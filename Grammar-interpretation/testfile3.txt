@@ -1,0 +1,18 @@
+int global_var = 0;
+
+int func() {
+    global_var = global_var + 1;
+    return 1;
+}
+
+int main() {
+    printf("22373017");
+    char c[10];
+    if (0) { ;
+    }
+    printf("%d", global_var); // 输出 0
+    if (2) { ;
+    }
+    printf("%d", global_var); // 输出 0
+    return 0;
+}

@@ -1,0 +1,178 @@
+int global_var = 0;
+char global_char = '1';
+const int cc_int = 114514;
+const char cc_char = '1';
+
+const int ccc_i[3] = {1, 2, 3};
+const char ccc_c[10] = "114514";
+
+// int bianyi = 1;
+/* char jizu = '2'; */
+
+void hahaha() {
+    int a;
+    int b;
+    a = 1;
+    b = 2;
+}
+
+int func() {
+    global_var = global_var + 1;
+    return 1;
+}
+
+char oooooo() {
+    return '1';
+}
+
+int hello(int a, char c) {
+    int b;
+    b = a + c;
+    return b;
+}
+
+char bad(int a) {
+    char ccc;
+    ccc = a + a;
+    return ccc;
+}
+
+int trytry(int a[], char c[]) {
+    return a[0] - c[1];
+}
+
+int hahhahahahhah() {
+    return 114514;
+}
+
+void thisisempty() {
+    int a = 1;
+}
+
+void goodafternoon() {
+    return;
+}
+
+int getttttt(int a) {
+    return a;
+}
+
+int main() {
+    int a = 1;
+    {
+        int a = 2;
+        {
+            int a = 3;
+        }
+    }
+    int b = 2, bc = 3;
+    int c = 3;
+    char d[100] = "114514", cd = '1';
+    int e[10] = {1, 2, 3, 4};
+    int i = 0;
+    char jjj = '1';
+    int iii = 114514;
+    const int mmmmmmmmmmm = 2;
+    const char nnnnnnnn = '2';
+    const int aaaaaaaa[3] = {1, 2, 3};
+    const char bbbbbbbbbb[10] = "114514", jjjjjjj = '1';
+
+    {}
+    {}
+    ;
+
+    printf("22373017");
+    if (0 && func()) { ;}
+    printf("%d", global_var); // 输出 0
+    if (1 || func()) { ;
+    }
+    printf("%d", global_var); // 输出 0
+
+    jjj = getchar();
+    iii = getint();
+
+    printf("\n%c %d",jjj, iii + iii * 2);
+
+    e[0] = 1;
+    e[b] = c;
+    e[1] = e[0] - e[1] - 2;
+
+    if(b > c) {;}
+    else {;}
+
+    if(b >= c) {;} else {;}
+    if(b < c) {;}
+    if(b <= c) {;}
+    if(b == c) {;}
+    if(b != c) {;}
+    if(b + c) {;}
+
+    for (i = 0; i < 2; i = i + 1) {
+        e[i] = i;
+        int m = 2;
+        continue;
+    }
+
+    if(1) {
+        for (i = 0 ; i < 2; i = i + 1) {
+            break;
+        }
+    }
+    else {
+        a = a + a;
+        {
+            a = a - a;
+        }
+    }
+
+    for(;;) {
+        break;
+    }
+
+    for(i = 0;;) {
+        break;
+    }
+
+    for(; i > 0;) {
+        break;
+    }
+
+    for(;; i = i + 1) {
+        break;
+    }
+
+    for(i = 0; i > 0;) {
+        break;
+    }
+
+    for(i =0;;i = i + 1) {
+        break;
+    }
+
+    for(;i > 0; i = i + 1) {
+        break;
+    }
+
+    a = 1;
+    // i = a + 1 - 1 * 2 / 1 + 1 % 1;
+    b = 1;
+    b = b + 1 - 1 * 1 - 0 * 8;
+
+    e[0] = e[1];
+    i = +i;
+    i = -i;
+    i = !i;
+
+    i = 1;
+    i = '1';
+
+    a = getttttt(a + 1);
+
+    (1 + 2);
+    (a + b);
+
+    a = hahhahahahhah();
+    thisisempty();
+
+    return 0;
+}

@@ -1,0 +1,44 @@
+int global_var = 0;
+
+int func() {
+    global_var = global_var + 1;
+    return 1;
+}
+
+int hello(int a, char b) {
+    int c;
+    c = a + b;
+    return c;
+}
+
+int main() {
+    printf("22373017");
+
+    int a = 1;
+    char ch = '1';
+    int tmp = a;
+
+    a = a + ch - tmp;
+    a = hello(tmp, ch);
+    a = a + a;
+    
+    int b = 3;
+    int c = 4;
+    /*
+    a = (b == c);
+    a = (b != c);
+    a = (b > c);
+    a = (b >= c);
+    a = (b < c);
+    a = (b <= a);*/
+    a = a * a;
+    a = a / a;
+    a = a % a;
+    a = 3;
+    a = !a;
+    a = -a;
+    a = +a;
+    
+
+    return 0;
+}
