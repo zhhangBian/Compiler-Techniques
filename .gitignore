@@ -1,2 +1,11 @@
+### Example user template template
+### Example user template
+
+# IntelliJ project files
 .idea
-MARS*
+*.iml
+out
+gen
+.vscode
+.gitignore
+
