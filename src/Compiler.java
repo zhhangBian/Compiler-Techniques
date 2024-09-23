@@ -8,7 +8,6 @@ import java.io.PrintStream;
 public class Compiler {
     private static final FrontEnd frontend = new FrontEnd();
 
-
     public static void main(String[] args) throws FileNotFoundException {
         FileInputStream in = new FileInputStream("testfile.txt");
         System.setIn(in);
