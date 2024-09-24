@@ -13,3 +13,5 @@ testfile.txt
 *.zip
 *.rar
 *.jar
+
+src/META-INF
