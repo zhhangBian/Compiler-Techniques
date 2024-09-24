@@ -126,12 +126,14 @@ public class Lexer {
                 this.Read();
             }
 
-            return new Token(TokenType.AND, string.toString(), this.lineNumber);
+            return new Token(TokenType.OR, string.toString(), this.lineNumber);
         } else if (this.currentChar == '<') {
             string.append(this.currentChar);
             this.Read();
 
             if (this.currentChar == '=') {
+                string.append(this.currentChar);
+                this.Read();
                 return new Token(TokenType.LEQ, string.toString(), this.lineNumber);
             }
             return new Token(TokenType.LSS, string.toString(), this.lineNumber);
@@ -140,6 +142,8 @@ public class Lexer {
             this.Read();
 
             if (this.currentChar == '=') {
+                string.append(this.currentChar);
+                this.Read();
                 return new Token(TokenType.GEQ, string.toString(), this.lineNumber);
             }
             return new Token(TokenType.GRE, string.toString(), this.lineNumber);
@@ -148,6 +152,8 @@ public class Lexer {
             this.Read();
 
             if (this.currentChar == '=') {
+                string.append(this.currentChar);
+                this.Read();
                 return new Token(TokenType.EQL, string.toString(), this.lineNumber);
             }
             return new Token(TokenType.ASSIGN, string.toString(), this.lineNumber);
@@ -156,6 +162,8 @@ public class Lexer {
             this.Read();
 
             if (this.currentChar == '=') {
+                string.append(this.currentChar);
+                this.Read();
                 return new Token(TokenType.NEQ, string.toString(), this.lineNumber);
             }
             return new Token(TokenType.NOT, string.toString(), this.lineNumber);
@@ -233,6 +241,11 @@ public class Lexer {
         else if (this.currentChar == '\'') {
             string.append(this.currentChar);
             this.Read();
+            if (this.currentChar == '\\') {
+                string.append(this.currentChar);
+                this.Read();
+            }
+
             string.append(this.currentChar);
             this.Read();
             if (this.currentChar != '\'') {

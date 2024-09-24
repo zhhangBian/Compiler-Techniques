@@ -15,7 +15,7 @@ public class Printer {
     private static FileOutputStream errorFile = null;
 
     public static void InitPrinter() throws FileNotFoundException {
-        Printer.outputFile = new FileOutputStream("output.txt");
+        Printer.outputFile = new FileOutputStream("lexer.txt");
         Printer.errorFile = new FileOutputStream("error.txt");
     }
 

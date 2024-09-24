@@ -9,3 +9,7 @@ reference
 
 lexer.txt
 testfile.txt
+*.txt
+*.zip
+*.rar
+*.jar
