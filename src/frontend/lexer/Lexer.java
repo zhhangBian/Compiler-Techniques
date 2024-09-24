@@ -1,5 +1,9 @@
 package frontend.lexer;
 
+import error.Error;
+import error.ErrorRecorder;
+import error.ErrorType;
+
 import java.io.IOException;
 import java.io.PushbackInputStream;
 import java.util.ArrayList;
@@ -105,22 +109,24 @@ public class Lexer {
             string.append(this.currentChar);
             this.Read();
             if (this.currentChar != '&') {
-                return new Token(TokenType.ERROR, "ERROR", this.lineNumber);
+                ErrorRecorder.AddError(new Error(ErrorType.ILLEGAL_SYMBOL, this.lineNumber));
+            } else {
+                string.append(this.currentChar);
+                this.Read();
             }
 
-            string.append(this.currentChar);
-            this.Read();
             return new Token(TokenType.AND, string.toString(), this.lineNumber);
         } else if (this.currentChar == '|') {
             string.append(this.currentChar);
             this.Read();
             if (this.currentChar != '|') {
-                return new Token(TokenType.ERROR, "ERROR", this.lineNumber);
+                ErrorRecorder.AddError(new Error(ErrorType.ILLEGAL_SYMBOL, this.lineNumber));
+            } else {
+                string.append(this.currentChar);
+                this.Read();
             }
 
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.OR, string.toString(), this.lineNumber);
+            return new Token(TokenType.AND, string.toString(), this.lineNumber);
         } else if (this.currentChar == '<') {
             string.append(this.currentChar);
             this.Read();
@@ -153,8 +159,9 @@ public class Lexer {
                 return new Token(TokenType.NEQ, string.toString(), this.lineNumber);
             }
             return new Token(TokenType.NOT, string.toString(), this.lineNumber);
-            // 处理注释
-        } else if (this.currentChar == '/') {
+        }
+        // 处理注释
+        else if (this.currentChar == '/') {
             string.append(this.currentChar);
             this.Read();
 
@@ -199,8 +206,6 @@ public class Lexer {
             else {
                 return new Token(TokenType.DIV, string.toString(), this.lineNumber);
             }
-
-            // 其他情况
         }
 
         // 数字常量

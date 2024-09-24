@@ -12,6 +12,8 @@ public class Compiler {
 
         FrontEnd.SetInputStream(input);
         FrontEnd.GenerateTokenList();
+
         Printer.PrintTokenList();
+        Printer.PrintErrorMessage();
     }
 }

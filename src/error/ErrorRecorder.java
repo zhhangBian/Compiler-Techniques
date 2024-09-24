@@ -3,18 +3,13 @@ package error;
 import java.util.ArrayList;
 
 public class ErrorRecorder {
-    private static ErrorRecorder errorRecorder;
+    private static final ArrayList<Error> errorList = new ArrayList<>();
 
-    private final ArrayList<Integer> errors;
-
-    private ErrorRecorder() {
-        this.errors = new ArrayList<>();
+    public static void AddError(Error error) {
+        errorList.add(error);
     }
 
-    public static ErrorRecorder getInstance() {
-        if (errorRecorder == null) {
-            errorRecorder = new ErrorRecorder();
-        }
-        return errorRecorder;
+    public static ArrayList<Error> GetErrorList() {
+        return errorList;
     }
 }
