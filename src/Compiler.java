@@ -1,26 +1,17 @@
 import frontend.FrontEnd;
+import utils.Printer;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.IOException;
+import java.io.PushbackInputStream;
 
 public class Compiler {
-    private static final FrontEnd frontend = new FrontEnd();
+    public static void main(String[] args) throws IOException {
+        PushbackInputStream input = new PushbackInputStream(new FileInputStream("testfile.txt"), 16);
+        Printer.InitPrinter();
 
-    public static void main(String[] args) throws FileNotFoundException {
-        FileInputStream in = new FileInputStream("testfile.txt");
-        System.setIn(in);
-        PrintStream out = new PrintStream("lexer.txt");
-        System.setOut(out);
-
-        frontend.SetInputStream(new InputStreamReader(in));
-
-
-        PrintLexerResult();
-    }
-
-    private static void PrintLexerResult() {
-
+        FrontEnd.SetInputStream(input);
+        FrontEnd.GenerateTokenList();
+        Printer.PrintTokenList();
     }
 }

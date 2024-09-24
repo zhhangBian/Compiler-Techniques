@@ -1,13 +1,25 @@
 package frontend.lexer;
 
 public class Token {
-    private String value;
-    private TokenType type;
-    private int lineNum;
+    private final TokenType tokenType;
+    private final String stringValue;
+    private final int lineNumber;
 
-    public Token(String value, TokenType type, int lineNum) {
-        this.value = value;
-        this.type = type;
-        this.lineNum = lineNum;
+    public Token(TokenType tokenType, String stringValue, int lineNumber) {
+        this.tokenType = tokenType;
+        this.stringValue = stringValue;
+        this.lineNumber = lineNumber;
+    }
+
+    public TokenType GetTokenType() {
+        return this.tokenType;
+    }
+
+    public String GetStringValue() {
+        return this.stringValue;
+    }
+
+    public int GetLineNumber() {
+        return this.lineNumber;
     }
 }
