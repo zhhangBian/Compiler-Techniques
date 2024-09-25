@@ -118,4 +118,11 @@ public enum TokenType {
             default -> TokenType.IDENFR;
         };
     }
+
+    public static TokenType GetTokenType(char character) {
+        return switch (character) {
+            case '+' -> TokenType.PLUS;
+            default -> TokenType.ERROR;
+        };
+    }
 }

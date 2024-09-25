@@ -10,27 +10,19 @@ import java.util.ArrayList;
 
 public class Lexer {
     private final PushbackInputStream reader;
-    private int lineNumber;
-    private char currentChar;
     private final ArrayList<Token> tokenList;
+    private char currentChar;
+    private int lineNumber;
 
     public Lexer(PushbackInputStream reader) throws IOException {
         this.reader = reader;
-        this.lineNumber = 1;
-        this.currentChar = (char) reader.read();
         this.tokenList = new ArrayList<>();
+        this.currentChar = (char) reader.read();
+        this.lineNumber = 1;
     }
 
     public ArrayList<Token> GetTokenList() {
         return this.tokenList;
-    }
-
-    private void Read() throws IOException {
-        this.currentChar = (char) reader.read();
-    }
-
-    private void UnRead() throws IOException {
-        this.reader.unread(this.currentChar);
     }
 
     public void GenerateTokenList() throws IOException {
@@ -39,6 +31,14 @@ public class Lexer {
             this.tokenList.add(token);
             token = this.GetToken();
         }
+    }
+
+    private void Read() throws IOException {
+        this.currentChar = (char) reader.read();
+    }
+
+    private void UnRead() throws IOException {
+        this.reader.unread(this.currentChar);
     }
 
     private Token GetToken() throws IOException {
