@@ -101,6 +101,12 @@ public enum TokenType {
 
     public static TokenType GetTokenType(String identifier) {
         return switch (identifier) {
+            case "<=" -> TokenType.LEQ;
+            case ">=" -> TokenType.GEQ;
+            case "==" -> TokenType.EQL;
+            case "!=" -> TokenType.NEQ;
+            case "&&" -> TokenType.AND;
+            case "||" -> TokenType.OR;
             case "main" -> TokenType.MAINTK;
             case "const" -> TokenType.CONSTTK;
             case "int" -> TokenType.INTTK;
@@ -122,6 +128,23 @@ public enum TokenType {
     public static TokenType GetTokenType(char character) {
         return switch (character) {
             case '+' -> TokenType.PLUS;
+            case '-' -> TokenType.MINU;
+            case '*' -> TokenType.MULT;
+            case '%' -> TokenType.MOD;
+            case ';' -> TokenType.SEMICN;
+            case ',' -> TokenType.COMMA;
+            case '(' -> TokenType.LPARENT;
+            case ')' -> TokenType.RPARENT;
+            case '[' -> TokenType.LBRACK;
+            case ']' -> TokenType.RBRACK;
+            case '{' -> TokenType.LBRACE;
+            case '}' -> TokenType.RBRACE;
+            case '&' -> TokenType.AND;
+            case '|' -> TokenType.OR;
+            case '<' -> TokenType.LSS;
+            case '>' -> TokenType.GRE;
+            case '=' -> TokenType.ASSIGN;
+            case '!' -> TokenType.NOT;
             default -> TokenType.ERROR;
         };
     }

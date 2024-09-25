@@ -7,7 +7,8 @@ import java.io.PushbackInputStream;
 
 public class Compiler {
     public static void main(String[] args) throws IOException {
-        PushbackInputStream input = new PushbackInputStream(new FileInputStream("testfile.txt"), 16);
+        PushbackInputStream input = new PushbackInputStream(
+            new FileInputStream("testfile.txt"), 16);
         Printer.InitPrinter();
 
         FrontEnd.SetInputStream(input);

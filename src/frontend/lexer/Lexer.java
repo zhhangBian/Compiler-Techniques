@@ -56,221 +56,30 @@ public class Lexer {
         if (this.IsEof()) {
             return new Token(TokenType.EOF, "EOF", this.lineNumber);
         }
-
-        if (this.currentChar == '+') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.PLUS, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '-') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.MINU, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '*') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.MULT, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '%') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.MOD, string.toString(), this.lineNumber);
-        } else if (this.currentChar == ';') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.SEMICN, string.toString(), this.lineNumber);
-        } else if (this.currentChar == ',') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.COMMA, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '(') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.LPARENT, string.toString(), this.lineNumber);
-        } else if (this.currentChar == ')') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.RPARENT, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '[') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.LBRACK, string.toString(), this.lineNumber);
-        } else if (this.currentChar == ']') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.RBRACK, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '{') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.LBRACE, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '}') {
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.RBRACE, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '&') {
-            string.append(this.currentChar);
-            this.Read();
-            if (this.currentChar != '&') {
-                ErrorRecorder.AddError(new Error(ErrorType.ILLEGAL_SYMBOL, this.lineNumber));
-            } else {
-                string.append(this.currentChar);
-                this.Read();
-            }
-
-            return new Token(TokenType.AND, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '|') {
-            string.append(this.currentChar);
-            this.Read();
-            if (this.currentChar != '|') {
-                ErrorRecorder.AddError(new Error(ErrorType.ILLEGAL_SYMBOL, this.lineNumber));
-            } else {
-                string.append(this.currentChar);
-                this.Read();
-            }
-
-            return new Token(TokenType.OR, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '<') {
-            string.append(this.currentChar);
-            this.Read();
-
-            if (this.currentChar == '=') {
-                string.append(this.currentChar);
-                this.Read();
-                return new Token(TokenType.LEQ, string.toString(), this.lineNumber);
-            }
-            return new Token(TokenType.LSS, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '>') {
-            string.append(this.currentChar);
-            this.Read();
-
-            if (this.currentChar == '=') {
-                string.append(this.currentChar);
-                this.Read();
-                return new Token(TokenType.GEQ, string.toString(), this.lineNumber);
-            }
-            return new Token(TokenType.GRE, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '=') {
-            string.append(this.currentChar);
-            this.Read();
-
-            if (this.currentChar == '=') {
-                string.append(this.currentChar);
-                this.Read();
-                return new Token(TokenType.EQL, string.toString(), this.lineNumber);
-            }
-            return new Token(TokenType.ASSIGN, string.toString(), this.lineNumber);
-        } else if (this.currentChar == '!') {
-            string.append(this.currentChar);
-            this.Read();
-
-            if (this.currentChar == '=') {
-                string.append(this.currentChar);
-                this.Read();
-                return new Token(TokenType.NEQ, string.toString(), this.lineNumber);
-            }
-            return new Token(TokenType.NOT, string.toString(), this.lineNumber);
+        // 数字常量
+        else if (this.IsDigit()) {
+            return this.LexerDigit(string);
+        }
+        // 字符串常量
+        else if (this.IsStringConst()) {
+            return this.LexerStringConst(string);
+        }
+        // 字符常量
+        else if (this.IsCharacterConst()) {
+            return this.LexerCharacterConst(string);
+        }
+        // 标识符
+        else if (this.IsIdentifier()) {
+            return this.LexerIdentifier(string);
         }
         // 处理注释
         else if (this.currentChar == '/') {
-            string.append(this.currentChar);
-            this.Read();
-
-            // 单行注释
-            if (this.currentChar == '/') {
-                this.Read();
-                while (!this.IsNewLine() && !this.IsEof()) {
-                    this.Read();
-                }
-                this.lineNumber++;
-
-                // 利用递归返回下一个token
-                this.Read();
-                return this.GetToken();
-            }
-            // 多行注释
-            else if (this.currentChar == '*') {
-                this.Read();
-                while (true) {
-                    while (this.currentChar != '*') {
-                        if (this.IsEof()) {
-                            return new Token(TokenType.EOF, "EOF", this.lineNumber);
-                        }
-
-                        if (this.IsNewLine()) {
-                            this.lineNumber++;
-                        }
-
-                        this.Read();
-                    }
-
-                    this.Read();
-                    if (this.currentChar == '/') {
-                        break;
-                    }
-                }
-
-                this.Read();
-                return this.GetToken();
-            }
-            // 一般情况
-            else {
-                return new Token(TokenType.DIV, string.toString(), this.lineNumber);
-            }
+            return this.LexerAnnotation(string);
         }
-
-        // 数字常量
-        else if (this.IsDigit()) {
-            while (this.IsDigit()) {
-                string.append(this.currentChar);
-                this.Read();
-            }
-            return new Token(TokenType.INTCON, string.toString(), this.lineNumber);
+        // 处理一般的符号
+        else {
+            return this.LexerOp(string);
         }
-        // 字符串常量
-        else if (this.currentChar == '"') {
-            string.append(this.currentChar);
-            this.Read();
-            while (this.currentChar != '"') {
-                string.append(this.currentChar);
-                this.Read();
-            }
-
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.STRCON, string.toString(), this.lineNumber);
-        }
-        // 字符常量
-        else if (this.currentChar == '\'') {
-            string.append(this.currentChar);
-            this.Read();
-            if (this.currentChar == '\\') {
-                string.append(this.currentChar);
-                this.Read();
-            }
-
-            string.append(this.currentChar);
-            this.Read();
-            if (this.currentChar != '\'') {
-                return new Token(TokenType.ERROR, "ERROR", this.lineNumber);
-            }
-
-            string.append(this.currentChar);
-            this.Read();
-            return new Token(TokenType.CHRCON, string.toString(), this.lineNumber);
-        }
-        // 标识符
-        else if (this.IsLetter() || this.IsUnderLine()) {
-            string.append(this.currentChar);
-            this.Read();
-
-            while (this.IsLetter() || this.IsDigit() || this.IsUnderLine()) {
-                string.append(this.currentChar);
-                this.Read();
-            }
-
-            String identifier = string.toString();
-            return new Token(TokenType.GetTokenType(identifier), identifier, this.lineNumber);
-        }
-
-        return new Token(TokenType.ERROR, "ERROR", this.lineNumber);
     }
 
     private boolean IsBlank() throws IOException {
@@ -294,11 +103,172 @@ public class Lexer {
         return Character.isDigit(this.currentChar);
     }
 
+    private boolean IsStringConst() {
+        return this.currentChar == '"';
+    }
+
+    private boolean IsCharacterConst() {
+        return this.currentChar == '\'';
+    }
+
+    private boolean IsIdentifier() {
+        return this.IsLetter() || this.IsUnderLine();
+    }
+
     private boolean IsLetter() {
         return Character.isLetter(this.currentChar);
     }
 
     private boolean IsUnderLine() {
         return this.currentChar == '_';
+    }
+
+    private Token LexerDigit(StringBuilder string) throws IOException {
+        while (this.IsDigit()) {
+            string.append(this.currentChar);
+            this.Read();
+        }
+        return new Token(TokenType.INTCON, string.toString(), this.lineNumber);
+    }
+
+    private Token LexerStringConst(StringBuilder string) throws IOException {
+        string.append(this.currentChar);
+        this.Read();
+        while (this.currentChar != '"') {
+            string.append(this.currentChar);
+            this.Read();
+        }
+
+        string.append(this.currentChar);
+        this.Read();
+        return new Token(TokenType.STRCON, string.toString(), this.lineNumber);
+    }
+
+    private Token LexerCharacterConst(StringBuilder string) throws IOException {
+        string.append(this.currentChar);
+        this.Read();
+        if (this.currentChar == '\\') {
+            string.append(this.currentChar);
+            this.Read();
+        }
+
+        string.append(this.currentChar);
+        this.Read();
+        if (this.currentChar != '\'') {
+            return new Token(TokenType.ERROR, "ERROR", this.lineNumber);
+        }
+
+        string.append(this.currentChar);
+        this.Read();
+        return new Token(TokenType.CHRCON, string.toString(), this.lineNumber);
+    }
+
+    private Token LexerIdentifier(StringBuilder string) throws IOException {
+        string.append(this.currentChar);
+        this.Read();
+
+        while (this.IsLetter() || this.IsDigit() || this.IsUnderLine()) {
+            string.append(this.currentChar);
+            this.Read();
+        }
+
+        String identifier = string.toString();
+        return new Token(TokenType.GetTokenType(identifier), identifier, this.lineNumber);
+    }
+
+    private Token LexerOp(StringBuilder string) throws IOException {
+        return switch (this.currentChar) {
+            case '+', '-', '*', '%', ';', ',', '(', ')', '[', ']', '{', '}' ->
+                this.LexerSingleOp(string);
+            case '<', '>', '!', '=' -> this.LexerTwiceEqual(string);
+            case '&', '|' -> this.LexerOpTwiceWithError(string);
+            default -> new Token(TokenType.ERROR, string.toString(), this.lineNumber);
+        };
+    }
+
+    private Token LexerSingleOp(StringBuilder string) throws IOException {
+        char character = this.currentChar;
+        string.append(character);
+        this.Read();
+        return new Token(TokenType.GetTokenType(character),
+            string.toString(), this.lineNumber);
+    }
+
+    private Token LexerTwiceEqual(StringBuilder string) throws IOException {
+        char character = this.currentChar;
+        string.append(character);
+        this.Read();
+
+        if (this.currentChar == '=') {
+            string.append(this.currentChar);
+            this.Read();
+            return new Token(TokenType.GetTokenType(string.toString()),
+                string.toString(), this.lineNumber);
+        } else {
+            return new Token(TokenType.GetTokenType(character),
+                string.toString(), this.lineNumber);
+        }
+    }
+
+    private Token LexerOpTwiceWithError(StringBuilder string) throws IOException {
+        char character = this.currentChar;
+        string.append(character);
+        this.Read();
+        if (this.currentChar != character) {
+            ErrorRecorder.AddError(new Error(ErrorType.ILLEGAL_SYMBOL, this.lineNumber));
+        } else {
+            string.append(this.currentChar);
+            this.Read();
+        }
+
+        return new Token(TokenType.GetTokenType(character),
+            string.toString(), this.lineNumber);
+    }
+
+    private Token LexerAnnotation(StringBuilder string) throws IOException {
+        string.append(this.currentChar);
+        this.Read();
+
+        // 单行注释
+        if (this.currentChar == '/') {
+            this.Read();
+            while (!this.IsNewLine() && !this.IsEof()) {
+                this.Read();
+            }
+            this.lineNumber++;
+
+            // 利用递归返回下一个token
+            this.Read();
+            return this.GetToken();
+        }
+        // 多行注释
+        else if (this.currentChar == '*') {
+            this.Read();
+            while (true) {
+                while (this.currentChar != '*') {
+                    if (this.IsEof()) {
+                        return new Token(TokenType.EOF, "EOF", this.lineNumber);
+                    }
+
+                    if (this.IsNewLine()) {
+                        this.lineNumber++;
+                    }
+
+                    this.Read();
+                }
+
+                this.Read();
+                if (this.currentChar == '/') {
+                    break;
+                }
+            }
+
+            this.Read();
+            return this.GetToken();
+        }
+        // 一般情况
+        else {
+            return new Token(TokenType.DIV, string.toString(), this.lineNumber);
+        }
     }
 }
