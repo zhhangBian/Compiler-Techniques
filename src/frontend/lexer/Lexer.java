@@ -45,12 +45,7 @@ public class Lexer {
         StringBuilder string = new StringBuilder();
 
         // 跳过空白字符
-        while (this.IsBlank()) {
-            if (this.IsNewLine()) {
-                this.lineNumber++;
-            }
-            this.Read();
-        }
+        this.SkipBlank();
 
         // 处理结束情况
         if (this.IsEof()) {
@@ -73,12 +68,21 @@ public class Lexer {
             return this.LexerIdentifier(string);
         }
         // 处理注释
-        else if (this.currentChar == '/') {
+        else if (this.IsAnnotation()) {
             return this.LexerAnnotation(string);
         }
         // 处理一般的符号
         else {
             return this.LexerOp(string);
+        }
+    }
+
+    private void SkipBlank() throws IOException {
+        while (this.IsBlank()) {
+            if (this.IsNewLine()) {
+                this.lineNumber++;
+            }
+            this.Read();
         }
     }
 
@@ -113,6 +117,10 @@ public class Lexer {
 
     private boolean IsIdentifier() {
         return this.IsLetter() || this.IsUnderLine();
+    }
+
+    private boolean IsAnnotation() {
+        return this.currentChar == '/';
     }
 
     private boolean IsLetter() {

@@ -2,16 +2,16 @@ package frontend;
 
 import frontend.lexer.Lexer;
 import frontend.lexer.Token;
+import utils.IOhandler;
 
 import java.io.IOException;
-import java.io.PushbackInputStream;
 import java.util.ArrayList;
 
 public class FrontEnd {
     private static Lexer lexer;
 
-    public static void SetInputStream(PushbackInputStream reader) throws IOException {
-        FrontEnd.lexer = new Lexer(reader);
+    public static void SetInput() throws IOException {
+        FrontEnd.lexer = new Lexer(IOhandler.GetInput());
     }
 
     public static void GenerateTokenList() throws IOException {

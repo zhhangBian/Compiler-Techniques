@@ -5,18 +5,26 @@ import error.ErrorRecorder;
 import frontend.FrontEnd;
 import frontend.lexer.Token;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PushbackInputStream;
 import java.util.ArrayList;
 
-public class Printer {
+public class IOhandler {
+    private static PushbackInputStream input = null;
     private static FileOutputStream outputFile = null;
     private static FileOutputStream errorFile = null;
 
-    public static void InitPrinter() throws FileNotFoundException {
-        Printer.outputFile = new FileOutputStream("lexer.txt");
-        Printer.errorFile = new FileOutputStream("error.txt");
+    public static void SetIO() throws FileNotFoundException {
+        IOhandler.input = new PushbackInputStream(new FileInputStream("testfile.txt"), 16);
+        IOhandler.outputFile = new FileOutputStream("lexer.txt");
+        IOhandler.errorFile = new FileOutputStream("error.txt");
+    }
+
+    public static PushbackInputStream GetInput() {
+        return input;
     }
 
     public static void PrintTokenList() throws IOException {
