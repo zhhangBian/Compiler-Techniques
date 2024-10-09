@@ -29,22 +29,11 @@ public enum SyntaxType {
     FUNC_FORMAL_PARAMS("FuncFParams"),
     // 函数形参
     FUNC_FORMAL_PARAM("FuncFParam"),
-
-
     FUNC_REAL_PARAMS("FuncRParams"),
+
     BLOCK("Block"),
 
     STMT("Stmt"),
-    ASSIGN_STMT("Stmt"),
-    EXP_STMT("Stmt"),
-    IF_STMT("Stmt"),
-    WHILE_STMT("Stmt"),
-    BREAK_STMT("Stmt"),
-    CONTINUE_STMT("Stmt"),
-    RETURN_STMT("Stmt"),
-    GETINT_STMT("Stmt"),
-    PRINTF_STMT("Stmt"),
-    BLOCK_STMT("Stmt"),
 
 
     LVAL_EXP("LVal"),
@@ -62,13 +51,14 @@ public enum SyntaxType {
 
     // reserved
     NUMBER("Number"),
+
     UNARY_OP("UnaryOp"),
 
-    TOKEN("token");
+    TOKEN("Token");
 
     private final String typeName;
 
-    private SyntaxType(String typeName) {
+    SyntaxType(String typeName) {
         this.typeName = typeName;
     }
 

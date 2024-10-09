@@ -25,8 +25,4 @@ public class TokenStream {
         }
         return this.tokenList.get(this.readPoint + peekStep);
     }
-
-    public Token GetCurrentToken() {
-        return this.tokenList.get(this.readPoint);
-    }
 }
