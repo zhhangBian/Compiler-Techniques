@@ -21,16 +21,16 @@ public class Lexer {
         this.lineNumber = 1;
     }
 
-    public ArrayList<Token> GetTokenList() {
-        return this.tokenList;
-    }
-
     public void GenerateTokenList() throws IOException {
         Token token = this.GetToken();
         while (!token.GetTokenType().equals(TokenType.EOF)) {
             this.tokenList.add(token);
             token = this.GetToken();
         }
+    }
+
+    public ArrayList<Token> GetTokenList() {
+        return this.tokenList;
     }
 
     private void Read() throws IOException {

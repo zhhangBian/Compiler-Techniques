@@ -9,6 +9,7 @@ public class Compiler {
 
         FrontEnd.SetInput();
         FrontEnd.GenerateTokenList();
+        FrontEnd.GenerateAstTree();
 
         IOhandler.PrintTokenList();
         IOhandler.PrintErrorMessage();

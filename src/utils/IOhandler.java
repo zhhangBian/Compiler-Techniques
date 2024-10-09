@@ -3,6 +3,7 @@ package utils;
 import error.Error;
 import error.ErrorRecorder;
 import frontend.FrontEnd;
+import frontend.ast.Node;
 import frontend.lexer.Token;
 
 import java.io.FileInputStream;
@@ -14,12 +15,14 @@ import java.util.ArrayList;
 
 public class IOhandler {
     private static PushbackInputStream input = null;
-    private static FileOutputStream outputFile = null;
+    private static FileOutputStream lexerOutputFile = null;
+    private static FileOutputStream parserOutputFile = null;
     private static FileOutputStream errorFile = null;
 
     public static void SetIO() throws FileNotFoundException {
         IOhandler.input = new PushbackInputStream(new FileInputStream("testfile.txt"), 16);
-        IOhandler.outputFile = new FileOutputStream("lexer.txt");
+        IOhandler.lexerOutputFile = new FileOutputStream("lexer.txt");
+        IOhandler.parserOutputFile = new FileOutputStream("parser.txt");
         IOhandler.errorFile = new FileOutputStream("error.txt");
     }
 
@@ -31,8 +34,13 @@ public class IOhandler {
         ArrayList<Token> tokenList = FrontEnd.GetTokenList();
         for (Token token : tokenList) {
             String string = token.GetTokenType() + " " + token.GetStringValue() + "\n";
-            outputFile.write(string.getBytes());
+            lexerOutputFile.write(string.getBytes());
         }
+    }
+
+    public static void PrintAstTree() {
+        Node astTree = FrontEnd.GetAstTree();
+        // TODO
     }
 
     public static void PrintErrorMessage() throws IOException {
