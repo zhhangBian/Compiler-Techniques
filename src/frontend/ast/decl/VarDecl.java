@@ -1,4 +1,7 @@
-package frontend.ast;
+package frontend.ast.decl;
+
+import frontend.ast.Node;
+import frontend.ast.SyntaxType;
 
 import java.util.ArrayList;
 

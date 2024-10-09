@@ -3,18 +3,20 @@ package frontend.ast;
 public enum SyntaxType {
     // 编译单元，一切的开始
     COMP_UNIT("CompUnit"),
-    // 声明
+
     DECL("Decl"),
-    // 常量声明
     CONST_DECL("ConstDecl"),
-    // 基本类型
+    VAR_DECL("VarDecl"),
+
+
     BTYPE("BType"),
-    // 常量定义
+
+
     CONST_DEF("ConstDef"),
     // 常量初值
     CONST_INITVAL("ConstInitVal"),
     // 变量声明
-    VAR_DECL("VarDecl"),
+
     // 变量定义
     VAR_DEF("VarDef"),
     // 变量初值
