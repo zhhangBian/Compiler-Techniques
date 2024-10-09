@@ -16,12 +16,17 @@ public class TokenStream {
             // TODO：应该更优雅的实现方式
             return null;
         }
-        return tokenList.get(readPoint++);
+        return this.tokenList.get(this.readPoint++);
     }
 
-    public void UnRead() {
-        if (this.readPoint > 0) {
-            this.readPoint--;
+    public Token Peek(int peekStep) {
+        if (this.readPoint + peekStep >= this.tokenList.size()) {
+            return null;
         }
+        return this.tokenList.get(this.readPoint + peekStep);
+    }
+
+    public Token GetCurrentToken() {
+        return this.tokenList.get(this.readPoint);
     }
 }

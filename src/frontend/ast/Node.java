@@ -1,10 +1,14 @@
 package frontend.ast;
 
+import frontend.lexer.TokenStream;
+
 import java.util.ArrayList;
 
-public class Node {
+public abstract class Node {
     private final SyntaxType syntaxType;
-    private final ArrayList<Node> components;
+    protected final ArrayList<Node> components;
+
+    public static TokenStream tokenStream;
 
     public Node(SyntaxType syntaxType, ArrayList<Node> components) {
         this.syntaxType = syntaxType;
@@ -18,4 +22,6 @@ public class Node {
     public ArrayList<Node> GetComponents() {
         return this.components;
     }
+
+    public abstract void Parse();
 }
