@@ -4,21 +4,15 @@ import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.lexer.TokenType;
 
-import java.util.ArrayList;
-
 public class Decl extends Node {
     public Decl() {
-        super(SyntaxType.DECL, new ArrayList<>());
+        super(SyntaxType.DECL);
     }
 
     @Override
     public void Parse() {
-        Node node;
-        if (GetCurrentToken().GetTokenType().equals(TokenType.CONSTTK)) {
-            node = new ConstDecl();
-        } else {
-            node = new VarDecl();
-        }
+        Node node = GetCurrentTokenType().equals(TokenType.CONSTTK) ?
+            new ConstDecl() : new VarDecl();
         node.Parse();
         this.components.add(node);
     }

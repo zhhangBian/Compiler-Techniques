@@ -2,6 +2,7 @@ package frontend.ast;
 
 import frontend.lexer.Token;
 import frontend.lexer.TokenStream;
+import frontend.lexer.TokenType;
 
 import java.util.ArrayList;
 
@@ -11,9 +12,14 @@ public abstract class Node {
 
     public static TokenStream tokenStream;
 
-    public Node(SyntaxType syntaxType, ArrayList<Node> components) {
+    public Node(SyntaxType syntaxType) {
         this.syntaxType = syntaxType;
-        this.components = components;
+        this.components = new ArrayList<>();
+    }
+
+    protected void AddNode(Node node) {
+        node.Parse();
+        this.components.add(node);
     }
 
     public SyntaxType GetSyntaxType() {
@@ -30,11 +36,27 @@ public abstract class Node {
         return tokenStream.Peek(0);
     }
 
-    public static Token Read() {
-        return tokenStream.Read();
+    public static TokenType GetCurrentTokenType() {
+        return tokenStream.Peek(0).GetTokenType();
+    }
+
+    public static void Read() {
+        tokenStream.Read();
     }
 
     public static Token Peek(int peekStep) {
         return tokenStream.Peek(peekStep);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Node node : this.components) {
+            stringBuilder.append(node);
+            stringBuilder.append("\n");
+        }
+        stringBuilder.append(this.syntaxType);
+
+        return stringBuilder.toString();
     }
 }

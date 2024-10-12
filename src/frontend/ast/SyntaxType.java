@@ -14,7 +14,7 @@ public enum SyntaxType {
 
     CONST_DEF("ConstDef"),
     // 常量初值
-    CONST_INITVAL("ConstInitVal"),
+    CONST_INIT_VAL("ConstInitVal"),
     // 变量声明
 
     // 变量定义
@@ -28,14 +28,16 @@ public enum SyntaxType {
     // 函数类型
     FUNC_TYPE("FuncType"),
     // 函数形参表
-    FUNC_FORMAL_PARAMS("FuncFParams"),
+    FUNC_FORMAL_PARAM("FuncFParams"),
     // 函数形参
-    FUNC_FORMAL_PARAM("FuncFParam"),
-    FUNC_REAL_PARAMS("FuncRParams"),
+    FUNC_FORMAL_PARAM_S("FuncFParam"),
+    FUNC_REAL_PARAM_S("FuncRParams"),
 
     BLOCK("Block"),
+    BLOCK_ITEM("BlockItem"),
 
     STMT("Stmt"),
+    FOR_STMT("ForStmt"),
 
 
     LVAL_EXP("LVal"),
@@ -53,8 +55,18 @@ public enum SyntaxType {
 
     // reserved
     NUMBER("Number"),
+    CHARACTER("Character"),
 
     UNARY_OP("UnaryOp"),
+
+    // Ident
+    IDENT("Ident"),
+    // IntConst
+    INT_CONST("IntConst"),
+    // StringConst
+    STRING_CONST("StringConst"),
+    // CharConst
+    CHAR_CONST("CharConst"),
 
     TOKEN("Token");
 

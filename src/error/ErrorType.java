@@ -15,7 +15,7 @@ public enum ErrorType {
     PRINTF_NOT_MATCH("l"),
     BREAK_OR_CONTINUE_IN_NOT_LOOP("m");
 
-    private String errorValue;
+    private final String errorValue;
 
     ErrorType(String errorValue) {
         this.errorValue = errorValue;

@@ -2,11 +2,7 @@ package frontend.parser;
 
 import frontend.ast.CompUnit;
 import frontend.ast.Node;
-import frontend.lexer.Token;
 import frontend.lexer.TokenStream;
-import frontend.lexer.TokenType;
-
-import java.util.ArrayList;
 
 public class Parser {
     private TokenStream tokenStream;

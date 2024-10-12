@@ -11,12 +11,12 @@ public class TokenStream {
         this.readPoint = 0;
     }
 
-    public Token Read() {
+    public void Read() {
         if (this.readPoint >= this.tokenList.size()) {
             // TODO：应该更优雅的实现方式
-            return null;
+            return;
         }
-        return this.tokenList.get(this.readPoint++);
+        this.readPoint++;
     }
 
     public Token Peek(int peekStep) {
