@@ -19,7 +19,6 @@ public class MainFuncDef extends Node {
         this.AddNode(new TokenNode());
         // (
         this.AddNode(new TokenNode());
-        Read();
         // )
         // TODO：括号不匹配，添加错误
         this.AddNode(new TokenNode());

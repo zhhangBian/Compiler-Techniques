@@ -24,4 +24,9 @@ public class BasicTokenNode extends Node {
 
         DebugPrint(this.token);
     }
+
+    @Override
+    public String toString() {
+        return this.token.GetTokenType() + " " + this.token.GetStringValue();
+    }
 }

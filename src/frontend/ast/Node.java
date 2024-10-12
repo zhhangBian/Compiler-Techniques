@@ -55,7 +55,8 @@ public abstract class Node {
             stringBuilder.append(node);
             stringBuilder.append("\n");
         }
-        stringBuilder.append(this.syntaxType);
+
+        stringBuilder.append("<" + this.syntaxType + ">");
 
         return stringBuilder.toString();
     }

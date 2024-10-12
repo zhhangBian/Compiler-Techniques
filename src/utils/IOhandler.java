@@ -40,7 +40,7 @@ public class IOhandler {
 
     public static void PrintAstTree() {
         Node astTree = FrontEnd.GetAstTree();
-        // TODO
+        System.out.println(astTree);
     }
 
     public static void PrintErrorMessage() throws IOException {

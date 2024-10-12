@@ -15,7 +15,6 @@ public class Parser {
 
     public void SetTokenStream(TokenStream tokenStream) {
         this.tokenStream = tokenStream;
-        this.tokenStream.Read();
     }
 
     public void GenerateAstTree() {

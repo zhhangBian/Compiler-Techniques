@@ -13,7 +13,6 @@ public class TokenStream {
 
     public void Read() {
         if (this.readPoint >= this.tokenList.size()) {
-            // TODO：应该更优雅的实现方式
             return;
         }
         this.readPoint++;

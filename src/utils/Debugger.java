@@ -1,7 +1,7 @@
 package utils;
 
 public class Debugger {
-    private static boolean debug = true;
+    private static boolean debug = false;
 
     public static void DebugPrint(Object object) {
         if (debug) {

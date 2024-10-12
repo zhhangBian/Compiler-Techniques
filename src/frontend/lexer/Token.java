@@ -22,4 +22,9 @@ public class Token {
     public int GetLineNumber() {
         return this.lineNumber;
     }
+
+    @Override
+    public String toString() {
+        return this.stringValue;
+    }
 }

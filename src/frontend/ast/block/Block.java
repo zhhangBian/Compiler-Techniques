@@ -15,7 +15,7 @@ public class Block extends Node {
         // {
         this.AddNode(new TokenNode());
         // BlockItem
-        while (GetCurrentTokenType().equals(TokenType.RBRACE)) {
+        while (!GetCurrentTokenType().equals(TokenType.RBRACE)) {
             this.AddNode(new BlockItem());
         }
         // }
