@@ -19,10 +19,13 @@ public class LAndExp extends RecursionNode {
 
     @Override
     public void Parse() {
-        this.AddNodeList(new MulExp());
+        // EqExp
+        this.AddNodeList(new EqExp());
         while (GetCurrentTokenType().equals(TokenType.AND)) {
+            // &&
             this.AddNodeList(new TokenNode());
-            this.AddNodeList(new MulExp());
+            // EqExp
+            this.AddNodeList(new EqExp());
         }
         this.HandleRecursion(LAndExp::new);
     }

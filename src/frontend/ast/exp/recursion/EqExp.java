@@ -19,10 +19,13 @@ public class EqExp extends RecursionNode {
 
     @Override
     public void Parse() {
+        // RelExp
         this.AddNodeList(new RelExp());
         while (GetCurrentTokenType().equals(TokenType.EQL) ||
             GetCurrentTokenType().equals(TokenType.NEQ)) {
+            // == | !=
             this.AddNodeList(new TokenNode());
+            // RelExp
             this.AddNodeList(new RelExp());
         }
         this.HandleRecursion(EqExp::new);

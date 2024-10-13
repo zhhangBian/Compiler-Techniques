@@ -19,12 +19,15 @@ public class RelExp extends RecursionNode {
 
     @Override
     public void Parse() {
+        // AddExp
         this.AddNode(new AddExp());
         while (GetCurrentTokenType().equals(TokenType.LSS) ||
             GetCurrentTokenType().equals(TokenType.LEQ) ||
             GetCurrentTokenType().equals(TokenType.GRE) ||
             GetCurrentTokenType().equals(TokenType.GEQ)) {
+            // < | > | <= | >=
             this.AddNodeList(new TokenNode());
+            // AddExp
             this.AddNodeList(new AddExp());
         }
         this.HandleRecursion(RelExp::new);

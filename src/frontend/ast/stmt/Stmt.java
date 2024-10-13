@@ -142,8 +142,10 @@ public class Stmt extends Node {
 
         // )
         this.AddNode(new TokenNode());
+        // TODO：错误处理
         // ;
         this.AddNode(new TokenNode());
+        // TODO：错误处理
     }
 
     private boolean IsExpStmt() {
@@ -157,11 +159,12 @@ public class Stmt extends Node {
 
     private void ExpStmt() {
         if (this.IsExpStmt()) {
+            // Exp
             this.AddNode(new Exp());
-            return;
         }
 
         if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
+            // ;
             this.AddNode(new TokenNode());
         }
         // TODO：错误处理
@@ -174,8 +177,8 @@ public class Stmt extends Node {
         this.AddNode(new TokenNode());
 
         // getint | getchar
-        if (Peek(1).GetTokenType().equals(TokenType.GETINTTK) ||
-            Peek(1).GetTokenType().equals(TokenType.GETCHARTK)) {
+        if (GetCurrentTokenType().equals(TokenType.GETINTTK) ||
+            GetCurrentTokenType().equals(TokenType.GETCHARTK)) {
             // getint | getchar
             this.AddNode(new TokenNode());
             // (
@@ -185,8 +188,6 @@ public class Stmt extends Node {
                 this.AddNode(new TokenNode());
             }
             // TODO：错误处理
-
-
         }
         // assign
         else {

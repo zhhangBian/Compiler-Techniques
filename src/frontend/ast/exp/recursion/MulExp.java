@@ -20,13 +20,15 @@ public class MulExp extends RecursionNode {
 
     @Override
     public void Parse() {
+        // UnaryExp
         this.AddNodeList(new UnaryExp());
 
-        this.AddNode(new UnaryExp());
         while (GetCurrentTokenType().equals(TokenType.MULT) ||
             GetCurrentTokenType().equals(TokenType.DIV) ||
             GetCurrentTokenType().equals(TokenType.MOD)) {
+            // * | / | %
             this.AddNodeList(new TokenNode());
+            // UnaryExp
             this.AddNodeList(new UnaryExp());
         }
         this.HandleRecursion(MulExp::new);

@@ -7,6 +7,7 @@ import frontend.lexer.TokenType;
 public class Decl extends Node {
     public Decl() {
         super(SyntaxType.DECL);
+        this.printSelf = false;
     }
 
     @Override

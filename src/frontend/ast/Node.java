@@ -9,12 +9,14 @@ import java.util.ArrayList;
 public abstract class Node {
     private final SyntaxType syntaxType;
     protected final ArrayList<Node> components;
+    protected boolean printSelf;
 
     public static TokenStream tokenStream;
 
     public Node(SyntaxType syntaxType) {
         this.syntaxType = syntaxType;
         this.components = new ArrayList<>();
+        this.printSelf = true;
     }
 
     protected void AddNode(Node node) {
@@ -56,7 +58,14 @@ public abstract class Node {
             stringBuilder.append("\n");
         }
 
-        stringBuilder.append("<" + this.syntaxType + ">");
+        if (printSelf) {
+            stringBuilder.append("<" + this.syntaxType + ">");
+        } else {
+            if (!stringBuilder.isEmpty() &&
+                stringBuilder.charAt(stringBuilder.length() - 1) == '\n') {
+                stringBuilder.setLength(stringBuilder.length() - 1);
+            }
+        }
 
         return stringBuilder.toString();
     }

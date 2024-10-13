@@ -22,7 +22,9 @@ public class AddExp extends RecursionNode {
         this.AddNodeList(new MulExp());
         while (GetCurrentTokenType().equals(TokenType.PLUS) ||
             GetCurrentTokenType().equals(TokenType.MINU)) {
+            // + | -
             this.AddNodeList(new TokenNode());
+            // MulExp
             this.AddNodeList(new MulExp());
         }
         this.HandleRecursion(AddExp::new);

@@ -10,6 +10,7 @@ import frontend.lexer.TokenType;
 public class BlockItem extends Node {
     public BlockItem() {
         super(SyntaxType.BLOCK_ITEM);
+        this.printSelf = false;
     }
 
     @Override
