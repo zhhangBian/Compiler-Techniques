@@ -12,9 +12,7 @@ public class Decl extends Node {
 
     @Override
     public void Parse() {
-        Node node = GetCurrentTokenType().equals(TokenType.CONSTTK) ?
-            new ConstDecl() : new VarDecl();
-        node.Parse();
-        this.components.add(node);
+        this.AddNode(GetCurrentTokenType().equals(TokenType.CONSTTK) ?
+            new ConstDecl() : new VarDecl());
     }
 }

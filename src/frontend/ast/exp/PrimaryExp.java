@@ -2,7 +2,6 @@ package frontend.ast.exp;
 
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
-import frontend.ast.token.CharConst;
 import frontend.ast.token.TokenNode;
 import frontend.ast.value.Character;
 import frontend.ast.value.Number;

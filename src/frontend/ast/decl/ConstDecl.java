@@ -13,36 +13,23 @@ public class ConstDecl extends Node {
 
     @Override
     public void Parse() {
-        Node node;
         // 得到const
-        node = new TokenNode();
-        node.Parse();
-        this.components.add(node);
+        this.AddNode(new TokenNode());
         // BType
-        node = new BType();
-        node.Parse();
-        this.components.add(node);
+        this.AddNode(new BType());
         // ConstDef
-        node = new ConstDef();
-        node.Parse();
-        this.components.add(node);
+        this.AddNode(new ConstDef());
 
         // 重复的constDef
         while (GetCurrentTokenType().equals(TokenType.COMMA)) {
             // ,
-            node = new TokenNode();
-            node.Parse();
-            this.components.add(node);
+            this.AddNode(new TokenNode());
             // ConstDef
-            node = new ConstDef();
-            node.Parse();
-            this.components.add(node);
+            this.AddNode(new ConstDef());
         }
 
         // ;
-        node = new TokenNode();
-        node.Parse();
-        this.components.add(node);
+        this.AddNode(new TokenNode());
         // TODO：错误处理
     }
 }

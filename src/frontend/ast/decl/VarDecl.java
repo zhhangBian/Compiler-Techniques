@@ -13,32 +13,21 @@ public class VarDecl extends Node {
 
     @Override
     public void Parse() {
-        Node node;
         // BType
-        node = new BType();
-        node.Parse();
-        this.components.add(node);
+        this.AddNode(new BType());
         // VarDef
-        node = new VarDef();
-        node.Parse();
-        this.components.add(node);
+        this.AddNode(new VarDef());
 
         // 重复的constDef
         while (GetCurrentTokenType().equals(TokenType.COMMA)) {
             // ,
-            node = new TokenNode();
-            node.Parse();
-            this.components.add(node);
+            this.AddNode(new TokenNode());
             // ConstDef
-            node = new VarDef();
-            node.Parse();
-            this.components.add(node);
+            this.AddNode(new VarDef());
         }
 
         // ;
-        node = new TokenNode();
-        node.Parse();
-        this.components.add(node);
+        this.AddNode(new TokenNode());
         // TODO：错误处理
     }
 }
