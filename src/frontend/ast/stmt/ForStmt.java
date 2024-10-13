@@ -1,7 +1,9 @@
-package frontend.ast.exp;
+package frontend.ast.stmt;
 
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
+import frontend.ast.exp.Exp;
+import frontend.ast.exp.LVal;
 import frontend.ast.token.TokenNode;
 
 public class ForStmt extends Node {

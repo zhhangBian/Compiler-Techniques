@@ -19,7 +19,7 @@ public class ConstInitVal extends Node {
             // {
             this.AddNode(new TokenNode());
             // value
-            if (GetCurrentTokenType().equals(TokenType.RBRACE)) {
+            if (!GetCurrentTokenType().equals(TokenType.RBRACE)) {
                 // ConstExp
                 this.AddNode(new ConstExp());
                 while (GetCurrentTokenType().equals(TokenType.COMMA)) {

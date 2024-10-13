@@ -15,3 +15,6 @@ testfile.txt
 *.jar
 
 src/META-INF
+META-INF/*
+META-INF
+META-INF/MANIFEST.MF

@@ -5,7 +5,6 @@ import frontend.ast.SyntaxType;
 import frontend.ast.block.Block;
 import frontend.ast.exp.Cond;
 import frontend.ast.exp.Exp;
-import frontend.ast.exp.ForStmt;
 import frontend.ast.exp.LVal;
 import frontend.ast.token.StringConst;
 import frontend.ast.token.TokenNode;
@@ -19,15 +18,45 @@ public class Stmt extends Node {
     @Override
     public void Parse() {
         switch (GetCurrentTokenType()) {
-            case LBRACE -> this.BlockStmt();
-            case IFTK -> this.IfStmt();
-            case FORTK -> this.ForStmt();
-            case BREAKTK -> this.BreakStmt();
-            case CONTINUETK -> this.ContinueStmt();
-            case RETURNTK -> this.ReturnStmt();
-            case PRINTFTK -> this.PrintStmt();
-            case SEMICN -> this.ExpStmt();
-            default -> this.AssignStmt();
+            case LBRACE:
+                this.BlockStmt();
+                break;
+            case IFTK:
+                this.IfStmt();
+                break;
+            case FORTK:
+                this.ForStmt();
+                break;
+            case BREAKTK:
+                this.BreakStmt();
+                break;
+            case CONTINUETK:
+                this.ContinueStmt();
+                break;
+            case RETURNTK:
+                this.ReturnStmt();
+                break;
+            case PRINTFTK:
+                this.PrintStmt();
+                break;
+            case SEMICN:
+                this.ExpStmt();
+                break;
+            default:
+                // 预读一个看是否为赋值，否则回溯
+                SetBackPoint();
+                Node node = new Exp();
+                node.Parse();
+
+                if (GetCurrentTokenType().equals(TokenType.ASSIGN)) {
+                    GoToBackPoint();
+                    this.AssignStmt();
+                }
+                else {
+                    GoToBackPoint();
+                    this.ExpStmt();
+                }
+                break;
         }
     }
 
@@ -81,11 +110,9 @@ public class Stmt extends Node {
         this.AddNode(new TokenNode());
 
         // ForStmt
-        if (!GetCurrentTokenType().equals(TokenType.SEMICN)) {
+        if (!GetCurrentTokenType().equals(TokenType.RPARENT)) {
             this.AddNode(new ForStmt());
         }
-        // ;
-        this.AddNode(new TokenNode());
 
         // )
         if (GetCurrentTokenType().equals(TokenType.RPARENT)) {
@@ -151,6 +178,7 @@ public class Stmt extends Node {
     private boolean IsExpStmt() {
         return GetCurrentTokenType().equals(TokenType.IDENFR) ||
             GetCurrentTokenType().equals(TokenType.INTCON) ||
+            GetCurrentTokenType().equals(TokenType.CHRCON) ||
             GetCurrentTokenType().equals(TokenType.PLUS) ||
             GetCurrentTokenType().equals(TokenType.MINU) ||
             GetCurrentTokenType().equals(TokenType.NOT) ||

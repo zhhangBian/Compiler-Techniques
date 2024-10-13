@@ -7,7 +7,7 @@ import frontend.lexer.TokenType;
 import java.util.ArrayList;
 
 public abstract class Node {
-    private final SyntaxType syntaxType;
+    protected final SyntaxType syntaxType;
     protected final ArrayList<Node> components;
     protected boolean printSelf;
 
@@ -48,6 +48,14 @@ public abstract class Node {
 
     public static Token Peek(int peekStep) {
         return tokenStream.Peek(peekStep);
+    }
+
+    public static void SetBackPoint() {
+        tokenStream.SetBackPoint();
+    }
+
+    public static void GoToBackPoint() {
+        tokenStream.GoToBackPoint();
     }
 
     @Override

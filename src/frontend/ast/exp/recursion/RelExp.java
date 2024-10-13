@@ -10,6 +10,11 @@ public class RelExp extends RecursionNode {
         super(SyntaxType.REL_EXP);
     }
 
+    public RelExp(Node node) {
+        super(SyntaxType.REL_EXP);
+        this.components.add(node);
+    }
+
     public RelExp(Node node1, Node node2, Node node3) {
         super(SyntaxType.REL_EXP);
         this.components.add(node1);
@@ -20,7 +25,7 @@ public class RelExp extends RecursionNode {
     @Override
     public void Parse() {
         // AddExp
-        this.AddNode(new AddExp());
+        this.AddNodeList(new AddExp());
         while (GetCurrentTokenType().equals(TokenType.LSS) ||
             GetCurrentTokenType().equals(TokenType.LEQ) ||
             GetCurrentTokenType().equals(TokenType.GRE) ||
@@ -30,6 +35,6 @@ public class RelExp extends RecursionNode {
             // AddExp
             this.AddNodeList(new AddExp());
         }
-        this.HandleRecursion(RelExp::new);
+        this.HandleRecursion(RelExp::new, RelExp::new);
     }
 }

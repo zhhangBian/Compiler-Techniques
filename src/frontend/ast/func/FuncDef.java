@@ -26,7 +26,6 @@ public class FuncDef extends Node {
             GetCurrentTokenType().equals(TokenType.CHARTK)) {
             this.AddNode(new FuncFormalParamS());
         }
-        this.AddNode(new FuncFormalParamS());
         // )
         this.AddNode(new TokenNode());
         // Block

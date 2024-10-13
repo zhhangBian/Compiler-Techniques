@@ -4,6 +4,7 @@ import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.token.CharConst;
 import frontend.ast.token.TokenNode;
+import frontend.ast.value.Character;
 import frontend.ast.value.Number;
 import frontend.lexer.TokenType;
 
@@ -28,7 +29,7 @@ public class PrimaryExp extends Node {
         }
         // Character
         else if (GetCurrentTokenType().equals(TokenType.CHRCON)) {
-            this.AddNode(new CharConst());
+            this.AddNode(new Character());
         }
         // LVal
         else {

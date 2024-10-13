@@ -8,7 +8,6 @@ public enum SyntaxType {
     CONST_DECL("ConstDecl"),
     VAR_DECL("VarDecl"),
 
-
     BTYPE("BType"),
 
 
@@ -27,10 +26,10 @@ public enum SyntaxType {
     MAIN_FUNC_DEF("MainFuncDef"),
     // 函数类型
     FUNC_TYPE("FuncType"),
-    // 函数形参表
-    FUNC_FORMAL_PARAM("FuncFParams"),
     // 函数形参
-    FUNC_FORMAL_PARAM_S("FuncFParam"),
+    FUNC_FORMAL_PARAM("FuncFParam"),
+    // 函数形参表
+    FUNC_FORMAL_PARAM_S("FuncFParams"),
     FUNC_REAL_PARAM_S("FuncRParams"),
 
     BLOCK("Block"),

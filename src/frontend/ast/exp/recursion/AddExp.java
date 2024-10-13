@@ -10,6 +10,11 @@ public class AddExp extends RecursionNode {
         super(SyntaxType.ADD_EXP);
     }
 
+    public AddExp(Node node) {
+        super(SyntaxType.ADD_EXP);
+        this.components.add(node);
+    }
+
     public AddExp(Node node1, Node node2, Node node3) {
         super(SyntaxType.ADD_EXP);
         this.components.add(node1);
@@ -27,6 +32,6 @@ public class AddExp extends RecursionNode {
             // MulExp
             this.AddNodeList(new MulExp());
         }
-        this.HandleRecursion(AddExp::new);
+        this.HandleRecursion(AddExp::new, AddExp::new);
     }
 }

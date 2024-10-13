@@ -38,9 +38,9 @@ public class IOhandler {
         }
     }
 
-    public static void PrintAstTree() {
+    public static void PrintAstTree() throws IOException {
         Node astTree = FrontEnd.GetAstTree();
-        System.out.println(astTree);
+        parserOutputFile.write(String.valueOf(astTree).getBytes());
     }
 
     public static void PrintErrorMessage() throws IOException {

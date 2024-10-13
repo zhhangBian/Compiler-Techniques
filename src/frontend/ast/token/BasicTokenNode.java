@@ -11,11 +11,7 @@ public class BasicTokenNode extends Node {
         super(syntaxType);
     }
 
-    private Token token;
-
-    public Token GetToken() {
-        return this.token;
-    }
+    protected Token token;
 
     @Override
     public void Parse() {

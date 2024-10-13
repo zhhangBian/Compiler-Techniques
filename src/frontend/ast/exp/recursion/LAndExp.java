@@ -10,6 +10,11 @@ public class LAndExp extends RecursionNode {
         super(SyntaxType.LAND_EXP);
     }
 
+    public LAndExp(Node node) {
+        super(SyntaxType.LAND_EXP);
+        this.components.add(node);
+    }
+
     public LAndExp(Node node1, Node node2, Node node3) {
         super(SyntaxType.LAND_EXP);
         this.components.add(node1);
@@ -27,6 +32,6 @@ public class LAndExp extends RecursionNode {
             // EqExp
             this.AddNodeList(new EqExp());
         }
-        this.HandleRecursion(LAndExp::new);
+        this.HandleRecursion(LAndExp::new, LAndExp::new);
     }
 }

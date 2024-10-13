@@ -10,6 +10,11 @@ public class EqExp extends RecursionNode {
         super(SyntaxType.EQ_EXP);
     }
 
+    public EqExp(Node node) {
+        super(SyntaxType.EQ_EXP);
+        this.components.add(node);
+    }
+
     public EqExp(Node node1, Node node2, Node node3) {
         super(SyntaxType.EQ_EXP);
         this.components.add(node1);
@@ -28,6 +33,6 @@ public class EqExp extends RecursionNode {
             // RelExp
             this.AddNodeList(new RelExp());
         }
-        this.HandleRecursion(EqExp::new);
+        this.HandleRecursion(EqExp::new, EqExp::new);
     }
 }

@@ -19,13 +19,13 @@ public class InitVal extends Node {
             // {
             this.AddNode(new TokenNode());
             // value
-            if (GetCurrentTokenType().equals(TokenType.RBRACE)) {
+            if (!GetCurrentTokenType().equals(TokenType.RBRACE)) {
                 // ConstExp
                 this.AddNode(new Exp());
                 while (GetCurrentTokenType().equals(TokenType.COMMA)) {
                     // ,
                     this.AddNode(new TokenNode());
-                    // ConstExp
+                    // Exp
                     this.AddNode(new Exp());
                 }
             }

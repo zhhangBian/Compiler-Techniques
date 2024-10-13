@@ -23,6 +23,7 @@ public class UnaryExp extends Node {
             this.AddNode(new TokenNode());
             // 函数参数
             if (GetCurrentTokenType().equals(TokenType.INTCON) ||
+                GetCurrentTokenType().equals(TokenType.CHRCON) ||
                 GetCurrentTokenType().equals(TokenType.IDENFR) ||
                 GetCurrentTokenType().equals(TokenType.PLUS) ||
                 GetCurrentTokenType().equals(TokenType.MINU) ||

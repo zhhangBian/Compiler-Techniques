@@ -10,6 +10,11 @@ public class LOrExp extends RecursionNode {
         super(SyntaxType.LOR_EXP);
     }
 
+    public LOrExp(Node node) {
+        super(SyntaxType.LOR_EXP);
+        this.components.add(node);
+    }
+
     public LOrExp(Node node1, Node node2, Node node3) {
         super(SyntaxType.LOR_EXP);
         this.components.add(node1);
@@ -27,6 +32,6 @@ public class LOrExp extends RecursionNode {
             // LAndExp
             this.AddNodeList(new LAndExp());
         }
-        this.HandleRecursion(LOrExp::new);
+        this.HandleRecursion(LOrExp::new, LOrExp::new);
     }
 }
