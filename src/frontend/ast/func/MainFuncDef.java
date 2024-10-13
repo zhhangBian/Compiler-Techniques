@@ -4,6 +4,7 @@ import frontend.ast.block.Block;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
+import frontend.lexer.TokenType;
 
 public class MainFuncDef extends Node {
     public MainFuncDef() {
@@ -20,8 +21,11 @@ public class MainFuncDef extends Node {
         // (
         this.AddNode(new TokenNode());
         // )
-        // TODO：括号不匹配，添加错误
-        this.AddNode(new TokenNode());
+        if (GetCurrentTokenType().equals(TokenType.RPARENT)) {
+            this.AddNode(new TokenNode());
+        } else {
+            this.AddMissRParentError();
+        }
         // Block
         this.AddNode(new Block());
     }

@@ -25,7 +25,9 @@ public class LVal extends Node {
             if (GetCurrentTokenType().equals(TokenType.RBRACK)) {
                 this.AddNode(new TokenNode());
             }
-            // TODO：错误处理
+            else {
+                this.AddMissRBrackError();
+            }
         }
     }
 }

@@ -1,5 +1,8 @@
 package frontend.ast.decl;
 
+import error.Error;
+import error.ErrorRecorder;
+import error.ErrorType;
 import frontend.ast.token.BType;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
@@ -29,7 +32,10 @@ public class ConstDecl extends Node {
         }
 
         // ;
-        this.AddNode(new TokenNode());
-        // TODO：错误处理
+        if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
+            this.AddNode(new TokenNode());
+        } else {
+            this.AddMissSemicnError();
+        }
     }
 }

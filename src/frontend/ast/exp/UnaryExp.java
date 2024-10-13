@@ -34,8 +34,9 @@ public class UnaryExp extends Node {
             // )
             if (GetCurrentTokenType().equals(TokenType.RPARENT)) {
                 this.AddNode(new TokenNode());
+            } else {
+                this.AddMissRParentError();
             }
-            // TODO：错误处理
         }
         // 带符号的表达式（右递归）
         else if (GetCurrentTokenType().equals(TokenType.PLUS) ||

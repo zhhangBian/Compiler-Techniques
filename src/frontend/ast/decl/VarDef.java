@@ -25,8 +25,11 @@ public class VarDef extends Node {
             // ConstExp
             this.AddNode(new ConstExp());
             // ]
-            this.AddNode(new TokenNode());
-            // TODO：错误处理不匹配
+            if (GetCurrentTokenType().equals(TokenType.RBRACK)) {
+                this.AddNode(new TokenNode());
+            } else {
+                this.AddMissRBrackError();
+            }
         }
 
         // 如果为赋值语句

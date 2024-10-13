@@ -27,7 +27,11 @@ public class FuncDef extends Node {
             this.AddNode(new FuncFormalParamS());
         }
         // )
-        this.AddNode(new TokenNode());
+        if (GetCurrentTokenType().equals(TokenType.RPARENT)) {
+            this.AddNode(new TokenNode());
+        } else {
+            this.AddMissRParentError();
+        }
         // Block
         this.AddNode(new Block());
     }

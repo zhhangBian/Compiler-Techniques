@@ -1,5 +1,8 @@
 package frontend.ast.stmt;
 
+import error.Error;
+import error.ErrorRecorder;
+import error.ErrorType;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.block.Block;
@@ -8,6 +11,7 @@ import frontend.ast.exp.Exp;
 import frontend.ast.exp.LVal;
 import frontend.ast.token.StringConst;
 import frontend.ast.token.TokenNode;
+import frontend.lexer.Token;
 import frontend.lexer.TokenType;
 
 public class Stmt extends Node {
@@ -51,8 +55,7 @@ public class Stmt extends Node {
                 if (GetCurrentTokenType().equals(TokenType.ASSIGN)) {
                     GoToBackPoint();
                     this.AssignStmt();
-                }
-                else {
+                } else {
                     GoToBackPoint();
                     this.ExpStmt();
                 }
@@ -74,8 +77,9 @@ public class Stmt extends Node {
         // )
         if (GetCurrentTokenType().equals(TokenType.RPARENT)) {
             this.AddNode(new TokenNode());
+        } else {
+            this.AddMissRParentError();
         }
-        // TODO：错误处理
 
         // Stmt
         this.AddNode(new Stmt());
@@ -117,8 +121,9 @@ public class Stmt extends Node {
         // )
         if (GetCurrentTokenType().equals(TokenType.RPARENT)) {
             this.AddNode(new TokenNode());
+        } else {
+            this.AddMissRParentError();
         }
-        // TODO：错误处理
 
         // Stmt
         this.AddNode(new Stmt());
@@ -148,8 +153,9 @@ public class Stmt extends Node {
         // ;
         if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
             this.AddNode(new TokenNode());
+        } else {
+            this.AddMissSemicnError();
         }
-        // TODO：错误处理
     }
 
     private void PrintStmt() {
@@ -168,11 +174,18 @@ public class Stmt extends Node {
         }
 
         // )
-        this.AddNode(new TokenNode());
-        // TODO：错误处理
+        if (GetCurrentTokenType().equals(TokenType.RPARENT)) {
+            this.AddNode(new TokenNode());
+        } else {
+            this.AddMissRParentError();
+        }
+
         // ;
-        this.AddNode(new TokenNode());
-        // TODO：错误处理
+        if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
+            this.AddNode(new TokenNode());
+        } else {
+            this.AddMissSemicnError();
+        }
     }
 
     private boolean IsExpStmt() {
@@ -194,8 +207,9 @@ public class Stmt extends Node {
         if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
             // ;
             this.AddNode(new TokenNode());
+        } else {
+            this.AddMissSemicnError();
         }
-        // TODO：错误处理
     }
 
     private void AssignStmt() {
@@ -214,10 +228,11 @@ public class Stmt extends Node {
             // )
             if (GetCurrentTokenType().equals(TokenType.RPARENT)) {
                 this.AddNode(new TokenNode());
+            } else {
+                this.AddMissRParentError();
             }
-            // TODO：错误处理
         }
-        // assign
+        // Exp
         else {
             this.AddNode(new Exp());
         }
@@ -225,7 +240,8 @@ public class Stmt extends Node {
         // ;
         if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
             this.AddNode(new TokenNode());
+        } else {
+            this.AddMissSemicnError();
         }
-        // TODO：错误处理
     }
 }

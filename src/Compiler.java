@@ -11,7 +11,7 @@ public class Compiler {
         FrontEnd.GenerateTokenList();
         FrontEnd.GenerateAstTree();
 
-        // IOhandler.PrintTokenList();
+        IOhandler.PrintTokenList();
         IOhandler.PrintAstTree();
         IOhandler.PrintErrorMessage();
     }

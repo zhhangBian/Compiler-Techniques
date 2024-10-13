@@ -1,5 +1,9 @@
 package frontend.ast;
 
+import error.Error;
+import error.ErrorRecorder;
+import error.ErrorType;
+import frontend.ast.token.TokenNode;
 import frontend.lexer.Token;
 import frontend.lexer.TokenStream;
 import frontend.lexer.TokenType;
@@ -42,6 +46,14 @@ public abstract class Node {
         return tokenStream.Peek(0).GetTokenType();
     }
 
+    public static int GetBeforeLineNumber() {
+        return Peek(-1).GetLineNumber();
+    }
+
+    public static int GetCurrentLineNumber() {
+        return GetCurrentToken().GetLineNumber();
+    }
+
     public static void Read() {
         tokenStream.Read();
     }
@@ -56,6 +68,24 @@ public abstract class Node {
 
     public static void GoToBackPoint() {
         tokenStream.GoToBackPoint();
+    }
+
+    protected void AddMissSemicnError() {
+        int line = GetBeforeLineNumber();
+        ErrorRecorder.AddError(new Error(ErrorType.MISS_SEMICN, line));
+        //this.components.add(new TokenNode(new Token(TokenType.SEMICN, ";", line)));
+    }
+
+    protected void AddMissRParentError() {
+        int line = GetBeforeLineNumber();
+        ErrorRecorder.AddError(new Error(ErrorType.MISS_RPARENT, GetCurrentLineNumber()));
+        //this.components.add(new TokenNode(new Token(TokenType.RPARENT, ")", line)));
+    }
+
+    protected void AddMissRBrackError() {
+        int line = GetBeforeLineNumber();
+        ErrorRecorder.AddError(new Error(ErrorType.MISS_RBRACK, GetCurrentLineNumber()));
+        //this.components.add(new TokenNode(new Token(TokenType.RBRACK, "]", line)));
     }
 
     @Override

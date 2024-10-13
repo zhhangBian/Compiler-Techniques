@@ -27,7 +27,10 @@ public class VarDecl extends Node {
         }
 
         // ;
-        this.AddNode(new TokenNode());
-        // TODO：错误处理
+        if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
+            this.AddNode(new TokenNode());
+        } else {
+            this.AddMissSemicnError();
+        }
     }
 }

@@ -225,12 +225,11 @@ public class Lexer {
         if (this.currentChar != character) {
             ErrorRecorder.AddError(new Error(ErrorType.ILLEGAL_SYMBOL, this.lineNumber));
         } else {
-            string.append(this.currentChar);
             this.Read();
         }
+        string.append(character);
 
-        return new Token(TokenType.GetTokenType(character),
-            string.toString(), this.lineNumber);
+        return new Token(TokenType.GetTokenType(character), string.toString(), this.lineNumber);
     }
 
     private Token LexerAnnotation(StringBuilder string) throws IOException {

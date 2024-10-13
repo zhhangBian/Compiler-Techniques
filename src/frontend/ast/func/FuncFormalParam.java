@@ -21,8 +21,9 @@ public class FuncFormalParam extends Node {
             this.AddNode(new TokenNode());
             if (GetCurrentTokenType().equals(TokenType.RBRACK)) {
                 this.AddNode(new TokenNode());
+            } else {
+                this.AddMissRBrackError();
             }
-            // TODO：错误处理
         }
     }
 }

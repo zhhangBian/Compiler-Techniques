@@ -20,7 +20,11 @@ public class PrimaryExp extends Node {
             // Exp
             this.AddNode(new Exp());
             // )
-            this.AddNode(new TokenNode());
+            if (GetCurrentTokenType().equals(TokenType.RPARENT)) {
+                this.AddNode(new TokenNode());
+            } else {
+                this.AddMissRParentError();
+            }
         }
         // Number
         else if (GetCurrentTokenType().equals(TokenType.INTCON)) {
