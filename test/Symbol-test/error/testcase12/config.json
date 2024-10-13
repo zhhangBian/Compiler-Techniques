@@ -1,0 +1,5 @@
+{
+    "type": "error",
+    "score_rule": "accumulate_per_line",
+    "scores": "60,13,13,14"
+}

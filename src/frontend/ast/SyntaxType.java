@@ -4,31 +4,22 @@ public enum SyntaxType {
     // 编译单元，一切的开始
     COMP_UNIT("CompUnit"),
 
+    BTYPE("BType"),
+
     DECL("Decl"),
     CONST_DECL("ConstDecl"),
     VAR_DECL("VarDecl"),
 
-    BTYPE("BType"),
-
-
     CONST_DEF("ConstDef"),
-    // 常量初值
     CONST_INIT_VAL("ConstInitVal"),
-    // 变量声明
-
-    // 变量定义
     VAR_DEF("VarDef"),
-    // 变量初值
     INIT_VAL("InitVal"),
-    // 函数定义
+
     FUNC_DEF("FuncDef"),
-    // 主函数定义
     MAIN_FUNC_DEF("MainFuncDef"),
-    // 函数类型
     FUNC_TYPE("FuncType"),
-    // 函数形参
+
     FUNC_FORMAL_PARAM("FuncFParam"),
-    // 函数形参表
     FUNC_FORMAL_PARAM_S("FuncFParams"),
     FUNC_REAL_PARAM_S("FuncRParams"),
 
@@ -38,7 +29,10 @@ public enum SyntaxType {
     STMT("Stmt"),
     FOR_STMT("ForStmt"),
 
+    UNARY_OP("UnaryOp"),
+    IDENT("Ident"),
 
+    EXP("Exp"),
     LVAL_EXP("LVal"),
     PRIMARY_EXP("PrimaryExp"),
     UNARY_EXP("UnaryExp"),
@@ -49,22 +43,13 @@ public enum SyntaxType {
     LAND_EXP("LAndExp"),
     LOR_EXP("LOrExp"),
     CONST_EXP("ConstExp"),
-    EXP("Exp"),
     COND_EXP("Cond"),
 
-    // reserved
     NUMBER("Number"),
     CHARACTER("Character"),
 
-    UNARY_OP("UnaryOp"),
-
-    // Ident
-    IDENT("Ident"),
-    // IntConst
     INT_CONST("IntConst"),
-    // StringConst
     STRING_CONST("StringConst"),
-    // CharConst
     CHAR_CONST("CharConst"),
 
     TOKEN("Token");
