@@ -11,7 +11,7 @@ public class LAndExp extends RecursionNode {
     }
 
     public LAndExp(Node node1, Node node2, Node node3) {
-        super(SyntaxType.ADD_EXP);
+        super(SyntaxType.LAND_EXP);
         this.components.add(node1);
         this.components.add(node2);
         this.components.add(node3);
