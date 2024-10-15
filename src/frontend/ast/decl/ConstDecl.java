@@ -1,8 +1,5 @@
 package frontend.ast.decl;
 
-import error.Error;
-import error.ErrorRecorder;
-import error.ErrorType;
 import frontend.ast.token.BType;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;

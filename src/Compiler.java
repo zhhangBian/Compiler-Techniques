@@ -10,9 +10,11 @@ public class Compiler {
         FrontEnd.SetInput();
         FrontEnd.GenerateTokenList();
         FrontEnd.GenerateAstTree();
+        //FrontEnd.GenerateSymbolTable();
 
         IOhandler.PrintTokenList();
         IOhandler.PrintAstTree();
+        //IOhandler.PrintSymbolTable();
         IOhandler.PrintErrorMessage();
     }
 }

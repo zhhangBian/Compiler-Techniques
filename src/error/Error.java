@@ -16,4 +16,9 @@ public class Error {
     public int GetLineNumber() {
         return this.lineNumber;
     }
+
+    @Override
+    public String toString() {
+        return this.lineNumber + " " + this.errorType;
+    }
 }

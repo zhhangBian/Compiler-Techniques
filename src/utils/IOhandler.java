@@ -5,6 +5,7 @@ import error.ErrorRecorder;
 import frontend.FrontEnd;
 import frontend.ast.Node;
 import frontend.lexer.Token;
+import frontend.symbol.SymbolTable;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,12 +18,14 @@ public class IOhandler {
     private static PushbackInputStream input = null;
     private static FileOutputStream lexerOutputFile = null;
     private static FileOutputStream parserOutputFile = null;
+    private static FileOutputStream symbolOutputFile = null;
     private static FileOutputStream errorFile = null;
 
     public static void SetIO() throws FileNotFoundException {
         IOhandler.input = new PushbackInputStream(new FileInputStream("testfile.txt"), 16);
         IOhandler.lexerOutputFile = new FileOutputStream("lexer.txt");
         IOhandler.parserOutputFile = new FileOutputStream("parser.txt");
+        IOhandler.symbolOutputFile = new FileOutputStream("symbol.txt");
         IOhandler.errorFile = new FileOutputStream("error.txt");
     }
 
@@ -40,14 +43,18 @@ public class IOhandler {
 
     public static void PrintAstTree() throws IOException {
         Node astTree = FrontEnd.GetAstTree();
-        parserOutputFile.write(String.valueOf(astTree).getBytes());
+        parserOutputFile.write(astTree.toString().getBytes());
+    }
+
+    public static void PrintSymbolTable() throws IOException {
+        SymbolTable rootSymbolTable = FrontEnd.GetRootSymbolTable();
+        symbolOutputFile.write(rootSymbolTable.toString().getBytes());
     }
 
     public static void PrintErrorMessage() throws IOException {
         ArrayList<Error> errorList = ErrorRecorder.GetErrorList();
         for (Error error : errorList) {
-            String string = error.GetLineNumber() + " " + error.GetErrorType() + "\n";
-            errorFile.write(string.getBytes());
+            errorFile.write((error + "\n").getBytes());
         }
     }
 }

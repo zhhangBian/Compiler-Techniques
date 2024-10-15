@@ -1,11 +1,30 @@
 package frontend.symbol;
 
 public enum SymbolType {
-    FUNC_SYMBOL,
+    CHAR("Char"),
+    INT("Int"),
 
-    INT_VAR_SYMBOL,
-    INT_CONST_SYMBOL,
+    CONST_CHAR("ConstChar"),
+    CONST_INT("ConstInt"),
 
-    CHAR_VAR_SYMBOL,
-    CHAR_CONST_SYMBOL
+    VOID_FUNC("VoidFunc"),
+    CHAR_FUNC("CharFunc"),
+    INT_FUNC("IntFunc"),
+
+    CONST_CHAR_ARRAY("ConstCharArray"),
+    CONST_INT_ARRAY("ConstIntArray"),
+
+    CHAR_ARRAY("CharArray"),
+    INT_ARRAY("IntArray");
+
+    private final String typeName;
+
+    SymbolType(String typeName) {
+        this.typeName = typeName;
+    }
+
+    @Override
+    public String toString() {
+        return this.typeName;
+    }
 }

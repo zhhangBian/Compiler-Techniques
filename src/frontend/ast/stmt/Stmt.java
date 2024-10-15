@@ -1,8 +1,6 @@
 package frontend.ast.stmt;
 
-import error.Error;
 import error.ErrorRecorder;
-import error.ErrorType;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.block.Block;
@@ -11,7 +9,6 @@ import frontend.ast.exp.Exp;
 import frontend.ast.exp.LVal;
 import frontend.ast.token.StringConst;
 import frontend.ast.token.TokenNode;
-import frontend.lexer.Token;
 import frontend.lexer.TokenType;
 
 public class Stmt extends Node {
@@ -49,14 +46,17 @@ public class Stmt extends Node {
             default:
                 // 预读一个看是否为赋值，否则回溯
                 SetBackPoint();
+                ErrorRecorder.SetStopRecordError();
                 Node node = new Exp();
                 node.Parse();
 
                 if (GetCurrentTokenType().equals(TokenType.ASSIGN)) {
                     GoToBackPoint();
+                    ErrorRecorder.SetStartRecordError();
                     this.AssignStmt();
                 } else {
                     GoToBackPoint();
+                    ErrorRecorder.SetStartRecordError();
                     this.ExpStmt();
                 }
                 break;
@@ -133,14 +133,22 @@ public class Stmt extends Node {
         // break
         this.AddNode(new TokenNode());
         // ;
-        this.AddNode(new TokenNode());
+        if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
+            this.AddNode(new TokenNode());
+        } else {
+            this.AddMissSemicnError();
+        }
     }
 
     private void ContinueStmt() {
         // continue
         this.AddNode(new TokenNode());
         // ;
-        this.AddNode(new TokenNode());
+        if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
+            this.AddNode(new TokenNode());
+        } else {
+            this.AddMissSemicnError();
+        }
     }
 
     private void ReturnStmt() {
