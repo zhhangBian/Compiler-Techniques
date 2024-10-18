@@ -1,4 +1,4 @@
-package frontend.symbol;
+package midend.symbol;
 
 public enum SymbolType {
     CHAR("Char"),

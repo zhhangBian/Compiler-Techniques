@@ -1,4 +1,5 @@
 import frontend.FrontEnd;
+import midend.MidEnd;
 import utils.IOhandler;
 
 import java.io.IOException;
@@ -10,11 +11,13 @@ public class Compiler {
         FrontEnd.SetInput();
         FrontEnd.GenerateTokenList();
         FrontEnd.GenerateAstTree();
-        //FrontEnd.GenerateSymbolTable();
+
+
+        MidEnd.GenerateSymbolTable();
 
         IOhandler.PrintTokenList();
         IOhandler.PrintAstTree();
-        //IOhandler.PrintSymbolTable();
+        IOhandler.PrintSymbolTable();
         IOhandler.PrintErrorMessage();
     }
 }

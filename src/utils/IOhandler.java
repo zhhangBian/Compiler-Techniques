@@ -5,7 +5,8 @@ import error.ErrorRecorder;
 import frontend.FrontEnd;
 import frontend.ast.Node;
 import frontend.lexer.Token;
-import frontend.symbol.SymbolTable;
+import midend.MidEnd;
+import midend.symbol.SymbolTable;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -47,7 +48,7 @@ public class IOhandler {
     }
 
     public static void PrintSymbolTable() throws IOException {
-        SymbolTable rootSymbolTable = FrontEnd.GetRootSymbolTable();
+        SymbolTable rootSymbolTable = MidEnd.GetRootSymbolTable();
         symbolOutputFile.write(rootSymbolTable.toString().getBytes());
     }
 

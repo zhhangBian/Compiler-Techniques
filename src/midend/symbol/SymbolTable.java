@@ -1,4 +1,4 @@
-package frontend.symbol;
+package midend.symbol;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
