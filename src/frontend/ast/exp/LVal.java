@@ -1,10 +1,14 @@
 package frontend.ast.exp;
 
+import error.Error;
+import error.ErrorRecorder;
+import error.ErrorType;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.token.Ident;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
+import midend.symbol.SymbolManger;
 
 public class LVal extends Node {
     public LVal() {
@@ -24,9 +28,21 @@ public class LVal extends Node {
             // ]
             if (GetCurrentTokenType().equals(TokenType.RBRACK)) {
                 this.AddNode(new TokenNode());
-            }
-            else {
+            } else {
                 this.AddMissRBrackError();
+            }
+        }
+    }
+
+    @Override
+    public void GenerateIr() {
+        for (Node component : this.components) {
+            if (component instanceof Ident ident) {
+                String identName = ident.GetTokenString();
+                int line = ident.GetLine();
+                if (SymbolManger.GetSymbol(identName) == null) {
+                    ErrorRecorder.AddError(new Error(ErrorType.NAME_UNDEFINED, line));
+                }
             }
         }
     }

@@ -3,10 +3,10 @@ package frontend.ast.func;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.token.BType;
-import frontend.ast.token.FuncType;
 import frontend.ast.token.Ident;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
+import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
 import midend.symbol.ValueSymbol;
@@ -35,8 +35,17 @@ public class FuncFormalParam extends Node {
 
     @Override
     public void GenerateIr() {
+        Symbol symbol = this.GetSymbol();
+        int line = ((Ident) this.components.get(1)).GetLine();
+        SymbolManger.AddSymbol(symbol, line);
+    }
+
+    public Symbol GetSymbol() {
+        Symbol symbol;
+
         String type = ((BType) this.components.get(0)).GetTokenString();
-        String symbolName = ((Ident) this.components.get(1)).GetTokenString();
+        Ident ident = (Ident) this.components.get(1);
+        String symbolName = ident.GetTokenString();
         // 为数组类型
         if (this.components.size() >= 3) {
             int dimension = 0;
@@ -47,10 +56,12 @@ public class FuncFormalParam extends Node {
                     }
                 }
             }
-            SymbolManger.AddSymbol(new ValueSymbol(symbolName, SymbolType.GetVarArrayType(type),
-                dimension, new ArrayList<>()));
+            symbol = new ValueSymbol(symbolName, SymbolType.GetVarArrayType(type),
+                dimension, new ArrayList<>());
         } else {
-            SymbolManger.AddSymbol(new ValueSymbol(symbolName, SymbolType.GetVarType(type)));
+            symbol = new ValueSymbol(symbolName, SymbolType.GetVarType(type));
         }
+
+        return symbol;
     }
 }

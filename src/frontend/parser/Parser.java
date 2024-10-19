@@ -18,7 +18,7 @@ public class Parser {
     }
 
     public void GenerateAstTree() {
-        Node.tokenStream = this.tokenStream;
+        Node.SetTokenStream(this.tokenStream);
         this.rootNode = new CompUnit();
         this.rootNode.Parse();
     }

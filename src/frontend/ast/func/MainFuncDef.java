@@ -5,7 +5,6 @@ import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
-import midend.llvm.IrModule;
 import midend.symbol.SymbolManger;
 
 public class MainFuncDef extends Node {

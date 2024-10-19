@@ -21,4 +21,14 @@ public class FuncRealParamS extends Node {
             this.AddNode(new Exp());
         }
     }
+
+    public int GetRealParamCount() {
+        int count = 0;
+        for (Node component : this.components) {
+            if (component instanceof Exp) {
+                count++;
+            }
+        }
+        return count;
+    }
 }

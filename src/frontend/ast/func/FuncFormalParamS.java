@@ -4,6 +4,9 @@ import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
+import midend.symbol.Symbol;
+
+import java.util.ArrayList;
 
 public class FuncFormalParamS extends Node {
     public FuncFormalParamS() {
@@ -20,5 +23,15 @@ public class FuncFormalParamS extends Node {
             // FuncFParam
             this.AddNode(new FuncFormalParam());
         }
+    }
+
+    public ArrayList<Symbol> GetFormalParamList() {
+        ArrayList<Symbol> formalParamList = new ArrayList<>();
+        for (Node component : this.components) {
+            if (component instanceof FuncFormalParam funcFormalParam) {
+                formalParamList.add(funcFormalParam.GetSymbol());
+            }
+        }
+        return formalParamList;
     }
 }

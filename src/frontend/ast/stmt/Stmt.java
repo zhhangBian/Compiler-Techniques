@@ -256,7 +256,8 @@ public class Stmt extends Node {
 
     @Override
     public void GenerateIr() {
-        for (Node component : this.components) {
+        for (int i = 0; i < this.components.size(); i++) {
+            Node component = this.components.get(i);
             if (component instanceof Block) {
                 SymbolManger.GoToSonSymbolTable();
                 component.GenerateIr();

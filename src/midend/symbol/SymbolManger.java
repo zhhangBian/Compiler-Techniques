@@ -11,8 +11,20 @@ public class SymbolManger {
         currentSymbolTable = rootSymbolTable;
     }
 
-    public static void AddSymbol(Symbol symbol) {
-        currentSymbolTable.AddSymbol(symbol);
+    public static void AddSymbol(Symbol symbol, int line) {
+        currentSymbolTable.AddSymbol(symbol, line);
+    }
+
+    public static Symbol GetSymbol(String name) {
+        SymbolTable table = currentSymbolTable;
+        while (table != null) {
+            Symbol symbol = table.GetSymbol(name);
+            if (symbol != null) {
+                return symbol;
+            }
+            table = table.GetFatherTable();
+        }
+        return null;
     }
 
     public SymbolTable GetSymbolTable() {

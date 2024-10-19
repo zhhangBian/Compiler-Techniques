@@ -54,7 +54,10 @@ public class ConstDef extends Node {
 
     @Override
     public void GenerateIr() {
-        String symbolName = ((Ident) this.components.get(0)).GetTokenString();
+        Ident ident = (Ident) this.components.get(0);
+        String symbolName = ident.GetTokenString();
+        int line = ident.GetLine();
+
         int dimension = 0;
         ArrayList<Integer> depthList = new ArrayList<>();
         // 获取维度：判断是否有维度信息
@@ -69,6 +72,6 @@ public class ConstDef extends Node {
 
         SymbolType type = (dimension == 0) ? SymbolType.GetConstType(this.type) :
             SymbolType.GetConstArrayType(this.type);
-        SymbolManger.AddSymbol(new ValueSymbol(symbolName, type, dimension, depthList));
+        SymbolManger.AddSymbol(new ValueSymbol(symbolName, type, dimension, depthList), line);
     }
 }

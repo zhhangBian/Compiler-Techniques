@@ -17,6 +17,10 @@ public class BasicTokenNode extends Node {
         return this.token.GetStringValue();
     }
 
+    public int GetLine() {
+        return this.token.GetLineNumber();
+    }
+
     @Override
     public void Parse() {
         this.token = GetCurrentToken();
