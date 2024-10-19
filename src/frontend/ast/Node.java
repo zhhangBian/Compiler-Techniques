@@ -37,6 +37,12 @@ public abstract class Node {
 
     public abstract void Parse();
 
+    public void GenerateIr() {
+        for (Node component : this.components) {
+            component.GenerateIr();
+        }
+    }
+
     public static Token GetCurrentToken() {
         return tokenStream.Peek(0);
     }

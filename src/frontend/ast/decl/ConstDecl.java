@@ -35,4 +35,18 @@ public class ConstDecl extends Node {
             this.AddMissSemicnError();
         }
     }
+
+    @Override
+    public void GenerateIr() {
+        // int | char
+        BType type = (BType) this.components.get(1);
+        String typeString = type.GetTokenString();
+
+        for (Node component : this.components) {
+            if (component instanceof ConstDef) {
+                ((ConstDef) component).SetTypeString(typeString);
+            }
+            component.GenerateIr();
+        }
+    }
 }

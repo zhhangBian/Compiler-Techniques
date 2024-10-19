@@ -13,6 +13,10 @@ public class BasicTokenNode extends Node {
 
     protected Token token;
 
+    public String GetTokenString() {
+        return this.token.GetStringValue();
+    }
+
     @Override
     public void Parse() {
         this.token = GetCurrentToken();

@@ -1,12 +1,13 @@
 package midend.symbol;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 
 public class SymbolTable {
     private final int depth;
     private final ArrayList<Symbol> symbolList;
-    private final Hashtable<String, Symbol> nameTable;
+    private final HashSet<String> symbolNameSet;
 
     private final SymbolTable fatherTable;
     private final ArrayList<SymbolTable> sonTables;
@@ -14,7 +15,7 @@ public class SymbolTable {
     public SymbolTable(int depth, SymbolTable fatherTable) {
         this.depth = depth;
         this.symbolList = new ArrayList<>();
-        this.nameTable = new Hashtable<>();
+        this.symbolNameSet = new HashSet<>();
 
         this.fatherTable = fatherTable;
         this.sonTables = new ArrayList<>();
@@ -33,8 +34,28 @@ public class SymbolTable {
     }
 
     public void AddSymbol(Symbol symbol) {
-        this.symbolList.add(symbol);
         // TODO：处理命名冲突问题
-        this.nameTable.put(symbol.GetSymbolName(), symbol);
+        String symbolName = symbol.GetSymbolName();
+        if (!this.symbolNameSet.contains(symbolName)) {
+            this.symbolList.add(symbol);
+            this.symbolNameSet.add(symbolName);
+        } else {
+            throw new RuntimeException("name conflict in symbolTable");
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Symbol symbol : this.symbolList) {
+            stringBuilder.append(this.depth + " " + symbol.GetSymbolName() + " " +
+                symbol.GetSymbolType() + "\n");
+        }
+
+        for (SymbolTable sonTable : this.sonTables) {
+            stringBuilder.append(sonTable.toString());
+        }
+
+        return stringBuilder.toString();
     }
 }

@@ -12,8 +12,8 @@ public class Compiler {
         FrontEnd.GenerateTokenList();
         FrontEnd.GenerateAstTree();
 
-
-        MidEnd.GenerateSymbolTable();
+        // 拟在遍历过程中，一边生成符号表，一边进行中间代码生成
+        MidEnd.GenerateIr();
 
         IOhandler.PrintTokenList();
         IOhandler.PrintAstTree();

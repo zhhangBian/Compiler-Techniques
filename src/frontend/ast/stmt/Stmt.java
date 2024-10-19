@@ -10,6 +10,7 @@ import frontend.ast.exp.LVal;
 import frontend.ast.token.StringConst;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
+import midend.symbol.SymbolManger;
 
 public class Stmt extends Node {
     public Stmt() {
@@ -250,6 +251,19 @@ public class Stmt extends Node {
             this.AddNode(new TokenNode());
         } else {
             this.AddMissSemicnError();
+        }
+    }
+
+    @Override
+    public void GenerateIr() {
+        for (Node component : this.components) {
+            if (component instanceof Block) {
+                SymbolManger.GoToSonSymbolTable();
+                component.GenerateIr();
+                SymbolManger.GoToFatherSymbolTable();
+            } else {
+                component.GenerateIr();
+            }
         }
     }
 }

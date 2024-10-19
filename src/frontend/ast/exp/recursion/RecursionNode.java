@@ -6,6 +6,7 @@ import frontend.ast.SyntaxType;
 import java.util.ArrayList;
 
 public abstract class RecursionNode extends Node {
+    protected int value;
     protected final ArrayList<Node> nodeList;
 
     public RecursionNode(SyntaxType syntaxType) {
@@ -17,6 +18,8 @@ public abstract class RecursionNode extends Node {
         node.Parse();
         this.nodeList.add(node);
     }
+
+    //public abstract int ComputeValue();
 
     @FunctionalInterface
     interface Generate1Node1One<T, R> {

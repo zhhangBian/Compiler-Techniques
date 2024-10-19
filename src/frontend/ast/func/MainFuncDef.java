@@ -5,6 +5,8 @@ import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
+import midend.llvm.IrModule;
+import midend.symbol.SymbolManger;
 
 public class MainFuncDef extends Node {
     public MainFuncDef() {
@@ -28,5 +30,16 @@ public class MainFuncDef extends Node {
         }
         // Block
         this.AddNode(new Block());
+    }
+
+    @Override
+    public void GenerateIr() {
+        for (Node component : this.components) {
+            if (component instanceof Block) {
+                SymbolManger.GoToSonSymbolTable();
+                component.GenerateIr();
+                SymbolManger.GoToFatherSymbolTable();
+            }
+        }
     }
 }

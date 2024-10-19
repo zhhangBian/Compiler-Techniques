@@ -48,7 +48,7 @@ public class IOhandler {
     }
 
     public static void PrintSymbolTable() throws IOException {
-        SymbolTable rootSymbolTable = MidEnd.GetRootSymbolTable();
+        SymbolTable rootSymbolTable = MidEnd.GetSymbolTable();
         symbolOutputFile.write(rootSymbolTable.toString().getBytes());
     }
 

@@ -6,11 +6,16 @@ public class SymbolManger {
     private static int depth;
 
     public SymbolManger() {
-        rootSymbolTable = new SymbolTable(1, null);
         depth = 1;
+        rootSymbolTable = new SymbolTable(depth, null);
+        currentSymbolTable = rootSymbolTable;
     }
 
-    public SymbolTable GetRootSymbolTable() {
+    public static void AddSymbol(Symbol symbol) {
+        currentSymbolTable.AddSymbol(symbol);
+    }
+
+    public SymbolTable GetSymbolTable() {
         return rootSymbolTable;
     }
 
@@ -18,14 +23,14 @@ public class SymbolManger {
         return currentSymbolTable;
     }
 
-    private void GoToFatherSymbolTable() {
+    public static void GoToFatherSymbolTable() {
         SymbolTable fatherTable = currentSymbolTable.GetFatherTable();
         if (fatherTable != null) {
             currentSymbolTable = fatherTable;
         }
     }
 
-    private void GoToSonSymbolTable() {
+    public static void GoToSonSymbolTable() {
         SymbolTable sonTable = new SymbolTable(++depth, currentSymbolTable);
         currentSymbolTable.AddSonTable(sonTable);
         currentSymbolTable = sonTable;

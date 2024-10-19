@@ -7,10 +7,21 @@ import frontend.ast.value.ConstInitVal;
 import frontend.ast.token.Ident;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
+import midend.symbol.SymbolManger;
+import midend.symbol.SymbolType;
+import midend.symbol.ValueSymbol;
+
+import java.util.ArrayList;
 
 public class ConstDef extends Node {
+    private String type;
+
     public ConstDef() {
         super(SyntaxType.CONST_DEF);
+    }
+
+    public void SetTypeString(String type) {
+        this.type = type;
     }
 
     @Override
@@ -39,5 +50,25 @@ public class ConstDef extends Node {
             // ConstInitVal
             this.AddNode(new ConstInitVal());
         }
+    }
+
+    @Override
+    public void GenerateIr() {
+        String symbolName = ((Ident) this.components.get(0)).GetTokenString();
+        int dimension = 0;
+        ArrayList<Integer> depthList = new ArrayList<>();
+        // 获取维度：判断是否有维度信息
+        for (Node component : this.components) {
+            if (component instanceof ConstExp) {
+                dimension++;
+            }
+            // TODO：计算维度信息
+            int depth = 1;
+            depthList.add(depth);
+        }
+
+        SymbolType type = (dimension == 0) ? SymbolType.GetConstType(this.type) :
+            SymbolType.GetConstArrayType(this.type);
+        SymbolManger.AddSymbol(new ValueSymbol(symbolName, type, dimension, depthList));
     }
 }
