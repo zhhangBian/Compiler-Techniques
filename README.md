@@ -6,4 +6,4 @@ my compiler for course Compiler-Techniques
 
 - 0925-22：09：完成Lexer
 - 1013-12：33：完成Parser
-- 1019-20：37：完成符号表生成，添加除运行时判断的错误处理
+- 1020-17：52：完成语义分析、所有错误处理
