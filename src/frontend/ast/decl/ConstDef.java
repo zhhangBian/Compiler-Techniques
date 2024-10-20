@@ -75,12 +75,11 @@ public class ConstDef extends Node {
             int depth = 1;
             depthList.add(depth);
         }
-        // 获取初始值
+        // TODO：初始值的处理
         int constValue = 0;
 
         SymbolType type = SymbolType.GetConstType(this.type, dimension);
-        // TODO：初始值的处理
-        this.symbol = new ValueSymbol(symbolName, type, dimension, depthList);
+        this.symbol = new ValueSymbol(symbolName, type, dimension, depthList, constValue);
         SymbolManger.AddSymbol(this.symbol, line);
     }
 }

@@ -15,8 +15,14 @@ import midend.symbol.SymbolType;
 import java.util.ArrayList;
 
 public class FuncDef extends Node {
+    private FuncSymbol symbol;
+
     public FuncDef() {
         super(SyntaxType.FUNC_DEF);
+    }
+
+    public Symbol GetSymbol() {
+        return this.symbol;
     }
 
     @Override
@@ -56,8 +62,8 @@ public class FuncDef extends Node {
             formalParamList = funcFormalParamS.GetFormalParamList();
         }
 
-        SymbolManger.AddSymbol(
-            new FuncSymbol(symbolName, SymbolType.GetFuncType(type), formalParamList), line);
+        this.symbol = new FuncSymbol(symbolName, SymbolType.GetFuncType(type), formalParamList);
+        SymbolManger.AddSymbol(this.symbol, line);
         // 解析形参和函数体的符号
         SymbolManger.GoToSonSymbolTable();
         for (Node component : this.components) {

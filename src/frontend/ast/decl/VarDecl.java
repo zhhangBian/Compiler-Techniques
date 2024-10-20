@@ -41,8 +41,8 @@ public class VarDecl extends Node {
         String typeString = type.GetTokenString();
 
         for (Node component : this.components) {
-            if (component instanceof VarDef) {
-                ((VarDef) component).SetTypeString(typeString);
+            if (component instanceof VarDef varDef) {
+                varDef.SetTypeString(typeString);
             }
             component.CreateSymbol();
         }

@@ -20,6 +20,10 @@ public class FuncFormalParam extends Node {
         super(SyntaxType.FUNC_FORMAL_PARAM);
     }
 
+    public Symbol GetSymbol() {
+        return this.symbol;
+    }
+
     @Override
     public void Parse() {
         this.AddNode(new BType());
@@ -58,9 +62,5 @@ public class FuncFormalParam extends Node {
 
         int line = ((Ident) this.components.get(1)).GetLine();
         SymbolManger.AddSymbol(this.symbol, line);
-    }
-
-    public Symbol GetSymbol() {
-        return this.symbol;
     }
 }
