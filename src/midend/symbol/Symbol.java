@@ -16,4 +16,9 @@ public class Symbol {
     public SymbolType GetSymbolType() {
         return this.symbolType;
     }
+
+    @Override
+    public String toString() {
+        return symbolName + " " + symbolType.toString();
+    }
 }

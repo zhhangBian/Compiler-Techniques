@@ -54,8 +54,7 @@ public class SymbolTable {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         for (Symbol symbol : this.symbolList) {
-            stringBuilder.append(this.depth + " " + symbol.GetSymbolName() + " " +
-                symbol.GetSymbolType() + "\n");
+            stringBuilder.append(this.depth + " " + symbol + "\n");
         }
 
         for (SymbolTable sonTable : this.sonTables) {

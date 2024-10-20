@@ -1,15 +1,17 @@
 package error;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.TreeMap;
 
 public class ErrorRecorder {
-    private static final ArrayList<Error> errorList = new ArrayList<>();
+    private static final TreeMap<Integer, Error> errorList = new TreeMap<>();
     private static boolean recordError = true;
 
     public static void AddError(Error error) {
         if (recordError) {
-            errorList.add(error);
+            if (!errorList.containsKey(error.GetLineNumber())) {
+                errorList.put(error.GetLineNumber(), error);
+            }
         }
     }
 
@@ -22,7 +24,6 @@ public class ErrorRecorder {
     }
 
     public static ArrayList<Error> GetErrorList() {
-        errorList.sort(Comparator.comparingInt(Error::GetLineNumber));
-        return errorList;
+        return new ArrayList<>(errorList.values());
     }
 }

@@ -1,5 +1,8 @@
 package frontend.ast.func;
 
+import error.Error;
+import error.ErrorRecorder;
+import error.ErrorType;
 import frontend.ast.block.Block;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
@@ -33,12 +36,12 @@ public class MainFuncDef extends Node {
 
     @Override
     public void CreateSymbol() {
-        for (Node component : this.components) {
-            if (component instanceof Block) {
-                SymbolManger.GoToSonSymbolTable();
-                component.CreateSymbol();
-                SymbolManger.GoToFatherSymbolTable();
-            }
+        Block block = (Block) this.components.get(4);
+        SymbolManger.GoToSonSymbolTable();
+        block.CreateSymbol();
+        if (!block.LastIsReturnStmt()) {
+            ErrorRecorder.AddError(new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
         }
+        SymbolManger.GoToFatherSymbolTable();
     }
 }

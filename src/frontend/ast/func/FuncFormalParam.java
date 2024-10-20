@@ -41,6 +41,7 @@ public class FuncFormalParam extends Node {
 
     @Override
     public void CreateSymbol() {
+        super.CreateSymbol();
         String type = ((BType) this.components.get(0)).GetTokenString();
         Ident ident = (Ident) this.components.get(1);
         String symbolName = ident.GetTokenString();

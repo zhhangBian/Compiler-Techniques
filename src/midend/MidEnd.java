@@ -13,7 +13,6 @@ public class MidEnd {
         symbolManger = new SymbolManger();
         rootNode = FrontEnd.GetAstTree();
         rootNode.CreateSymbol();
-        rootNode.CheckError();
     }
 
     public static SymbolTable GetSymbolTable() {

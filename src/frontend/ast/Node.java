@@ -50,12 +50,6 @@ public abstract class Node {
         }
     }
 
-    public void CheckError() {
-        for (Node component : this.components) {
-            component.CheckError();
-        }
-    }
-
     public void GenerateIr() {
         for (Node component : this.components) {
             component.GenerateIr();
@@ -136,6 +130,15 @@ public abstract class Node {
                 stringBuilder.charAt(stringBuilder.length() - 1) == '\n') {
                 stringBuilder.setLength(stringBuilder.length() - 1);
             }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public String GetSimpleName() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Node node : this.components) {
+            stringBuilder.append(node.GetSimpleName());
         }
 
         return stringBuilder.toString();

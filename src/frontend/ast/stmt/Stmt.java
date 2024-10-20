@@ -1,6 +1,8 @@
 package frontend.ast.stmt;
 
+import error.Error;
 import error.ErrorRecorder;
+import error.ErrorType;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.block.Block;
@@ -127,11 +129,17 @@ public class Stmt extends Node {
         }
 
         // Stmt
+        SymbolManger.EnterForBlock();
         this.AddNode(new Stmt());
+        SymbolManger.LeaveForBlock();
     }
 
     private void BreakStmt() {
         // break
+        if (!SymbolManger.InForBlock()) {
+            ErrorRecorder.AddError(new Error(ErrorType.BREAK_OR_CONTINUE_IN_NOT_LOOP,
+                GetCurrentLineNumber()));
+        }
         this.AddNode(new TokenNode());
         // ;
         if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
@@ -143,6 +151,10 @@ public class Stmt extends Node {
 
     private void ContinueStmt() {
         // continue
+        if (!SymbolManger.InForBlock()) {
+            ErrorRecorder.AddError(new Error(ErrorType.BREAK_OR_CONTINUE_IN_NOT_LOOP,
+                GetCurrentLineNumber()));
+        }
         this.AddNode(new TokenNode());
         // ;
         if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
@@ -154,10 +166,15 @@ public class Stmt extends Node {
 
     private void ReturnStmt() {
         // return
-        this.AddNode(new TokenNode());
+        TokenNode tokenNode = new TokenNode();
+        tokenNode.Parse();
+        this.components.add(tokenNode);
         // Exp
         if (this.IsExpStmt()) {
             this.AddNode(new Exp());
+            if (SymbolManger.GetFuncType().equals("void")) {
+                ErrorRecorder.AddError(new Error(ErrorType.RETURN_NOT_MATCH, tokenNode.GetLine()));
+            }
         }
         // ;
         if (GetCurrentTokenType().equals(TokenType.SEMICN)) {
@@ -169,17 +186,30 @@ public class Stmt extends Node {
 
     private void PrintStmt() {
         // printf
-        this.AddNode(new TokenNode());
+        TokenNode printNode = new TokenNode();
+        printNode.Parse();
+        this.components.add(printNode);
         // (
         this.AddNode(new TokenNode());
         // StringConst
-        this.AddNode(new StringConst());
+        StringConst node = new StringConst();
+        node.Parse();
+        this.components.add(node);
+
+        String formatString = node.GetTokenString();
+        int formatCount = this.GetFormatStringCount(formatString);
+        int realCount = 0;
 
         while (GetCurrentTokenType().equals(TokenType.COMMA)) {
             // ,
             this.AddNode(new TokenNode());
             // Exp
             this.AddNode(new Exp());
+            realCount++;
+        }
+
+        if (realCount != formatCount) {
+            ErrorRecorder.AddError(new Error(ErrorType.PRINTF_NOT_MATCH, printNode.GetLine()));
         }
 
         // )
@@ -265,5 +295,40 @@ public class Stmt extends Node {
                 component.CreateSymbol();
             }
         }
+
+        // 识别赋值语句
+        if (this.components.get(0) instanceof LVal lVal &&
+            this.components.get(1) instanceof TokenNode tokenNode
+            && tokenNode.GetTokenString().equals("=")) {
+            // 得到LVal对应的符号
+            if (lVal.HaveSymbol() && lVal.CannotChangeValue()) {
+                ErrorRecorder.AddError(new Error(ErrorType.CHANGE_CONST_VALUE, lVal.GetLine()));
+            }
+        }
+    }
+
+    public boolean IsReturnStmt() {
+        Node component = this.components.get(0);
+        if (component instanceof TokenNode tokenNode) {
+            return tokenNode.GetTokenString().equals("return") &&
+                this.components.size() > 2;
+        }
+        return false;
+    }
+
+    public int GetReturnLine() {
+        TokenNode tokenNode = (TokenNode) this.components.get(0);
+        return tokenNode.GetLine();
+    }
+
+    private int GetFormatStringCount(String formatString) {
+        int count = 0;
+        for (int i = 0; i < formatString.length(); i++) {
+            if (formatString.charAt(i) == '%' &&
+                (formatString.charAt(i + 1) == 'd' || formatString.charAt(i + 1) == 'c')) {
+                count++;
+            }
+        }
+        return count;
     }
 }

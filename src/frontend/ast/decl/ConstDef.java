@@ -68,6 +68,7 @@ public class ConstDef extends Node {
         ArrayList<Integer> depthList = new ArrayList<>();
         // 获取维度：判断是否有维度信息
         for (Node component : this.components) {
+            component.CreateSymbol();
             if (component instanceof ConstExp) {
                 dimension++;
             }

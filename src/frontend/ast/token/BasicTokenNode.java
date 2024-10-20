@@ -33,4 +33,9 @@ public class BasicTokenNode extends Node {
     public String toString() {
         return this.token.GetTokenType() + " " + this.token.GetStringValue();
     }
+
+    @Override
+    public String GetSimpleName() {
+        return this.token.GetStringValue();
+    }
 }

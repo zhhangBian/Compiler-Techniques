@@ -3,7 +3,7 @@ package midend.symbol;
 import java.util.ArrayList;
 
 public class FuncSymbol extends Symbol {
-    private final ArrayList<Symbol> formalParamList;
+    private ArrayList<Symbol> formalParamList;
 
     public FuncSymbol(String symbolName, SymbolType symbolType) {
         super(symbolName, symbolType);
@@ -13,6 +13,10 @@ public class FuncSymbol extends Symbol {
     public FuncSymbol(String symbolName, SymbolType symbolType,
                       ArrayList<Symbol> formalParamList) {
         super(symbolName, symbolType);
+        this.formalParamList = formalParamList;
+    }
+
+    public void SetFormalParamList(ArrayList<Symbol> formalParamList) {
         this.formalParamList = formalParamList;
     }
 

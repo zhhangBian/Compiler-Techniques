@@ -12,6 +12,9 @@ import frontend.lexer.TokenType;
 import midend.symbol.FuncSymbol;
 import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
+import midend.symbol.SymbolType;
+
+import java.util.ArrayList;
 
 public class UnaryExp extends Node {
     public UnaryExp() {
@@ -60,8 +63,10 @@ public class UnaryExp extends Node {
     }
 
     @Override
-    public void CheckError() {
+    public void CreateSymbol() {
         for (Node component : this.components) {
+            component.CreateSymbol();
+
             if (component instanceof Ident ident) {
                 String identName = ident.GetTokenString();
                 int line = ident.GetLine();
@@ -75,11 +80,18 @@ public class UnaryExp extends Node {
                 if (symbol instanceof FuncSymbol funcSymbol) {
                     FuncRealParamS funcRealParamS = this.GetFuncRealParaS();
                     if (funcRealParamS != null) {
-                        int realParamCount = funcRealParamS.GetRealParamCount();
-                        int formalParamCount = funcSymbol.GetFormalParamList().size();
+                        ArrayList<Exp> realParamList = funcRealParamS.GetRealParamList();
+                        ArrayList<Symbol> formalParamList = funcSymbol.GetFormalParamList();
+                        int realParamCount = realParamList.size();
+                        int formalParamCount = formalParamList.size();
+
                         if (realParamCount != formalParamCount) {
                             ErrorRecorder.AddError(
                                 new Error(ErrorType.FUNC_PARAM_NUM_NOT_MATCH, line));
+                        }
+                        // 处理类型不匹配的问题
+                        else {
+                            this.CheckParamFit(realParamList, formalParamList, line);
                         }
                     } else {
                         ErrorRecorder.AddError(new Error(ErrorType.UNDEFINED, line));
@@ -100,5 +112,44 @@ public class UnaryExp extends Node {
             }
         }
         return null;
+    }
+
+    private void CheckParamFit(ArrayList<Exp> realParamList,
+                               ArrayList<Symbol> formalParamList,
+                               int line) {
+        for (int i = 0; i < formalParamList.size(); i++) {
+            Symbol formalSymbol = formalParamList.get(i);
+            String realPara = realParamList.get(i).GetSimpleName();
+            Symbol realSymbol = SymbolManger.GetSymbol(realPara);
+
+            SymbolType formalType = formalSymbol.GetSymbolType();
+            if (formalType.equals(SymbolType.INT_ARRAY) ||
+                formalType.equals(SymbolType.CHAR_ARRAY)) {
+                if (realSymbol != null) {
+                    if (!realSymbol.GetSymbolType().equals(formalType)) {
+                        ErrorRecorder.AddError(
+                            new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
+                    }
+                } else {
+                    ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
+                }
+            } else if (formalType.equals(SymbolType.INT) || formalType.equals(SymbolType.CHAR)) {
+                if (realSymbol != null) {
+                    SymbolType realType = realSymbol.GetSymbolType();
+                    if (realType.equals(SymbolType.INT_ARRAY) ||
+                        realType.equals(SymbolType.CHAR_ARRAY)) {
+                        ErrorRecorder.AddError(
+                            new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean IsInitConst(String para) {
+        boolean isInt = para.matches("[0-9]+");
+        boolean isCharacter = para.matches("'(\\\\[\\\\btnrf\"']|.)'");
+
+        return isInt || isCharacter;
     }
 }

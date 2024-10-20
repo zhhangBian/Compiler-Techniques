@@ -8,7 +8,9 @@ import frontend.ast.SyntaxType;
 import frontend.ast.token.Ident;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
+import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
+import midend.symbol.SymbolType;
 
 public class LVal extends Node {
     public LVal() {
@@ -35,7 +37,7 @@ public class LVal extends Node {
     }
 
     @Override
-    public void CheckError() {
+    public void CreateSymbol() {
         for (Node component : this.components) {
             if (component instanceof Ident ident) {
                 String identName = ident.GetTokenString();
@@ -44,6 +46,34 @@ public class LVal extends Node {
                     ErrorRecorder.AddError(new Error(ErrorType.NAME_UNDEFINED, ident.GetLine()));
                 }
             }
+            component.CreateSymbol();
         }
+    }
+
+    public boolean HaveSymbol() {
+        String identName = ((Ident) this.components.get(0)).GetTokenString();
+        return SymbolManger.GetSymbol(identName) != null;
+    }
+
+    public boolean CannotChangeValue() {
+        String identName = ((Ident) this.components.get(0)).GetTokenString();
+        Symbol symbol = SymbolManger.GetSymbol(identName);
+        if (symbol == null) {
+            return true;
+        }
+
+        SymbolType type = symbol.GetSymbolType();
+        // 是变量
+        if (this.components.size() == 1) {
+            return !type.equals(SymbolType.INT) && !type.equals(SymbolType.CHAR);
+        }
+        // 是数组
+        else {
+            return !type.equals(SymbolType.INT_ARRAY) && !type.equals(SymbolType.CHAR_ARRAY);
+        }
+    }
+
+    public int GetLine() {
+        return ((Ident) this.components.get(0)).GetLine();
     }
 }

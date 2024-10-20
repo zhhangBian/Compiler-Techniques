@@ -1,5 +1,8 @@
 package frontend.ast.func;
 
+import error.Error;
+import error.ErrorRecorder;
+import error.ErrorType;
 import frontend.ast.block.Block;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
@@ -28,7 +31,9 @@ public class FuncDef extends Node {
     @Override
     public void Parse() {
         // FuncType
-        this.AddNode(new FuncType());
+        FuncType funcType = new FuncType();
+        funcType.Parse();
+        this.components.add(funcType);
         // Ident
         this.AddNode(new Ident());
         // (
@@ -45,7 +50,9 @@ public class FuncDef extends Node {
             this.AddMissRParentError();
         }
         // Block
+        SymbolManger.EnterFunc(funcType.GetTokenString());
         this.AddNode(new Block());
+        SymbolManger.LeaveFunc();
     }
 
     @Override
@@ -56,20 +63,21 @@ public class FuncDef extends Node {
         Ident ident = (Ident) this.components.get(1);
         String symbolName = ident.GetTokenString();
         int line = ident.GetLine();
-        // FuncParams
-        ArrayList<Symbol> formalParamList = new ArrayList<>();
-        if (this.components.get(3) instanceof FuncFormalParamS funcFormalParamS) {
-            formalParamList = funcFormalParamS.GetFormalParamList();
-        }
-
-        this.symbol = new FuncSymbol(symbolName, SymbolType.GetFuncType(type), formalParamList);
+        this.symbol = new FuncSymbol(symbolName, SymbolType.GetFuncType(type));
         SymbolManger.AddSymbol(this.symbol, line);
+
         // 解析形参和函数体的符号
         SymbolManger.GoToSonSymbolTable();
         for (Node component : this.components) {
-            if (component instanceof FuncFormalParamS ||
-                component instanceof Block) {
-                component.CreateSymbol();
+            component.CreateSymbol();
+            if (component instanceof FuncFormalParamS funcFormalParamS) {
+                this.symbol.SetFormalParamList(funcFormalParamS.GetFormalParamList());
+            } else if (component instanceof Block block) {
+                if (type.equals("int") || type.equals("char")) {
+                    if (!block.LastIsReturnStmt()) {
+                        ErrorRecorder.AddError(new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
+                    }
+                }
             }
         }
         SymbolManger.GoToFatherSymbolTable();

@@ -5,10 +5,16 @@ public class SymbolManger {
     private static SymbolTable currentSymbolTable;
     private static int depth;
 
+    private static int forDepth;
+    private static String funcReturnType = "";
+
     public SymbolManger() {
         depth = 1;
         rootSymbolTable = new SymbolTable(depth, null);
         currentSymbolTable = rootSymbolTable;
+
+        forDepth = 0;
+        funcReturnType = "";
     }
 
     public static void AddSymbol(Symbol symbol, int line) {
@@ -46,5 +52,29 @@ public class SymbolManger {
         SymbolTable sonTable = new SymbolTable(++depth, currentSymbolTable);
         currentSymbolTable.AddSonTable(sonTable);
         currentSymbolTable = sonTable;
+    }
+
+    public static void EnterForBlock() {
+        forDepth++;
+    }
+
+    public static void LeaveForBlock() {
+        forDepth--;
+    }
+
+    public static boolean InForBlock() {
+        return forDepth > 0;
+    }
+
+    public static void EnterFunc(String type) {
+        funcReturnType = type;
+    }
+
+    public static void LeaveFunc() {
+        funcReturnType = "";
+    }
+
+    public static String GetFuncType() {
+        return funcReturnType;
     }
 }

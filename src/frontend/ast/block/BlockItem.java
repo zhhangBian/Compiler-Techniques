@@ -22,4 +22,17 @@ public class BlockItem extends Node {
             this.AddNode(new Stmt());
         }
     }
+
+    public boolean IsReturnStmt() {
+        Node component = this.components.get(0);
+        if (component instanceof Stmt stmt) {
+            return stmt.IsReturnStmt();
+        }
+        return false;
+    }
+
+    public int GetReturnStmtLine() {
+        Stmt stmt = (Stmt) this.components.get(0);
+        return stmt.GetReturnLine();
+    }
 }
