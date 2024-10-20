@@ -35,7 +35,7 @@ public class VarDecl extends Node {
     }
 
     @Override
-    public void GenerateIr() {
+    public void CreateSymbol() {
         // int | char
         BType type = (BType) this.components.get(0);
         String typeString = type.GetTokenString();
@@ -44,7 +44,7 @@ public class VarDecl extends Node {
             if (component instanceof VarDef) {
                 ((VarDef) component).SetTypeString(typeString);
             }
-            component.GenerateIr();
+            component.CreateSymbol();
         }
     }
 }

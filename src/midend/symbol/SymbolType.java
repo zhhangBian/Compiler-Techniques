@@ -38,7 +38,11 @@ public enum SymbolType {
         };
     }
 
-    public static SymbolType GetVarArrayType(String typeString) {
+    public static SymbolType GetVarType(String typeString, int dimension) {
+        if (dimension == 0) {
+            return GetVarType(typeString);
+        }
+
         return switch (typeString) {
             case "int" -> INT_ARRAY;
             case "char" -> CHAR_ARRAY;
@@ -54,7 +58,11 @@ public enum SymbolType {
         };
     }
 
-    public static SymbolType GetConstArrayType(String typeString) {
+    public static SymbolType GetConstType(String typeString, int dimension) {
+        if (dimension == 0) {
+            return GetConstType(typeString);
+        }
+
         return switch (typeString) {
             case "int" -> CONST_INT_ARRAY;
             case "char" -> CONST_CHAR_ARRAY;

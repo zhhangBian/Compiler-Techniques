@@ -7,6 +7,7 @@ import frontend.ast.value.InitVal;
 import frontend.ast.token.Ident;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
+import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
 import midend.symbol.ValueSymbol;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 
 public class VarDef extends Node {
     private String type;
+    private ValueSymbol symbol;
 
     public VarDef() {
         super(SyntaxType.VAR_DEF);
@@ -22,6 +24,10 @@ public class VarDef extends Node {
 
     public void SetTypeString(String type) {
         this.type = type;
+    }
+
+    public Symbol GetSymbol() {
+        return this.symbol;
     }
 
     @Override
@@ -53,7 +59,7 @@ public class VarDef extends Node {
     }
 
     @Override
-    public void GenerateIr() {
+    public void CreateSymbol() {
         Ident ident = (Ident) this.components.get(0);
         String symbolName = ident.GetTokenString();
         int line = ident.GetLine();
@@ -70,8 +76,8 @@ public class VarDef extends Node {
             depthList.add(depth);
         }
 
-        SymbolType type = (dimension == 0) ? SymbolType.GetVarType(this.type) :
-            SymbolType.GetVarArrayType(this.type);
-        SymbolManger.AddSymbol(new ValueSymbol(symbolName, type, dimension, depthList), line);
+        SymbolType type = SymbolType.GetVarType(this.type, dimension);
+        this.symbol = new ValueSymbol(symbolName, type, dimension, depthList);
+        SymbolManger.AddSymbol(symbol, line);
     }
 }

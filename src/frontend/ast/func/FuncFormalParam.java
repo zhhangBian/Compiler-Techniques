@@ -14,6 +14,8 @@ import midend.symbol.ValueSymbol;
 import java.util.ArrayList;
 
 public class FuncFormalParam extends Node {
+    private Symbol symbol;
+
     public FuncFormalParam() {
         super(SyntaxType.FUNC_FORMAL_PARAM);
     }
@@ -34,15 +36,7 @@ public class FuncFormalParam extends Node {
     }
 
     @Override
-    public void GenerateIr() {
-        Symbol symbol = this.GetSymbol();
-        int line = ((Ident) this.components.get(1)).GetLine();
-        SymbolManger.AddSymbol(symbol, line);
-    }
-
-    public Symbol GetSymbol() {
-        Symbol symbol;
-
+    public void CreateSymbol() {
         String type = ((BType) this.components.get(0)).GetTokenString();
         Ident ident = (Ident) this.components.get(1);
         String symbolName = ident.GetTokenString();
@@ -56,12 +50,17 @@ public class FuncFormalParam extends Node {
                     }
                 }
             }
-            symbol = new ValueSymbol(symbolName, SymbolType.GetVarArrayType(type),
+            this.symbol = new ValueSymbol(symbolName, SymbolType.GetVarType(type, dimension),
                 dimension, new ArrayList<>());
         } else {
-            symbol = new ValueSymbol(symbolName, SymbolType.GetVarType(type));
+            this.symbol = new ValueSymbol(symbolName, SymbolType.GetVarType(type));
         }
 
-        return symbol;
+        int line = ((Ident) this.components.get(1)).GetLine();
+        SymbolManger.AddSymbol(this.symbol, line);
+    }
+
+    public Symbol GetSymbol() {
+        return this.symbol;
     }
 }

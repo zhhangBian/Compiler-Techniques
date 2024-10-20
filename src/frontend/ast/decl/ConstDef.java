@@ -7,6 +7,7 @@ import frontend.ast.value.ConstInitVal;
 import frontend.ast.token.Ident;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
+import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
 import midend.symbol.ValueSymbol;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 
 public class ConstDef extends Node {
     private String type;
+    private ValueSymbol symbol;
 
     public ConstDef() {
         super(SyntaxType.CONST_DEF);
@@ -22,6 +24,10 @@ public class ConstDef extends Node {
 
     public void SetTypeString(String type) {
         this.type = type;
+    }
+
+    public Symbol GetSymbol() {
+        return this.symbol;
     }
 
     @Override
@@ -53,7 +59,7 @@ public class ConstDef extends Node {
     }
 
     @Override
-    public void GenerateIr() {
+    public void CreateSymbol() {
         Ident ident = (Ident) this.components.get(0);
         String symbolName = ident.GetTokenString();
         int line = ident.GetLine();
@@ -69,9 +75,12 @@ public class ConstDef extends Node {
             int depth = 1;
             depthList.add(depth);
         }
+        // 获取初始值
+        int constValue = 0;
 
-        SymbolType type = (dimension == 0) ? SymbolType.GetConstType(this.type) :
-            SymbolType.GetConstArrayType(this.type);
-        SymbolManger.AddSymbol(new ValueSymbol(symbolName, type, dimension, depthList), line);
+        SymbolType type = SymbolType.GetConstType(this.type, dimension);
+        // TODO：初始值的处理
+        this.symbol = new ValueSymbol(symbolName, type, dimension, depthList);
+        SymbolManger.AddSymbol(this.symbol, line);
     }
 }

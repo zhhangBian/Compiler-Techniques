@@ -13,7 +13,8 @@ public enum ErrorType {
     MISS_RPARENT("j"),
     MISS_RBRACK("k"),
     PRINTF_NOT_MATCH("l"),
-    BREAK_OR_CONTINUE_IN_NOT_LOOP("m");
+    BREAK_OR_CONTINUE_IN_NOT_LOOP("m"),
+    UNDEFINED("undefined");
 
     private final String errorValue;
 

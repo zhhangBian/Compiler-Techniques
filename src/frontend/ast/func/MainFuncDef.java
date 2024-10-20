@@ -32,11 +32,11 @@ public class MainFuncDef extends Node {
     }
 
     @Override
-    public void GenerateIr() {
+    public void CreateSymbol() {
         for (Node component : this.components) {
             if (component instanceof Block) {
                 SymbolManger.GoToSonSymbolTable();
-                component.GenerateIr();
+                component.CreateSymbol();
                 SymbolManger.GoToFatherSymbolTable();
             }
         }

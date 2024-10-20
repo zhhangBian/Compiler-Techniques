@@ -37,16 +37,18 @@ public class ConstDecl extends Node {
     }
 
     @Override
-    public void GenerateIr() {
+    public void CreateSymbol() {
         // int | char
         BType type = (BType) this.components.get(1);
         String typeString = type.GetTokenString();
 
+        // 可能会有多个ConstDef
         for (Node component : this.components) {
-            if (component instanceof ConstDef) {
-                ((ConstDef) component).SetTypeString(typeString);
+            // 标注类型
+            if (component instanceof ConstDef constDef) {
+                constDef.SetTypeString(typeString);
             }
-            component.GenerateIr();
+            component.CreateSymbol();
         }
     }
 }

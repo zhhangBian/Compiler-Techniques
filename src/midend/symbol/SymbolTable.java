@@ -42,7 +42,7 @@ public class SymbolTable {
 
     public void AddSymbol(Symbol symbol, int line) {
         String symbolName = symbol.GetSymbolName();
-        if (!this.symbolTable.contains(symbolName)) {
+        if (!this.symbolTable.containsKey(symbolName)) {
             this.symbolList.add(symbol);
             this.symbolTable.put(symbolName, symbol);
         } else {

@@ -43,7 +43,7 @@ public class FuncDef extends Node {
     }
 
     @Override
-    public void GenerateIr() {
+    public void CreateSymbol() {
         // FuncType
         String type = ((FuncType) this.components.get(0)).GetTokenString();
         // Ident
@@ -63,7 +63,7 @@ public class FuncDef extends Node {
         for (Node component : this.components) {
             if (component instanceof FuncFormalParamS ||
                 component instanceof Block) {
-                component.GenerateIr();
+                component.CreateSymbol();
             }
         }
         SymbolManger.GoToFatherSymbolTable();

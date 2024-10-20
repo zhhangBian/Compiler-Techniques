@@ -44,6 +44,18 @@ public abstract class Node {
 
     public abstract void Parse();
 
+    public void CreateSymbol() {
+        for (Node component : this.components) {
+            component.CreateSymbol();
+        }
+    }
+
+    public void CheckError() {
+        for (Node component : this.components) {
+            component.CheckError();
+        }
+    }
+
     public void GenerateIr() {
         for (Node component : this.components) {
             component.GenerateIr();

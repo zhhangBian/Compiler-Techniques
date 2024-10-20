@@ -35,13 +35,13 @@ public class LVal extends Node {
     }
 
     @Override
-    public void GenerateIr() {
+    public void CheckError() {
         for (Node component : this.components) {
             if (component instanceof Ident ident) {
                 String identName = ident.GetTokenString();
-                int line = ident.GetLine();
+                // 未定义
                 if (SymbolManger.GetSymbol(identName) == null) {
-                    ErrorRecorder.AddError(new Error(ErrorType.NAME_UNDEFINED, line));
+                    ErrorRecorder.AddError(new Error(ErrorType.NAME_UNDEFINED, ident.GetLine()));
                 }
             }
         }

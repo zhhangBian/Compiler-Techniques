@@ -18,7 +18,7 @@ public class IrModule extends IrNode {
     }
 
     public static void GenerateIrModule() {
-        rootNode.GenerateIr();
+        rootNode.CreateSymbol();
     }
 
     public static void AddIrGlobalVariable(IrGlobalVariable globalVariable) {
