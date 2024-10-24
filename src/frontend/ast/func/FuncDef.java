@@ -73,7 +73,8 @@ public class FuncDef extends Node {
             } else if (component instanceof Block block) {
                 if (type.equals("int") || type.equals("char")) {
                     if (!block.LastIsReturnStmt()) {
-                        ErrorRecorder.AddError(new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
+                        ErrorRecorder.AddError(
+                            new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
                     }
                 }
             }
