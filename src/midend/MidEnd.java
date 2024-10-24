@@ -12,7 +12,7 @@ public class MidEnd {
     public static void GenerateIr() {
         symbolManger = new SymbolManger();
         rootNode = FrontEnd.GetAstTree();
-        rootNode.CreateSymbol();
+        rootNode.Visit();
     }
 
     public static SymbolTable GetSymbolTable() {

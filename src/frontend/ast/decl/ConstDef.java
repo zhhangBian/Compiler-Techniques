@@ -59,7 +59,7 @@ public class ConstDef extends Node {
     }
 
     @Override
-    public void CreateSymbol() {
+    public void Visit() {
         Ident ident = (Ident) this.components.get(0);
         String symbolName = ident.GetTokenString();
         int line = ident.GetLine();
@@ -68,7 +68,7 @@ public class ConstDef extends Node {
         ArrayList<Integer> depthList = new ArrayList<>();
         // 获取维度：判断是否有维度信息
         for (Node component : this.components) {
-            component.CreateSymbol();
+            component.Visit();
             if (component instanceof ConstExp) {
                 dimension++;
             }

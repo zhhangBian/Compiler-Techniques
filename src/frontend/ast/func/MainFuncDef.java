@@ -35,10 +35,10 @@ public class MainFuncDef extends Node {
     }
 
     @Override
-    public void CreateSymbol() {
+    public void Visit() {
         Block block = (Block) this.components.get(4);
         SymbolManger.GoToSonSymbolTable();
-        block.CreateSymbol();
+        block.Visit();
         if (!block.LastIsReturnStmt()) {
             ErrorRecorder.AddError(new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
         }

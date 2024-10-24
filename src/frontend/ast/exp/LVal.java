@@ -37,7 +37,7 @@ public class LVal extends Node {
     }
 
     @Override
-    public void CreateSymbol() {
+    public void Visit() {
         for (Node component : this.components) {
             if (component instanceof Ident ident) {
                 String identName = ident.GetTokenString();
@@ -46,7 +46,7 @@ public class LVal extends Node {
                     ErrorRecorder.AddError(new Error(ErrorType.NAME_UNDEFINED, ident.GetLine()));
                 }
             }
-            component.CreateSymbol();
+            component.Visit();
         }
     }
 

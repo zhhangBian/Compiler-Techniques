@@ -37,7 +37,7 @@ public class ConstDecl extends Node {
     }
 
     @Override
-    public void CreateSymbol() {
+    public void Visit() {
         // int | char
         BType type = (BType) this.components.get(1);
         String typeString = type.GetTokenString();
@@ -48,7 +48,7 @@ public class ConstDecl extends Node {
             if (component instanceof ConstDef constDef) {
                 constDef.SetTypeString(typeString);
             }
-            component.CreateSymbol();
+            component.Visit();
         }
     }
 }

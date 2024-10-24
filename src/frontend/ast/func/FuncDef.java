@@ -15,8 +15,6 @@ import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
 
-import java.util.ArrayList;
-
 public class FuncDef extends Node {
     private FuncSymbol symbol;
 
@@ -56,7 +54,7 @@ public class FuncDef extends Node {
     }
 
     @Override
-    public void CreateSymbol() {
+    public void Visit() {
         // FuncType
         String type = ((FuncType) this.components.get(0)).GetTokenString();
         // Ident
@@ -69,7 +67,7 @@ public class FuncDef extends Node {
         // 解析形参和函数体的符号
         SymbolManger.GoToSonSymbolTable();
         for (Node component : this.components) {
-            component.CreateSymbol();
+            component.Visit();
             if (component instanceof FuncFormalParamS funcFormalParamS) {
                 this.symbol.SetFormalParamList(funcFormalParamS.GetFormalParamList());
             } else if (component instanceof Block block) {

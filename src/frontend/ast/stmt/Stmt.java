@@ -285,14 +285,14 @@ public class Stmt extends Node {
     }
 
     @Override
-    public void CreateSymbol() {
+    public void Visit() {
         for (Node component : this.components) {
             if (component instanceof Block) {
                 SymbolManger.GoToSonSymbolTable();
-                component.CreateSymbol();
+                component.Visit();
                 SymbolManger.GoToFatherSymbolTable();
             } else {
-                component.CreateSymbol();
+                component.Visit();
             }
         }
 

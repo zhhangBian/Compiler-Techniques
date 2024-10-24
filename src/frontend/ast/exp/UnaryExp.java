@@ -63,9 +63,9 @@ public class UnaryExp extends Node {
     }
 
     @Override
-    public void CreateSymbol() {
+    public void Visit() {
         for (Node component : this.components) {
-            component.CreateSymbol();
+            component.Visit();
 
             if (component instanceof Ident ident) {
                 String identName = ident.GetTokenString();
@@ -74,28 +74,11 @@ public class UnaryExp extends Node {
                 Symbol symbol = SymbolManger.GetSymbol(identName);
                 if (symbol == null) {
                     ErrorRecorder.AddError(new Error(ErrorType.NAME_UNDEFINED, line));
-                    return;
+                    continue;
                 }
 
                 if (symbol instanceof FuncSymbol funcSymbol) {
-                    FuncRealParamS funcRealParamS = this.GetFuncRealParaS();
-                    if (funcRealParamS != null) {
-                        ArrayList<Exp> realParamList = funcRealParamS.GetRealParamList();
-                        ArrayList<Symbol> formalParamList = funcSymbol.GetFormalParamList();
-                        int realParamCount = realParamList.size();
-                        int formalParamCount = formalParamList.size();
-
-                        if (realParamCount != formalParamCount) {
-                            ErrorRecorder.AddError(
-                                new Error(ErrorType.FUNC_PARAM_NUM_NOT_MATCH, line));
-                        }
-                        // 处理类型不匹配的问题
-                        else {
-                            this.CheckParamFit(realParamList, formalParamList, line);
-                        }
-                    } else {
-                        ErrorRecorder.AddError(new Error(ErrorType.UNDEFINED, line));
-                    }
+                    this.CheckFuncParam(funcSymbol, line);
                 }
                 // 相应的符号不是函数
                 else {
@@ -112,6 +95,26 @@ public class UnaryExp extends Node {
             }
         }
         return null;
+    }
+
+    private void CheckFuncParam(FuncSymbol funcSymbol, int line) {
+        FuncRealParamS funcRealParamS = this.GetFuncRealParaS();
+        if (funcRealParamS != null) {
+            ArrayList<Exp> realParamList = funcRealParamS.GetRealParamList();
+            ArrayList<Symbol> formalParamList = funcSymbol.GetFormalParamList();
+            int realParamCount = realParamList.size();
+            int formalParamCount = formalParamList.size();
+
+            if (realParamCount == formalParamCount) {
+                this.CheckParamFit(realParamList, formalParamList, line);
+            }
+            // 处理类型不匹配的问题
+            else {
+                ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_NUM_NOT_MATCH, line));
+            }
+        } else {
+            ErrorRecorder.AddError(new Error(ErrorType.UNDEFINED, line));
+        }
     }
 
     private void CheckParamFit(ArrayList<Exp> realParamList,
@@ -144,12 +147,5 @@ public class UnaryExp extends Node {
                 }
             }
         }
-    }
-
-    private boolean IsInitConst(String para) {
-        boolean isInt = para.matches("[0-9]+");
-        boolean isCharacter = para.matches("'(\\\\[\\\\btnrf\"']|.)'");
-
-        return isInt || isCharacter;
     }
 }

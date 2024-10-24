@@ -15,7 +15,7 @@ public abstract class Node {
     protected final ArrayList<Node> components;
     protected boolean printSelf;
 
-    private static final boolean FIX_ERROR = true;
+    private static final boolean FIX_ERROR = false;
 
     private static TokenStream tokenStream;
 
@@ -44,15 +44,9 @@ public abstract class Node {
 
     public abstract void Parse();
 
-    public void CreateSymbol() {
+    public void Visit() {
         for (Node component : this.components) {
-            component.CreateSymbol();
-        }
-    }
-
-    public void GenerateIr() {
-        for (Node component : this.components) {
-            component.GenerateIr();
+            component.Visit();
         }
     }
 
