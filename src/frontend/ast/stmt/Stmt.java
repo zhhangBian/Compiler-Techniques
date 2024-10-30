@@ -23,31 +23,15 @@ public class Stmt extends Node {
     @Override
     public void Parse() {
         switch (GetCurrentTokenType()) {
-            case LBRACE:
-                this.BlockStmt();
-                break;
-            case IFTK:
-                this.IfStmt();
-                break;
-            case FORTK:
-                this.ForStmt();
-                break;
-            case BREAKTK:
-                this.BreakStmt();
-                break;
-            case CONTINUETK:
-                this.ContinueStmt();
-                break;
-            case RETURNTK:
-                this.ReturnStmt();
-                break;
-            case PRINTFTK:
-                this.PrintStmt();
-                break;
-            case SEMICN:
-                this.ExpStmt();
-                break;
-            default:
+            case LBRACE -> this.ParseBlockStmt();
+            case IFTK -> this.ParseIfStmt();
+            case FORTK -> this.ParseForStmt();
+            case BREAKTK -> this.ParseBreakStmt();
+            case CONTINUETK -> this.ParseContinueStmt();
+            case RETURNTK -> this.ParseReturnStmt();
+            case PRINTFTK -> this.ParsePrintStmt();
+            case SEMICN -> this.ParseExpStmt();
+            default -> {
                 // 预读一个看是否为赋值，否则回溯
                 SetBackPoint();
                 ErrorRecorder.SetStopRecordError();
@@ -61,17 +45,17 @@ public class Stmt extends Node {
                 } else {
                     GoToBackPoint();
                     ErrorRecorder.SetStartRecordError();
-                    this.ExpStmt();
+                    this.ParseExpStmt();
                 }
-                break;
+            }
         }
     }
 
-    private void BlockStmt() {
+    private void ParseBlockStmt() {
         this.AddNode(new Block());
     }
 
-    private void IfStmt() {
+    private void ParseIfStmt() {
         // if
         this.AddNode(new TokenNode());
         // (
@@ -97,7 +81,7 @@ public class Stmt extends Node {
         }
     }
 
-    private void ForStmt() {
+    private void ParseForStmt() {
         // for
         this.AddNode(new TokenNode());
         // (
@@ -135,7 +119,7 @@ public class Stmt extends Node {
         SymbolManger.LeaveForBlock();
     }
 
-    private void BreakStmt() {
+    private void ParseBreakStmt() {
         // break
         if (!SymbolManger.InForBlock()) {
             ErrorRecorder.AddError(new Error(ErrorType.BREAK_OR_CONTINUE_IN_NOT_LOOP,
@@ -150,7 +134,7 @@ public class Stmt extends Node {
         }
     }
 
-    private void ContinueStmt() {
+    private void ParseContinueStmt() {
         // continue
         if (!SymbolManger.InForBlock()) {
             ErrorRecorder.AddError(new Error(ErrorType.BREAK_OR_CONTINUE_IN_NOT_LOOP,
@@ -165,7 +149,7 @@ public class Stmt extends Node {
         }
     }
 
-    private void ReturnStmt() {
+    private void ParseReturnStmt() {
         // return
         TokenNode tokenNode = new TokenNode();
         tokenNode.Parse();
@@ -185,7 +169,7 @@ public class Stmt extends Node {
         }
     }
 
-    private void PrintStmt() {
+    private void ParsePrintStmt() {
         // printf
         TokenNode printNode = new TokenNode();
         printNode.Parse();
@@ -238,7 +222,7 @@ public class Stmt extends Node {
             GetCurrentTokenType().equals(TokenType.LPARENT);
     }
 
-    private void ExpStmt() {
+    private void ParseExpStmt() {
         if (this.IsExpStmt()) {
             // Exp
             this.AddNode(new Exp());
@@ -314,7 +298,7 @@ public class Stmt extends Node {
     }
 
     private boolean IsAssignStmt() {
-        return this.components.get(0) instanceof LVal lVal &&
+        return this.components.get(0) instanceof LVal &&
             this.components.get(1) instanceof TokenNode tokenNode &&
             tokenNode.GetTokenString().equals("=");
     }
@@ -330,7 +314,7 @@ public class Stmt extends Node {
 
     private int GetFormatStringCount(String formatString) {
         int count = 0;
-        for (int i = 0; i < formatString.length(); i++) {
+        for (int i = 0; i < formatString.length() - 1; i++) {
             if (formatString.charAt(i) == '%' &&
                 (formatString.charAt(i + 1) == 'd' || formatString.charAt(i + 1) == 'c')) {
                 count++;
