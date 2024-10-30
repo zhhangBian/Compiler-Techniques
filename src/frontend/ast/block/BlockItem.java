@@ -30,9 +30,4 @@ public class BlockItem extends Node {
         }
         return false;
     }
-
-    public int GetReturnStmtLine() {
-        Stmt stmt = (Stmt) this.components.get(0);
-        return stmt.GetReturnLine();
-    }
 }

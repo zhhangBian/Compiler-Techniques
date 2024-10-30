@@ -13,6 +13,7 @@ import midend.symbol.FuncSymbol;
 import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
+import utils.Setting;
 
 import java.util.ArrayList;
 
@@ -67,24 +68,32 @@ public class UnaryExp extends Node {
         for (Node component : this.components) {
             component.Visit();
 
-            if (component instanceof Ident ident) {
-                String identName = ident.GetTokenString();
-                int line = ident.GetLine();
-
-                Symbol symbol = SymbolManger.GetSymbol(identName);
-                if (symbol == null) {
-                    ErrorRecorder.AddError(new Error(ErrorType.NAME_UNDEFINED, line));
-                    continue;
-                }
-
-                if (symbol instanceof FuncSymbol funcSymbol) {
-                    this.CheckFuncParam(funcSymbol, line);
-                }
-                // 相应的符号不是函数
-                else {
-                    ErrorRecorder.AddError(new Error(ErrorType.UNDEFINED, line));
-                }
+            if (Setting.CHECK_ERROR) {
+                this.CheckIdentError(component);
             }
+        }
+    }
+
+    private void CheckIdentError(Node component) {
+        if (!(component instanceof Ident ident)) {
+            return;
+        }
+
+        String identName = ident.GetTokenString();
+        int line = ident.GetLine();
+        Symbol symbol = SymbolManger.GetSymbol(identName);
+
+        if (symbol == null) {
+            ErrorRecorder.AddError(new Error(ErrorType.NAME_UNDEFINED, line));
+            return;
+        }
+
+        if (symbol instanceof FuncSymbol funcSymbol) {
+            this.CheckFuncParam(funcSymbol, line);
+        }
+        // 相应的符号不是函数
+        else {
+            ErrorRecorder.AddError(new Error(ErrorType.UNDEFINED, line));
         }
     }
 
@@ -101,50 +110,59 @@ public class UnaryExp extends Node {
         FuncRealParamS funcRealParamS = this.GetFuncRealParaS();
         if (funcRealParamS != null) {
             ArrayList<Exp> realParamList = funcRealParamS.GetRealParamList();
-            ArrayList<Symbol> formalParamList = funcSymbol.GetFormalParamList();
             int realParamCount = realParamList.size();
+
+            ArrayList<Symbol> formalParamList = funcSymbol.GetFormalParamList();
             int formalParamCount = formalParamList.size();
 
-            if (realParamCount == formalParamCount) {
-                this.CheckParamFit(realParamList, formalParamList, line);
-            }
             // 处理类型不匹配的问题
-            else {
+            if (realParamCount != formalParamCount) {
                 ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_NUM_NOT_MATCH, line));
+                return;
+
             }
+
+            this.CheckParamFit(realParamList, formalParamList, line);
         } else {
             ErrorRecorder.AddError(new Error(ErrorType.UNDEFINED, line));
         }
     }
 
     private void CheckParamFit(ArrayList<Exp> realParamList,
-                               ArrayList<Symbol> formalParamList,
-                               int line) {
+                               ArrayList<Symbol> formalParamList, int line) {
         for (int i = 0; i < formalParamList.size(); i++) {
             Symbol formalSymbol = formalParamList.get(i);
-            String realPara = realParamList.get(i).GetSimpleName();
-            Symbol realSymbol = SymbolManger.GetSymbol(realPara);
-
             SymbolType formalType = formalSymbol.GetSymbolType();
-            if (formalType.equals(SymbolType.INT_ARRAY) ||
-                formalType.equals(SymbolType.CHAR_ARRAY)) {
-                if (realSymbol != null) {
-                    if (!realSymbol.GetSymbolType().equals(formalType)) {
-                        ErrorRecorder.AddError(
-                            new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
-                    }
-                } else {
-                    ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
+
+            String realParamName = realParamList.get(i).GetSimpleName();
+            Symbol realSymbol = SymbolManger.GetSymbol(realParamName);
+
+            switch (formalType) {
+                case INT_ARRAY, CHAR_ARRAY ->
+                    this.CheckArrayParamFit(realSymbol, formalSymbol, line);
+                case INT, CHAR -> this.CheckValueParamFit(realSymbol, formalSymbol, line);
+                default -> {
                 }
-            } else if (formalType.equals(SymbolType.INT) || formalType.equals(SymbolType.CHAR)) {
-                if (realSymbol != null) {
-                    SymbolType realType = realSymbol.GetSymbolType();
-                    if (realType.equals(SymbolType.INT_ARRAY) ||
-                        realType.equals(SymbolType.CHAR_ARRAY)) {
-                        ErrorRecorder.AddError(
-                            new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
-                    }
-                }
+            }
+        }
+    }
+
+    private void CheckArrayParamFit(Symbol realSymbol, Symbol formalSymbol, int line) {
+        if (realSymbol == null) {
+            ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
+            return;
+        }
+
+        if (!realSymbol.GetSymbolType().equals(formalSymbol.GetSymbolType())) {
+            ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
+        }
+    }
+
+    private void CheckValueParamFit(Symbol realSymbol, Symbol formalSymbol, int line) {
+        if (realSymbol != null) {
+            SymbolType realType = realSymbol.GetSymbolType();
+            if (realType.equals(SymbolType.INT_ARRAY) || realType.equals(SymbolType.CHAR_ARRAY)) {
+                ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
             }
         }
     }

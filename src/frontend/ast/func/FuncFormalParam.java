@@ -55,7 +55,8 @@ public class FuncFormalParam extends Node {
                     }
                 }
             }
-            this.symbol = new ValueSymbol(symbolName, SymbolType.GetVarType(type, dimension),
+            this.symbol = new ValueSymbol(
+                symbolName, SymbolType.GetVarType(type, dimension),
                 dimension, new ArrayList<>());
         } else {
             this.symbol = new ValueSymbol(symbolName, SymbolType.GetVarType(type));

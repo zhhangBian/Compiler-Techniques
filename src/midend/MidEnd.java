@@ -9,7 +9,7 @@ public class MidEnd {
     private static SymbolManger symbolManger;
     private static Node rootNode;
 
-    public static void GenerateIr() {
+    public static void Visit() {
         symbolManger = new SymbolManger();
         rootNode = FrontEnd.GetAstTree();
         rootNode.Visit();

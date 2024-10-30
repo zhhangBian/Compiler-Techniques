@@ -14,6 +14,7 @@ import midend.symbol.FuncSymbol;
 import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
+import utils.Setting;
 
 public class FuncDef extends Node {
     private FuncSymbol symbol;
@@ -70,15 +71,24 @@ public class FuncDef extends Node {
             component.Visit();
             if (component instanceof FuncFormalParamS funcFormalParamS) {
                 this.symbol.SetFormalParamList(funcFormalParamS.GetFormalParamList());
-            } else if (component instanceof Block block) {
-                if (type.equals("int") || type.equals("char")) {
-                    if (!block.LastIsReturnStmt()) {
-                        ErrorRecorder.AddError(
-                            new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
-                    }
-                }
+            }
+
+            if (Setting.CHECK_ERROR) {
+                this.CheckReturnError(type, component);
             }
         }
         SymbolManger.GoToFatherSymbolTable();
+    }
+
+    private void CheckReturnError(String type, Node component) {
+        if (!(component instanceof Block block)) {
+            return;
+        }
+
+        if (type.equals("int") || type.equals("char")) {
+            if (!block.LastIsReturnStmt()) {
+                ErrorRecorder.AddError(new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
+            }
+        }
     }
 }

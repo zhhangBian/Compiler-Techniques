@@ -30,8 +30,8 @@ public class ForStmt extends Node {
 
         // 识别赋值语句
         if (this.components.get(0) instanceof LVal lVal &&
-            this.components.get(1) instanceof TokenNode tokenNode
-            && tokenNode.GetTokenString().equals("=")) {
+            this.components.get(1) instanceof TokenNode tokenNode &&
+            tokenNode.GetTokenString().equals("=")) {
             // 得到LVal对应的符号
             if (lVal.HaveSymbol() && lVal.CannotChangeValue()) {
                 ErrorRecorder.AddError(new Error(ErrorType.CHANGE_CONST_VALUE, lVal.GetLine()));

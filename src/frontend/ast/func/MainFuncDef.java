@@ -9,6 +9,7 @@ import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 import midend.symbol.SymbolManger;
+import utils.Setting;
 
 public class MainFuncDef extends Node {
     public MainFuncDef() {
@@ -36,12 +37,23 @@ public class MainFuncDef extends Node {
 
     @Override
     public void Visit() {
-        Block block = (Block) this.components.get(4);
-        SymbolManger.GoToSonSymbolTable();
-        block.Visit();
+        for (Node component : this.components) {
+            if (component instanceof Block block) {
+                SymbolManger.GoToSonSymbolTable();
+                block.Visit();
+
+                if (Setting.CHECK_ERROR) {
+                    this.CheckReturnError(block);
+                }
+
+                SymbolManger.GoToFatherSymbolTable();
+            }
+        }
+    }
+
+    private void CheckReturnError(Block block) {
         if (!block.LastIsReturnStmt()) {
             ErrorRecorder.AddError(new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
         }
-        SymbolManger.GoToFatherSymbolTable();
     }
 }

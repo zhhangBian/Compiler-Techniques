@@ -7,6 +7,7 @@ import frontend.ast.token.TokenNode;
 import frontend.lexer.Token;
 import frontend.lexer.TokenStream;
 import frontend.lexer.TokenType;
+import utils.Setting;
 
 import java.util.ArrayList;
 
@@ -14,8 +15,6 @@ public abstract class Node {
     protected final SyntaxType syntaxType;
     protected final ArrayList<Node> components;
     protected boolean printSelf;
-
-    private static final boolean FIX_ERROR = false;
 
     private static TokenStream tokenStream;
 
@@ -34,14 +33,6 @@ public abstract class Node {
         this.components.add(node);
     }
 
-    public SyntaxType GetSyntaxType() {
-        return this.syntaxType;
-    }
-
-    public ArrayList<Node> GetComponents() {
-        return this.components;
-    }
-
     public abstract void Parse();
 
     public void Visit() {
@@ -50,35 +41,35 @@ public abstract class Node {
         }
     }
 
-    public static Token GetCurrentToken() {
+    protected Token GetCurrentToken() {
         return tokenStream.Peek(0);
     }
 
-    public static TokenType GetCurrentTokenType() {
+    protected TokenType GetCurrentTokenType() {
         return tokenStream.Peek(0).GetTokenType();
     }
 
-    public static int GetBeforeLineNumber() {
+    protected int GetBeforeLineNumber() {
         return Peek(-1).GetLineNumber();
     }
 
-    public static int GetCurrentLineNumber() {
+    protected int GetCurrentLineNumber() {
         return GetCurrentToken().GetLineNumber();
     }
 
-    public static void Read() {
+    protected void Read() {
         tokenStream.Read();
     }
 
-    public static Token Peek(int peekStep) {
+    protected Token Peek(int peekStep) {
         return tokenStream.Peek(peekStep);
     }
 
-    public static void SetBackPoint() {
+    protected void SetBackPoint() {
         tokenStream.SetBackPoint();
     }
 
-    public static void GoToBackPoint() {
+    protected void GoToBackPoint() {
         tokenStream.GoToBackPoint();
     }
 
@@ -86,7 +77,7 @@ public abstract class Node {
         int line = GetBeforeLineNumber();
         ErrorRecorder.AddError(new Error(ErrorType.MISS_SEMICN, line));
 
-        if (FIX_ERROR) {
+        if (Setting.FIX_ERROR) {
             this.components.add(new TokenNode(new Token(TokenType.SEMICN, ";", line)));
         }
     }
@@ -95,7 +86,7 @@ public abstract class Node {
         int line = GetBeforeLineNumber();
         ErrorRecorder.AddError(new Error(ErrorType.MISS_RPARENT, line));
 
-        if (FIX_ERROR) {
+        if (Setting.FIX_ERROR) {
             this.components.add(new TokenNode(new Token(TokenType.RPARENT, ")", line)));
         }
     }
@@ -104,7 +95,7 @@ public abstract class Node {
         int line = GetBeforeLineNumber();
         ErrorRecorder.AddError(new Error(ErrorType.MISS_RBRACK, line));
 
-        if (FIX_ERROR) {
+        if (Setting.FIX_ERROR) {
             this.components.add(new TokenNode(new Token(TokenType.RBRACK, "]", line)));
         }
     }

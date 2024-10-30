@@ -11,6 +11,7 @@ import frontend.lexer.TokenType;
 import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
+import utils.Setting;
 
 public class LVal extends Node {
     public LVal() {
@@ -39,14 +40,23 @@ public class LVal extends Node {
     @Override
     public void Visit() {
         for (Node component : this.components) {
-            if (component instanceof Ident ident) {
-                String identName = ident.GetTokenString();
-                // 未定义
-                if (SymbolManger.GetSymbol(identName) == null) {
-                    ErrorRecorder.AddError(new Error(ErrorType.NAME_UNDEFINED, ident.GetLine()));
-                }
+            if (Setting.CHECK_ERROR) {
+                this.CheckSymbolError(component);
             }
+
             component.Visit();
+        }
+    }
+
+    private void CheckSymbolError(Node component) {
+        if (!(component instanceof Ident ident)) {
+            return;
+        }
+
+        String identName = ident.GetTokenString();
+        // 未定义
+        if (SymbolManger.GetSymbol(identName) == null) {
+            ErrorRecorder.AddError(new Error(ErrorType.NAME_UNDEFINED, ident.GetLine()));
         }
     }
 

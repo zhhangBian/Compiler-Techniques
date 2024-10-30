@@ -1,7 +1,7 @@
 package midend.llvm;
 
-import midend.llvm.value.function.IrFunction;
-import midend.llvm.value.variable.IrGlobalVariable;
+import midend.llvm.value.IrFunction;
+import midend.llvm.value.IrGlobalVariable;
 
 import java.util.ArrayList;
 

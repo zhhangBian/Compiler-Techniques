@@ -13,6 +13,7 @@ import frontend.ast.token.StringConst;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 import midend.symbol.SymbolManger;
+import utils.Setting;
 
 public class Stmt extends Node {
     public Stmt() {
@@ -296,15 +297,26 @@ public class Stmt extends Node {
             }
         }
 
+        if (Setting.CHECK_ERROR) {
+            this.CheckConstError();
+        }
+    }
+
+    private void CheckConstError() {
         // 识别赋值语句
-        if (this.components.get(0) instanceof LVal lVal &&
-            this.components.get(1) instanceof TokenNode tokenNode
-            && tokenNode.GetTokenString().equals("=")) {
+        if (this.IsAssignStmt()) {
             // 得到LVal对应的符号
-            if (lVal.HaveSymbol() && lVal.CannotChangeValue()) {
-                ErrorRecorder.AddError(new Error(ErrorType.CHANGE_CONST_VALUE, lVal.GetLine()));
+            LVal lval = (LVal) this.components.get(0);
+            if (lval.HaveSymbol() && lval.CannotChangeValue()) {
+                ErrorRecorder.AddError(new Error(ErrorType.CHANGE_CONST_VALUE, lval.GetLine()));
             }
         }
+    }
+
+    private boolean IsAssignStmt() {
+        return this.components.get(0) instanceof LVal lVal &&
+            this.components.get(1) instanceof TokenNode tokenNode &&
+            tokenNode.GetTokenString().equals("=");
     }
 
     public boolean IsReturnStmt() {
@@ -314,11 +326,6 @@ public class Stmt extends Node {
                 this.components.size() > 2;
         }
         return false;
-    }
-
-    public int GetReturnLine() {
-        TokenNode tokenNode = (TokenNode) this.components.get(0);
-        return tokenNode.GetLine();
     }
 
     private int GetFormatStringCount(String formatString) {
