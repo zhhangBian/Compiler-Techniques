@@ -20,6 +20,8 @@ public class IOhandler {
     private static FileOutputStream lexerOutputFile = null;
     private static FileOutputStream parserOutputFile = null;
     private static FileOutputStream symbolOutputFile = null;
+    private static FileOutputStream llvmOutputFile = null;
+    private static FileOutputStream mipsOutputFile = null;
     private static FileOutputStream errorFile = null;
 
     public static void SetIO() throws FileNotFoundException {
@@ -27,6 +29,8 @@ public class IOhandler {
         IOhandler.lexerOutputFile = new FileOutputStream("lexer.txt");
         IOhandler.parserOutputFile = new FileOutputStream("parser.txt");
         IOhandler.symbolOutputFile = new FileOutputStream("symbol.txt");
+        IOhandler.llvmOutputFile = new FileOutputStream("llvm_ir.txt");
+        IOhandler.mipsOutputFile = new FileOutputStream("mips.txt");
         IOhandler.errorFile = new FileOutputStream("error.txt");
     }
 
@@ -50,6 +54,14 @@ public class IOhandler {
     public static void PrintSymbolTable() throws IOException {
         SymbolTable rootSymbolTable = MidEnd.GetSymbolTable();
         symbolOutputFile.write(rootSymbolTable.toString().getBytes());
+    }
+
+    public static void PrintLlvm() {
+        Debug.DebugThrow("not finish llvm print yet.");
+    }
+
+    public static void PrintMips() {
+        Debug.DebugThrow("not finish mips print yet.");
     }
 
     public static void PrintErrorMessage() throws IOException {

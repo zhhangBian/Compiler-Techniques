@@ -4,7 +4,7 @@ import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.lexer.Token;
 
-import static utils.Debugger.DebugPrint;
+import static utils.Debug.DebugPrint;
 
 public class BasicTokenNode extends Node {
     public BasicTokenNode(SyntaxType syntaxType) {

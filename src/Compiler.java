@@ -19,5 +19,7 @@ public class Compiler {
         IOhandler.PrintAstTree();
         IOhandler.PrintSymbolTable();
         IOhandler.PrintErrorMessage();
+        //IOhandler.PrintLlvm();
+        //IOhandler.PrintMips();
     }
 }
