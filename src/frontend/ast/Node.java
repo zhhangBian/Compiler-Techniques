@@ -36,9 +36,7 @@ public abstract class Node {
     public abstract void Parse();
 
     public void Visit() {
-        for (Node component : this.components) {
-            component.Visit();
-        }
+        this.components.forEach(Node::Visit);
     }
 
     protected Token GetCurrentToken() {

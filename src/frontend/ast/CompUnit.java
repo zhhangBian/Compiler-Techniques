@@ -29,7 +29,6 @@ public class CompUnit extends Node {
             }
             // 未定义
             else {
-                // TODO：错误处理
                 break;
             }
         }
