@@ -1,4 +1,5 @@
 package midend.llvm.type;
 
-public class IrType {
+public abstract class IrType {
+
 }

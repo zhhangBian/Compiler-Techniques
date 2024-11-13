@@ -13,4 +13,9 @@ public class UnaryOp extends Node {
     public void Parse() {
         this.AddNode(new TokenNode());
     }
+
+    public String GetSimpleName() {
+        TokenNode tokenNode = (TokenNode) this.components.get(0);
+        return tokenNode.GetSimpleName();
+    }
 }

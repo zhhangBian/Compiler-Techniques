@@ -8,6 +8,9 @@ import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
+import midend.llvm.IrBuilder;
+import midend.llvm.type.IrBaseType;
+import midend.llvm.value.IrFunction;
 import midend.symbol.SymbolManger;
 import utils.Setting;
 
@@ -39,6 +42,11 @@ public class MainFuncDef extends Node {
     public void Visit() {
         for (Node component : this.components) {
             if (component instanceof Block block) {
+                // 创建函数IR
+                IrFunction irFunction = IrBuilder.GetFunctionIr("main", IrBaseType.INT32);
+                IrBuilder.SetCurrentFunction(irFunction);
+                IrBuilder.GetNewBasicBlock();
+
                 SymbolManger.GoToSonSymbolTable();
                 block.Visit();
 

@@ -4,8 +4,6 @@ import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.lexer.Token;
 
-import static utils.Debug.DebugPrint;
-
 public class BasicTokenNode extends Node {
     public BasicTokenNode(SyntaxType syntaxType) {
         super(syntaxType);
@@ -25,8 +23,6 @@ public class BasicTokenNode extends Node {
     public void Parse() {
         this.token = GetCurrentToken();
         Read();
-
-        DebugPrint(this.token);
     }
 
     @Override

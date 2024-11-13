@@ -1,10 +1,9 @@
 package frontend.ast.exp;
 
-import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.exp.recursion.AddExp;
 
-public class ConstExp extends Node {
+public class ConstExp extends ComputeExp {
     public ConstExp() {
         super(SyntaxType.CONST_EXP);
     }
@@ -12,5 +11,10 @@ public class ConstExp extends Node {
     @Override
     public void Parse() {
         this.AddNode(new AddExp());
+    }
+
+    @Override
+    public void Compute() {
+
     }
 }

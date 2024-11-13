@@ -3,11 +3,11 @@ package frontend.ast.exp;
 import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
-import frontend.ast.value.Character;
+import frontend.ast.value.Char;
 import frontend.ast.value.Number;
 import frontend.lexer.TokenType;
 
-public class PrimaryExp extends Node {
+public class PrimaryExp extends ComputeExp {
     public PrimaryExp() {
         super(SyntaxType.PRIMARY_EXP);
     }
@@ -32,11 +32,28 @@ public class PrimaryExp extends Node {
         }
         // Character
         else if (GetCurrentTokenType().equals(TokenType.CHRCON)) {
-            this.AddNode(new Character());
+            this.AddNode(new Char());
         }
         // LVal
         else {
             this.AddNode(new LVal());
+        }
+    }
+
+    @Override
+    public void Compute() {
+        Node node = this.components.get(0);
+        if (node instanceof Number number) {
+            this.isConst = true;
+            this.value = number.GetValue();
+        } else if (node instanceof Char character) {
+            this.isConst = true;
+            this.value = character.GetValue();
+        } else if (node instanceof TokenNode) {
+            Exp exp = (Exp) this.components.get(1);
+            exp.Compute();
+            this.isConst = exp.GetIfConst();
+            this.value = exp.GetValue();
         }
     }
 }

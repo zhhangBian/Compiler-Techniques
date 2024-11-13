@@ -7,24 +7,29 @@ import java.util.ArrayList;
 
 public class IrModule extends IrNode {
     // 全局变量
-    private static final ArrayList<IrGlobalVariable> globalVariables = new ArrayList<>();
+    private final ArrayList<IrGlobalVariable> globalVariables;
     // 一切运行对象皆为function，包括main
-    private static final ArrayList<IrFunction> functions = new ArrayList<>();
+    private final ArrayList<IrFunction> functions;
 
-    public static void AddIrGlobalVariable(IrGlobalVariable globalVariable) {
-        globalVariables.add(globalVariable);
+    public IrModule() {
+        this.globalVariables = new ArrayList<>();
+        this.functions = new ArrayList<>();
     }
 
-    public static void AddIrFunction(IrFunction function) {
-        functions.add(function);
+    public void AddIrGlobalVariable(IrGlobalVariable globalVariable) {
+        this.globalVariables.add(globalVariable);
     }
 
-    public static ArrayList<IrGlobalVariable> GetIrGlobalVariables() {
-        return globalVariables;
+    public void AddIrFunction(IrFunction function) {
+        this.functions.add(function);
     }
 
-    public static ArrayList<IrFunction> GetIrFunctions() {
-        return functions;
+    public ArrayList<IrGlobalVariable> GetIrGlobalVariables() {
+        return this.globalVariables;
+    }
+
+    public ArrayList<IrFunction> GetIrFunctions() {
+        return this.functions;
     }
 
     @Override

@@ -13,11 +13,12 @@ import midend.symbol.FuncSymbol;
 import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
+import utils.Debug;
 import utils.Setting;
 
 import java.util.ArrayList;
 
-public class UnaryExp extends Node {
+public class UnaryExp extends ComputeExp {
     public UnaryExp() {
         super(SyntaxType.UNARY_EXP);
     }
@@ -165,5 +166,29 @@ public class UnaryExp extends Node {
                 ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
             }
         }
+    }
+
+    @Override
+    public void Compute() {
+        Node node = this.components.get(0);
+        if (node instanceof PrimaryExp primaryExp) {
+            primaryExp.Compute();
+            this.isConst = primaryExp.GetIfConst();
+            this.value = primaryExp.GetValue();
+        } else if (node instanceof UnaryOp unaryOp) {
+            UnaryExp exp = (UnaryExp) this.components.get(1);
+            exp.Compute();
+            this.isConst = exp.GetIfConst();
+            this.value = this.GetUnaryOpResult(unaryOp.GetSimpleName(), exp.GetValue());
+        }
+    }
+
+    private int GetUnaryOpResult(String op, int value) {
+        return switch (op) {
+            case "+" -> value;
+            case "-" -> -value;
+            case "!" -> value == 0 ? 1 : 0;
+            default -> throw new RuntimeException("Invalid UnaryOp");
+        };
     }
 }

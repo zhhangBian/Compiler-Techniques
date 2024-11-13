@@ -6,7 +6,7 @@ import frontend.lexer.TokenStream;
 
 public class Parser {
     private TokenStream tokenStream;
-    private Node rootNode;
+    private CompUnit rootNode;
 
     public Parser() {
         this.tokenStream = null;
@@ -23,7 +23,7 @@ public class Parser {
         this.rootNode.Parse();
     }
 
-    public Node GetAstTree() {
+    public CompUnit GetAstTree() {
         return this.rootNode;
     }
 }

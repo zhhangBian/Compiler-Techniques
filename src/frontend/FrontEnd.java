@@ -1,6 +1,6 @@
 package frontend;
 
-import frontend.ast.Node;
+import frontend.ast.CompUnit;
 import frontend.lexer.Lexer;
 import frontend.lexer.Token;
 import frontend.lexer.TokenStream;
@@ -36,7 +36,7 @@ public class FrontEnd {
         return new TokenStream(lexer.GetTokenList());
     }
 
-    public static Node GetAstTree() {
+    public static CompUnit GetAstTree() {
         return parser.GetAstTree();
     }
 }
