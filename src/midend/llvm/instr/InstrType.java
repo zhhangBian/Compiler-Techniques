@@ -12,5 +12,6 @@ public enum InstrType {
     CALL,
     RETURN,
 
+    GEP,
     IO
 }

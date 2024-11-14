@@ -41,6 +41,14 @@ public class ValueSymbol extends Symbol {
         return this.dimension;
     }
 
+    public int GetTotalDepth() {
+        int totalDepth = 1;
+        for (int depth : this.depthList) {
+            totalDepth *= depth;
+        }
+        return totalDepth;
+    }
+
     public ArrayList<Integer> GetInitValueList() {
         return this.initValueList;
     }

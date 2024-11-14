@@ -84,4 +84,8 @@ public class ConstDef extends Node {
         this.symbol = new ValueSymbol(symbolName, type, dimension, depthList, initValueList);
         SymbolManger.AddSymbol(this.symbol, line);
     }
+
+    public Ident GetIdent() {
+        return (Ident) this.components.get(0);
+    }
 }

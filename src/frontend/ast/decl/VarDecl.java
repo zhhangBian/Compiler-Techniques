@@ -6,6 +6,8 @@ import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 
+import java.util.ArrayList;
+
 public class VarDecl extends Node {
     public VarDecl() {
         super(SyntaxType.VAR_DECL);
@@ -46,5 +48,15 @@ public class VarDecl extends Node {
             }
             component.Visit();
         }
+    }
+
+    public ArrayList<VarDef> GetVAeDefs() {
+        ArrayList<VarDef> varDefs = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof VarDef varDef) {
+                varDefs.add(varDef);
+            }
+        }
+        return varDefs;
     }
 }

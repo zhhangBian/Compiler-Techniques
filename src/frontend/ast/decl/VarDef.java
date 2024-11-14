@@ -81,4 +81,8 @@ public class VarDef extends Node {
         this.symbol = new ValueSymbol(symbolName, type, dimension, depthList);
         SymbolManger.AddSymbol(symbol, line);
     }
+
+    public Ident GetIdent() {
+        return (Ident) this.components.get(0);
+    }
 }

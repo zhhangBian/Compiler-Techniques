@@ -8,6 +8,8 @@ import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ConstInitVal extends Node {
     public ConstInitVal() {
@@ -49,12 +51,20 @@ public class ConstInitVal extends Node {
     }
 
     // 约定如果是常值形式，那么返回只有一个元素的list
+    // 如果是字符串形式，那么是一个阿斯玛的list
     public ArrayList<Integer> GetInitValueList() {
         ArrayList<Integer> initValueList = new ArrayList<>();
         for (Node node : this.components) {
             if (node instanceof ConstExp constExp) {
                 constExp.Compute();
                 initValueList.add(constExp.GetValue());
+            } else if (node instanceof StringConst stringConst) {
+                String string = stringConst.GetStringValue();
+                ArrayList<Integer> asciiList = new ArrayList<>();
+                for (char c : string.toCharArray()) {
+                    asciiList.add((int) c);
+                }
+                return asciiList;
             }
         }
         return initValueList;

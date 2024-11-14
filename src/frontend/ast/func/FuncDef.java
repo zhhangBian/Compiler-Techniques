@@ -66,7 +66,7 @@ public class FuncDef extends Node {
         SymbolManger.AddSymbol(this.symbol, line);
 
         // 解析形参和函数体的符号
-        SymbolManger.GoToSonSymbolTable();
+        SymbolManger.CreateSonSymbolTable();
         for (Node component : this.components) {
             component.Visit();
             if (component instanceof FuncFormalParamS funcFormalParamS) {

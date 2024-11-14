@@ -1,8 +1,13 @@
 package midend.llvm;
 
+import midend.llvm.constant.IrConstant;
+import midend.llvm.instr.Instr;
 import midend.llvm.type.IrType;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
+import midend.llvm.value.IrGlobalValue;
+
+import java.util.HashMap;
 
 public class IrBuilder {
     private static final String GLOBAL_VAR_NAME_PREFIX = "@g";
@@ -17,40 +22,34 @@ public class IrBuilder {
     private static IrFunction currentFunction = null;
 
     private static int basicBlockCount = 0;
+    private static int globalVarNameCount = 0;
+    private static HashMap<IrFunction, Integer> functionVarNameCountMap = new HashMap<>();
 
     public static void SetCurrentModule(IrModule irModule) {
         currentModule = irModule;
     }
 
-    public static IrModule GetCurrentModule() {
-        return currentModule;
+    public static IrGlobalValue GetNewIrGlobalValue(IrType valueType, IrConstant initValue) {
+        IrGlobalValue globalValue = new IrGlobalValue(valueType, GetGlobalVarName(), initValue);
+        currentModule.AddIrGlobalValue(globalValue);
+        return globalValue;
     }
 
-    public static void SetCurrentBasicBlock(IrBasicBlock basicBlock) {
-        currentBasicBlock = basicBlock;
-    }
-
-    public static IrBasicBlock GetCurrentBasicBlock() {
-        return currentBasicBlock;
-    }
-
-    public static void SetCurrentFunction(IrFunction function) {
-        currentFunction = function;
-    }
-
-    public static IrFunction GetCurrentFunction() {
-        return currentFunction;
-    }
-
-    public static IrFunction GetFunctionIr(String name, IrType returnType) {
+    public static IrFunction GetNewFunctionIr(String name, IrType returnType) {
         String funcName = name.equals("main") ? "@" + name : FUNC_NAME_PREFIX + name;
-        return new IrFunction(funcName, returnType);
+        IrFunction irFunction = new IrFunction(funcName, returnType);
+        currentModule.AddIrFunction(irFunction);
+        // 设置为当前处理的Function
+        currentFunction = irFunction;
+        // 添加计数表
+        functionVarNameCountMap.put(irFunction, 0);
+
+        return irFunction;
     }
 
-    public static IrBasicBlock GetNewBasicBlock() {
+    public static IrBasicBlock GetNewBasicBlockIr() {
         String irName = BasicBlock_NAME_PREFIX + (basicBlockCount++);
         IrBasicBlock basicBlock = new IrBasicBlock(irName);
-
         // 设置相应的函数关系
         currentFunction.AddBasicBlock(basicBlock);
         basicBlock.SetParentFunction(currentFunction);
@@ -58,5 +57,19 @@ public class IrBuilder {
         currentBasicBlock = basicBlock;
 
         return basicBlock;
+    }
+
+    public static String GetGlobalVarName() {
+        return GLOBAL_VAR_NAME_PREFIX + globalVarNameCount++;
+    }
+
+    public static String GetFunctionVarName() {
+        int count = functionVarNameCountMap.get(currentFunction);
+        functionVarNameCountMap.put(currentFunction, count + 1);
+        return LOCAL_VAR_NAME_PREFIX + count;
+    }
+
+    public static void AddInstr(Instr instr) {
+        currentBasicBlock.AddInstr(instr);
     }
 }

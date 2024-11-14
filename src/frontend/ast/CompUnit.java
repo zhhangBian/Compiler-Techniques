@@ -5,6 +5,8 @@ import frontend.ast.func.FuncDef;
 import frontend.ast.func.MainFuncDef;
 import frontend.lexer.TokenType;
 
+import java.util.ArrayList;
+
 public class CompUnit extends Node {
     public CompUnit() {
         super(SyntaxType.COMP_UNIT);
@@ -32,5 +34,34 @@ public class CompUnit extends Node {
                 break;
             }
         }
+    }
+
+    public ArrayList<Decl> GetDecls() {
+        ArrayList<Decl> decls = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof Decl decl) {
+                decls.add(decl);
+            }
+        }
+        return decls;
+    }
+
+    public ArrayList<FuncDef> GetFuncDefs() {
+        ArrayList<FuncDef> funcDefs = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof FuncDef funcDef) {
+                funcDefs.add(funcDef);
+            }
+        }
+        return funcDefs;
+    }
+
+    public MainFuncDef GetMainFuncDef() {
+        for (Node node : this.components) {
+            if (node instanceof MainFuncDef mainFuncDef) {
+                return mainFuncDef;
+            }
+        }
+        throw new RuntimeException("now MainFuncDef in the CompUnit!");
     }
 }

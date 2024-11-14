@@ -6,6 +6,8 @@ import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 
+import java.util.ArrayList;
+
 public class ConstDecl extends Node {
     public ConstDecl() {
         super(SyntaxType.CONST_DECL);
@@ -50,5 +52,15 @@ public class ConstDecl extends Node {
             }
             component.Visit();
         }
+    }
+
+    public ArrayList<ConstDef> GetConstDef() {
+        ArrayList<ConstDef> constDefs = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof ConstDef constDef) {
+                constDefs.add(constDef);
+            }
+        }
+        return constDefs;
     }
 }

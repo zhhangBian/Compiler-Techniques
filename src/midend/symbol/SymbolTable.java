@@ -9,6 +9,8 @@ import java.util.Hashtable;
 
 public class SymbolTable {
     private final int depth;
+    private int index;
+
     private final ArrayList<Symbol> symbolList;
     private final Hashtable<String, Symbol> symbolTable;
 
@@ -17,6 +19,8 @@ public class SymbolTable {
 
     public SymbolTable(int depth, SymbolTable fatherTable) {
         this.depth = depth;
+        this.index = -1;
+
         this.symbolList = new ArrayList<>();
         this.symbolTable = new Hashtable<>();
 
@@ -48,6 +52,10 @@ public class SymbolTable {
         } else {
             ErrorRecorder.AddError(new Error(ErrorType.NAME_REDEFINE, line));
         }
+    }
+
+    public SymbolTable GetNextSonTable() {
+        return this.sonTables.get(++index);
     }
 
     @Override

@@ -8,13 +8,17 @@ public class SymbolManger {
     private static int forDepth;
     private static String funcReturnType = "";
 
-    public SymbolManger() {
+    public static void Init() {
         depth = 1;
         rootSymbolTable = new SymbolTable(depth, null);
         currentSymbolTable = rootSymbolTable;
 
         forDepth = 0;
         funcReturnType = "";
+    }
+
+    public static void GoBackToRootSymbolTable() {
+        currentSymbolTable = rootSymbolTable;
     }
 
     public static boolean IsGlobal() {
@@ -37,12 +41,8 @@ public class SymbolManger {
         return null;
     }
 
-    public SymbolTable GetSymbolTable() {
+    public static SymbolTable GetSymbolTable() {
         return rootSymbolTable;
-    }
-
-    public static SymbolTable GetCurrentSymbolTable() {
-        return currentSymbolTable;
     }
 
     public static void GoToFatherSymbolTable() {
@@ -52,10 +52,14 @@ public class SymbolManger {
         }
     }
 
-    public static void GoToSonSymbolTable() {
+    public static void CreateSonSymbolTable() {
         SymbolTable sonTable = new SymbolTable(++depth, currentSymbolTable);
         currentSymbolTable.AddSonTable(sonTable);
         currentSymbolTable = sonTable;
+    }
+
+    public static void GoToSonSymbolTable() {
+        currentSymbolTable = currentSymbolTable.GetNextSonTable();
     }
 
     public static void EnterForBlock() {

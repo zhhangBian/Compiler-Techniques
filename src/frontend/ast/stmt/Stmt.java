@@ -273,7 +273,7 @@ public class Stmt extends Node {
     public void Visit() {
         for (Node component : this.components) {
             if (component instanceof Block) {
-                SymbolManger.GoToSonSymbolTable();
+                SymbolManger.CreateSonSymbolTable();
                 component.Visit();
                 SymbolManger.GoToFatherSymbolTable();
             } else {

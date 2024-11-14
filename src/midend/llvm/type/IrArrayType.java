@@ -2,9 +2,9 @@ package midend.llvm.type;
 
 public class IrArrayType extends IrType {
     private final int arraySize;
-    private final IrBaseType elementType;
+    private final IrType elementType;
 
-    public IrArrayType(int arraySize, IrBaseType elementType) {
+    public IrArrayType(int arraySize, IrType elementType) {
         this.arraySize = arraySize;
         this.elementType = elementType;
     }
@@ -13,7 +13,7 @@ public class IrArrayType extends IrType {
         return this.arraySize;
     }
 
-    public IrBaseType GetElementType() {
+    public IrType GetElementType() {
         return this.elementType;
     }
 }
