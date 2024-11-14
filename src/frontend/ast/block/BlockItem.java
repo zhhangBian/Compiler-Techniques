@@ -30,4 +30,16 @@ public class BlockItem extends Node {
         }
         return false;
     }
+
+    public boolean IsDecl() {
+        return this.components.get(0) instanceof Decl;
+    }
+
+    public Decl GetDecl() {
+        return (Decl) this.components.get(0);
+    }
+
+    public Stmt GetStmt() {
+        return (Stmt) this.components.get(0);
+    }
 }

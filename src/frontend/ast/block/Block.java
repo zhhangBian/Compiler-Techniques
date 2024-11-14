@@ -5,6 +5,8 @@ import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 
+import java.util.ArrayList;
+
 public class Block extends Node {
     public Block() {
         super(SyntaxType.BLOCK);
@@ -34,5 +36,15 @@ public class Block extends Node {
     public int GetLastLine() {
         TokenNode tokenNode = (TokenNode) this.components.get(this.components.size() - 1);
         return tokenNode.GetLine();
+    }
+
+    public ArrayList<BlockItem> GetBlockItemList() {
+        ArrayList<BlockItem> blockItemList = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof BlockItem blockItem) {
+                blockItemList.add(blockItem);
+            }
+        }
+        return blockItemList;
     }
 }
