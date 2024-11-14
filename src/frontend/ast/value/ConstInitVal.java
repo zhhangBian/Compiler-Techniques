@@ -7,6 +7,8 @@ import frontend.ast.token.StringConst;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 
+import java.util.ArrayList;
+
 public class ConstInitVal extends Node {
     public ConstInitVal() {
         super(SyntaxType.CONST_INIT_VAL);
@@ -40,5 +42,21 @@ public class ConstInitVal extends Node {
         else {
             this.AddNode(new ConstExp());
         }
+    }
+
+    public boolean IsArrayInitValue() {
+        return this.components.get(0) instanceof TokenNode;
+    }
+
+    // 约定如果是常值形式，那么返回只有一个元素的list
+    public ArrayList<Integer> GetInitValueList() {
+        ArrayList<Integer> initValueList = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof ConstExp constExp) {
+                constExp.Compute();
+                initValueList.add(constExp.GetValue());
+            }
+        }
+        return initValueList;
     }
 }

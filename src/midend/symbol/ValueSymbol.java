@@ -5,20 +5,20 @@ import java.util.ArrayList;
 public class ValueSymbol extends Symbol {
     private final int dimension;
     private final ArrayList<Integer> depthList;
-    private int initValue;
+    private ArrayList<Integer> initValueList;
 
     public ValueSymbol(String symbolName, SymbolType symbolType) {
         super(symbolName, symbolType);
         this.dimension = 0;
         this.depthList = new ArrayList<>();
-        this.initValue = 0;
+        this.initValueList = new ArrayList<>();
     }
 
-    public ValueSymbol(String symbolName, SymbolType symbolType, int initValue) {
+    public ValueSymbol(String symbolName, SymbolType symbolType, ArrayList<Integer> initValueList) {
         super(symbolName, symbolType);
         this.dimension = 0;
         this.depthList = new ArrayList<>();
-        this.initValue = initValue;
+        this.initValueList = initValueList;
     }
 
     public ValueSymbol(String symbolName, SymbolType symbolType,
@@ -26,39 +26,26 @@ public class ValueSymbol extends Symbol {
         super(symbolName, symbolType);
         this.dimension = dimension;
         this.depthList = depthList;
-        this.initValue = 0;
+        this.initValueList = new ArrayList<>();
     }
 
     public ValueSymbol(String symbolName, SymbolType symbolType,
-                       int dimension, ArrayList<Integer> depthList, int initValue) {
+                       int dimension, ArrayList<Integer> depthList, ArrayList<Integer> initValueList) {
         super(symbolName, symbolType);
         this.dimension = dimension;
         this.depthList = depthList;
-        this.initValue = 0;
-        this.initValue = initValue;
+        this.initValueList = initValueList;
     }
 
     public int GetDimension() {
         return this.dimension;
     }
 
-    public int GetInitValue() {
-        return this.initValue;
+    public ArrayList<Integer> GetInitValueList() {
+        return this.initValueList;
     }
 
     public ArrayList<Integer> GetDepthList() {
         return this.depthList;
-    }
-
-    public int GetTotalDepth() {
-        if (this.depthList.isEmpty()) {
-            return 0;
-        } else {
-            int totalDepth = 1;
-            for (int depth : this.depthList) {
-                totalDepth *= depth;
-            }
-            return totalDepth;
-        }
     }
 }

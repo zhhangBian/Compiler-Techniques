@@ -2,18 +2,15 @@ package midend.llvm.instr;
 
 public enum InstrType {
     ALU,
-    ALLOCA,
+    EXTEND,
+
+    ALLOCATE,
+    LOAD,
+    STORE,
+
     BRANCH,
     CALL,
-    GEP,
-    ICMP,
-    JUMP,
-    LOAD,
     RETURN,
-    STORE,
-    ZEXT,
-    IO,
-    PHI,
-    PCOPY,
-    MOVE
+
+    IO
 }

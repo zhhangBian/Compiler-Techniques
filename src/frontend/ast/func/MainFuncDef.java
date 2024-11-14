@@ -40,13 +40,13 @@ public class MainFuncDef extends Node {
 
     @Override
     public void Visit() {
+        // 创建函数IR
+        IrFunction irFunction = IrBuilder.GetFunctionIr("main", IrBaseType.INT32);
+        IrBuilder.SetCurrentFunction(irFunction);
+        IrBuilder.GetNewBasicBlock();
+
         for (Node component : this.components) {
             if (component instanceof Block block) {
-                // 创建函数IR
-                IrFunction irFunction = IrBuilder.GetFunctionIr("main", IrBaseType.INT32);
-                IrBuilder.SetCurrentFunction(irFunction);
-                IrBuilder.GetNewBasicBlock();
-
                 SymbolManger.GoToSonSymbolTable();
                 block.Visit();
 

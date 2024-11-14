@@ -7,15 +7,15 @@ import java.util.ArrayList;
 
 public class IrFunction extends IrValue {
     private final IrType returnType;
-    private final ArrayList<IrParameter> parameters;
-    private final ArrayList<IrBasicBlock> basicBlocks;
+    private final ArrayList<IrParameter> parameterList;
+    private final ArrayList<IrBasicBlock> basicBlockList;
 
     public IrFunction(String name, IrType returnType) {
         super(IrFunctionType.FUNCTION_TYPE, name);
         this.returnType = returnType;
 
-        this.parameters = new ArrayList<>();
-        this.basicBlocks = new ArrayList<>();
+        this.parameterList = new ArrayList<>();
+        this.basicBlockList = new ArrayList<>();
     }
 
     public IrType GetReturnType() {
@@ -23,10 +23,18 @@ public class IrFunction extends IrValue {
     }
 
     public void AddParameter(IrParameter parameter) {
-        this.parameters.add(parameter);
+        this.parameterList.add(parameter);
+    }
+
+    public ArrayList<IrParameter> GetParameterList() {
+        return this.parameterList;
     }
 
     public void AddBasicBlock(IrBasicBlock basicBlock) {
-        this.basicBlocks.add(basicBlock);
+        this.basicBlockList.add(basicBlock);
+    }
+
+    public ArrayList<IrBasicBlock> GetBasicBlockList() {
+        return this.basicBlockList;
     }
 }

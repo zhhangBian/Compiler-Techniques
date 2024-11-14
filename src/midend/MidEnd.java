@@ -3,11 +3,8 @@ package midend;
 import frontend.FrontEnd;
 import frontend.ast.CompUnit;
 import midend.llvm.IrModule;
-import midend.llvm.value.IrGlobalVariable;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolTable;
-
-import java.util.ArrayList;
 
 public class MidEnd {
     private static SymbolManger symbolManger;
@@ -23,9 +20,5 @@ public class MidEnd {
 
     public static SymbolTable GetSymbolTable() {
         return symbolManger.GetSymbolTable();
-    }
-
-    public static ArrayList<IrGlobalVariable> GetGlobalVariables() {
-        return irModule.GetIrGlobalVariables();
     }
 }

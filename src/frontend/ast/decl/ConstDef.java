@@ -66,21 +66,22 @@ public class ConstDef extends Node {
 
         int dimension = 0;
         ArrayList<Integer> depthList = new ArrayList<>();
+        ArrayList<Integer> initValueList = null;
         // 获取维度：判断是否有维度信息
         for (Node component : this.components) {
             component.Visit();
-            if (component instanceof ConstExp) {
+            if (component instanceof ConstExp constExp) {
                 dimension++;
+                // 计算维度信息
+                constExp.Compute();
+                depthList.add(constExp.GetValue());
+            } else if (component instanceof ConstInitVal constInitVal) {
+                initValueList = constInitVal.GetInitValueList();
             }
-            // TODO：计算维度信息
-            int depth = 1;
-            depthList.add(depth);
         }
-        // TODO：初始值的处理
-        int constValue = 0;
 
         SymbolType type = SymbolType.GetConstType(this.type, dimension);
-        this.symbol = new ValueSymbol(symbolName, type, dimension, depthList, constValue);
+        this.symbol = new ValueSymbol(symbolName, type, dimension, depthList, initValueList);
         SymbolManger.AddSymbol(this.symbol, line);
     }
 }

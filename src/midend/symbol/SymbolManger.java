@@ -17,6 +17,10 @@ public class SymbolManger {
         funcReturnType = "";
     }
 
+    public static boolean IsGlobal() {
+        return currentSymbolTable == rootSymbolTable;
+    }
+
     public static void AddSymbol(Symbol symbol, int line) {
         currentSymbolTable.AddSymbol(symbol, line);
     }

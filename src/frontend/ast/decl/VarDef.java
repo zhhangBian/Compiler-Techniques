@@ -69,12 +69,12 @@ public class VarDef extends Node {
         // 获取维度：判断是否有维度信息
         for (Node component : this.components) {
             component.Visit();
-            if (component instanceof ConstExp) {
+            if (component instanceof ConstExp constExp) {
                 dimension++;
+                // 计算维度信息
+                constExp.Compute();
+                depthList.add(constExp.GetValue());
             }
-            // TODO：计算维度信息
-            int depth = 1;
-            depthList.add(depth);
         }
 
         SymbolType type = SymbolType.GetVarType(this.type, dimension);

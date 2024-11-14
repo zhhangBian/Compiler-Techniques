@@ -1,6 +1,7 @@
 package frontend.ast.exp;
 
 import frontend.ast.SyntaxType;
+import frontend.ast.exp.recursion.AddExp;
 import frontend.ast.exp.recursion.LOrExp;
 
 public class Cond extends ComputeExp {
@@ -15,6 +16,11 @@ public class Cond extends ComputeExp {
 
     @Override
     public void Compute() {
-        throw new RuntimeException("not finished yet");
+        // 递归进行计算
+        LOrExp lorExp = (LOrExp) this.components.get(0);
+        lorExp.Compute();
+        // 设置相应的属性
+        this.isConst = lorExp.GetIfConst();
+        this.value = lorExp.GetValue();
     }
 }
