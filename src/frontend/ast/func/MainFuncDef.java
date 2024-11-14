@@ -8,9 +8,6 @@ import frontend.ast.Node;
 import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
-import midend.llvm.IrBuilder;
-import midend.llvm.type.IrBaseType;
-import midend.llvm.value.IrFunction;
 import midend.symbol.SymbolManger;
 import utils.Setting;
 
@@ -58,5 +55,14 @@ public class MainFuncDef extends Node {
         if (!block.LastIsReturnStmt()) {
             ErrorRecorder.AddError(new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
         }
+    }
+
+    public Block GetBlock() {
+        for (Node node : this.components) {
+            if (node instanceof Block block) {
+                return block;
+            }
+        }
+        throw new RuntimeException("no block in this func");
     }
 }

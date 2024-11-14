@@ -17,49 +17,47 @@ import midend.llvm.type.IrArrayType;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.type.IrType;
 import midend.llvm.value.IrGlobalValue;
-import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
-import midend.symbol.SymbolType;
 import midend.symbol.ValueSymbol;
 
 import java.util.ArrayList;
 
-public class FuncVisitDecl {
-    public void VisitDecl(Decl decl) {
+public class VisitorDecl {
+    public static void VisitDecl(Decl decl) {
         if (decl.IsConstDecl()) {
-            this.VisitConstDecl((ConstDecl) decl.GetDecl());
+            VisitConstDecl((ConstDecl) decl.GetDecl());
         } else {
-            this.VisitVarDecl((VarDecl) decl.GetDecl());
+            VisitVarDecl((VarDecl) decl.GetDecl());
         }
     }
 
-    private void VisitConstDecl(ConstDecl constDecl) {
+    private static void VisitConstDecl(ConstDecl constDecl) {
         ArrayList<ConstDef> constDefs = constDecl.GetConstDef();
         for (ConstDef constDef : constDefs) {
-            this.VisitConstDef(constDef);
+            VisitConstDef(constDef);
         }
     }
 
-    private void VisitVarDecl(VarDecl varDecl) {
+    private static void VisitVarDecl(VarDecl varDecl) {
         ArrayList<VarDef> varDefs = varDecl.GetVAeDefs();
         for (VarDef varDef : varDefs) {
-            this.VisitVarDef(varDef);
+            VisitVarDef(varDef);
         }
     }
 
-    private void VisitConstDef(ConstDef constDef) {
+    private static void VisitConstDef(ConstDef constDef) {
         ValueSymbol symbol =
             (ValueSymbol) SymbolManger.GetSymbol(constDef.GetIdent().GetSimpleName());
         // 当前在global层级
         if (SymbolManger.IsGlobal()) {
             IrGlobalValue irGlobalValue = IrBuilder.GetNewIrGlobalValue(
-                this.GetValueType(symbol), this.GetValueConstant(symbol));
+                GetValueType(symbol), GetValueConstant(symbol));
             symbol.SetIrValue(irGlobalValue);
         }
         // 局部变量
         else {
             AllocateInstr allocateInstr =
-                new AllocateInstr(IrBuilder.GetFunctionVarName(), this.GetValueType(symbol));
+                new AllocateInstr(IrBuilder.GetFunctionVarName(), GetValueType(symbol));
             symbol.SetIrValue(allocateInstr);
             IrBuilder.AddInstr(allocateInstr);
 
@@ -67,7 +65,8 @@ public class FuncVisitDecl {
             // 如果不是数组，添加存储指令：建立空间、赋初值
             if (symbol.GetDimension() == 0) {
                 StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(),
-                    this.GetValueConstant(symbol), allocateInstr);
+                    GetValueConstant(symbol), allocateInstr);
+                IrBuilder.AddInstr(storeInstr);
             } else {
                 // 生成一系列GEP+store指令，将初始值存入常量
                 int offset = 0;
@@ -78,24 +77,25 @@ public class FuncVisitDecl {
                     // 将初始值存储到偏移量中
                     StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(),
                         new IrConstantInt(initValue), gepInstr);
+                    IrBuilder.AddInstr(storeInstr);
                 }
             }
         }
     }
 
-    private void VisitVarDef(VarDef varDef) {
+    private static void VisitVarDef(VarDef varDef) {
         ValueSymbol symbol =
             (ValueSymbol) SymbolManger.GetSymbol(varDef.GetIdent().GetSimpleName());
         // 当前在global层级
         if (SymbolManger.IsGlobal()) {
             IrGlobalValue irGlobalValue = IrBuilder.GetNewIrGlobalValue(
-                this.GetValueType(symbol), this.GetValueConstant(symbol));
+                GetValueType(symbol), GetValueConstant(symbol));
             symbol.SetIrValue(irGlobalValue);
         }
         // 局部变量
         else {
             AllocateInstr allocateInstr =
-                new AllocateInstr(IrBuilder.GetFunctionVarName(), this.GetValueType(symbol));
+                new AllocateInstr(IrBuilder.GetFunctionVarName(), GetValueType(symbol));
             symbol.SetIrValue(allocateInstr);
             IrBuilder.AddInstr(allocateInstr);
 
@@ -103,7 +103,8 @@ public class FuncVisitDecl {
             // 如果不是数组，添加存储指令：建立空间、赋初值
             if (symbol.GetDimension() == 0) {
                 StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(),
-                    this.GetValueConstant(symbol), allocateInstr);
+                    GetValueConstant(symbol), allocateInstr);
+                IrBuilder.AddInstr(storeInstr);
             } else {
                 // 生成一系列GEP+store指令，将初始值存入常量
                 int offset = 0;
@@ -114,12 +115,13 @@ public class FuncVisitDecl {
                     // 将初始值存储到偏移量中
                     StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(),
                         new IrConstantInt(initValue), gepInstr);
+                    IrBuilder.AddInstr(storeInstr);
                 }
             }
         }
     }
 
-    private IrType GetValueType(ValueSymbol symbol) {
+    private static IrType GetValueType(ValueSymbol symbol) {
         return switch (symbol.GetSymbolType()) {
             case CHAR, CONST_CHAR -> IrBaseType.INT8;
             case INT, CONST_INT -> IrBaseType.INT32;
@@ -132,17 +134,17 @@ public class FuncVisitDecl {
     }
 
     // TODO：初始化为字符串类型
-    private IrConstant GetValueConstant(ValueSymbol symbol) {
+    private static IrConstant GetValueConstant(ValueSymbol symbol) {
         ArrayList<Integer> initValueList = symbol.GetInitValueList();
         // 非数组类型
         if (symbol.GetDimension() == 0) {
             int initValue = initValueList.get(0);
-            return this.GetValueType(symbol).equals(IrBaseType.INT8) ?
+            return GetValueType(symbol).equals(IrBaseType.INT8) ?
                 new IrConstantChar(initValue) : new IrConstantInt(initValue);
         }
         // 数组类型
         else {
-            return new IrConstantArray(symbol.GetTotalDepth(), this.GetValueType(symbol),
+            return new IrConstantArray(symbol.GetTotalDepth(), GetValueType(symbol),
                 symbol.GetSymbolName(), initValueList);
         }
     }

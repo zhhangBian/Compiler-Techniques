@@ -17,6 +17,10 @@ public class IrValue {
         this.usedList = new ArrayList<>();
     }
 
+    public IrType GetIrType() {
+        return this.irType;
+    }
+
     public void AddUse(IrUse use) {
         this.usedList.add(use);
     }

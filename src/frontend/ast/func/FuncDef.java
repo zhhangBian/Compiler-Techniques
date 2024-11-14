@@ -11,7 +11,6 @@ import frontend.ast.token.Ident;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 import midend.symbol.FuncSymbol;
-import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
 import utils.Setting;
@@ -23,7 +22,7 @@ public class FuncDef extends Node {
         super(SyntaxType.FUNC_DEF);
     }
 
-    public Symbol GetSymbol() {
+    public FuncSymbol GetSymbol() {
         return this.symbol;
     }
 
@@ -90,5 +89,14 @@ public class FuncDef extends Node {
                 ErrorRecorder.AddError(new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
             }
         }
+    }
+
+    public Block GetBlock() {
+        for (Node node : this.components) {
+            if (node instanceof Block block) {
+                return block;
+            }
+        }
+        throw new RuntimeException("no block in this func");
     }
 }

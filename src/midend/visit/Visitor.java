@@ -4,9 +4,6 @@ import frontend.ast.CompUnit;
 import frontend.ast.decl.Decl;
 import frontend.ast.func.FuncDef;
 import frontend.ast.func.MainFuncDef;
-import midend.llvm.IrBuilder;
-import midend.llvm.type.IrBaseType;
-import midend.llvm.value.IrFunction;
 
 import java.util.ArrayList;
 
@@ -22,10 +19,14 @@ public class Visitor {
         ArrayList<FuncDef> funcDefs = this.compUnit.GetFuncDefs();
         MainFuncDef mainFuncDef = this.compUnit.GetMainFuncDef();
 
-        FuncVisitDecl funcVisitDecl = new FuncVisitDecl();
         for (Decl decl : decls) {
-            funcVisitDecl.VisitDecl(decl);
+            VisitorDecl.VisitDecl(decl);
         }
 
+        for (FuncDef funcDef : funcDefs) {
+            VisitorFuncDef.VisitFuncDef(funcDef);
+        }
+
+        VisitorFuncDef.VisitMainFuncDef(mainFuncDef);
     }
 }
