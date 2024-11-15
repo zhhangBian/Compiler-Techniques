@@ -2,6 +2,7 @@ package midend.llvm.instr;
 
 public enum InstrType {
     ALU,
+    CMP,
     EXTEND,
 
     ALLOCATE,

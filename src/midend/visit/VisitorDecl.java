@@ -59,14 +59,12 @@ public class VisitorDecl {
             AllocateInstr allocateInstr =
                 new AllocateInstr(IrBuilder.GetFunctionVarName(), GetValueType(symbol));
             symbol.SetIrValue(allocateInstr);
-            IrBuilder.AddInstr(allocateInstr);
 
             ArrayList<Integer> initValueList = symbol.GetInitValueList();
             // 如果不是数组，添加存储指令：建立空间、赋初值
             if (symbol.GetDimension() == 0) {
                 StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(),
                     GetValueConstant(symbol), allocateInstr);
-                IrBuilder.AddInstr(storeInstr);
             } else {
                 // 生成一系列GEP+store指令，将初始值存入常量
                 int offset = 0;
@@ -77,7 +75,6 @@ public class VisitorDecl {
                     // 将初始值存储到偏移量中
                     StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(),
                         new IrConstantInt(initValue), gepInstr);
-                    IrBuilder.AddInstr(storeInstr);
                 }
             }
         }
@@ -97,14 +94,12 @@ public class VisitorDecl {
             AllocateInstr allocateInstr =
                 new AllocateInstr(IrBuilder.GetFunctionVarName(), GetValueType(symbol));
             symbol.SetIrValue(allocateInstr);
-            IrBuilder.AddInstr(allocateInstr);
 
             ArrayList<Integer> initValueList = symbol.GetInitValueList();
             // 如果不是数组，添加存储指令：建立空间、赋初值
             if (symbol.GetDimension() == 0) {
                 StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(),
                     GetValueConstant(symbol), allocateInstr);
-                IrBuilder.AddInstr(storeInstr);
             } else {
                 // 生成一系列GEP+store指令，将初始值存入常量
                 int offset = 0;
@@ -115,7 +110,6 @@ public class VisitorDecl {
                     // 将初始值存储到偏移量中
                     StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(),
                         new IrConstantInt(initValue), gepInstr);
-                    IrBuilder.AddInstr(storeInstr);
                 }
             }
         }

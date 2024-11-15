@@ -56,4 +56,36 @@ public class PrimaryExp extends ComputeExp {
             this.value = exp.GetValue();
         }
     }
+
+    public boolean IsExpType() {
+        return this.components.get(0) instanceof TokenNode;
+    }
+
+    public Exp GetExp() {
+        return (Exp) this.components.get(1);
+    }
+
+    public boolean IsLValType() {
+        return this.components.get(0) instanceof LVal;
+    }
+
+    public LVal GetLVal() {
+        return (LVal) this.components.get(0);
+    }
+
+    public boolean IsNumberType() {
+        return this.components.get(0) instanceof Number;
+    }
+
+    public Number GetNumber() {
+        return (Number) this.components.get(0);
+    }
+
+    public boolean IsCharacterType() {
+        return this.components.get(0) instanceof Char;
+    }
+
+    public Char GetCharacter() {
+        return (Char) this.components.get(0);
+    }
 }

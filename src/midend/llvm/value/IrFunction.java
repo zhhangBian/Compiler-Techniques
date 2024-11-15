@@ -53,7 +53,6 @@ public class IrFunction extends IrValue {
                 returnValue = new IrConstantInt(0);
             }
             ReturnInstr returnInstr = new ReturnInstr(IrBuilder.GetFunctionVarName(), returnValue);
-            IrBuilder.AddInstr(returnInstr);
         }
 
     }

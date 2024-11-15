@@ -23,4 +23,8 @@ public class Exp extends ComputeExp {
         this.isConst = addExp.GetIfConst();
         this.value = addExp.GetValue();
     }
+
+    public AddExp GetAddExp() {
+        return (AddExp) this.components.get(0);
+    }
 }

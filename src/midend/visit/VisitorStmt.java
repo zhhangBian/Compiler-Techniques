@@ -58,7 +58,6 @@ public class VisitorStmt {
         IrValue irLVal = VisitorLVal.VisitLVal(lval);
         IrValue irExp = VisitorExp.VisitExp(exp);
         StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(), irExp, irLVal);
-        IrBuilder.AddInstr(storeInstr);
     }
 
     private static void VisitGetIntStmt(Stmt stmt) {
@@ -66,7 +65,6 @@ public class VisitorStmt {
         IrValue irLVal = VisitorLVal.VisitLVal(lval);
         GetIntInstr getIntInstr = new GetIntInstr(IrBuilder.GetFunctionVarName());
         StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(), irLVal, getIntInstr);
-        IrBuilder.AddInstr(storeInstr);
     }
 
     private static void VisitGetCharStmt(Stmt stmt) {
@@ -74,7 +72,6 @@ public class VisitorStmt {
         IrValue irLVal = VisitorLVal.VisitLVal(lval);
         GetCharInstr getIntInstr = new GetCharInstr(IrBuilder.GetFunctionVarName());
         StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(), irLVal, getIntInstr);
-        IrBuilder.AddInstr(storeInstr);
     }
 
     private static void VisitPrintStmt(Stmt stmt) {
@@ -92,7 +89,6 @@ public class VisitorStmt {
                         new IrConstantString(IrBuilder.GetFunctionVarName(), builder.toString());
                     PrintStrInstr printStrInstr =
                         new PrintStrInstr(IrBuilder.GetFunctionVarName(), irConstantString);
-                    IrBuilder.AddInstr(printStrInstr);
                     builder.setLength(0);
                 }
 
@@ -100,14 +96,12 @@ public class VisitorStmt {
                     IrValue irValue = VisitorExp.VisitExp(expList.get(expCnt++));
                     PrintIntInstr printIntInstr =
                         new PrintIntInstr(IrBuilder.GetFunctionVarName(), irValue);
-                    IrBuilder.AddInstr(printIntInstr);
 
                     i++;
                 } else if (formatString.charAt(i + 1) == 'c') {
                     IrValue irValue = VisitorExp.VisitExp(expList.get(expCnt++));
                     PrintCharInstr printCharInstr =
                         new PrintCharInstr(IrBuilder.GetFunctionVarName(), irValue);
-                    IrBuilder.AddInstr(printCharInstr);
 
                     i++;
                 }
@@ -139,7 +133,6 @@ public class VisitorStmt {
         }
 
         ReturnInstr returnInstr = new ReturnInstr(IrBuilder.GetFunctionVarName(), irReturn);
-        IrBuilder.AddInstr(returnInstr);
     }
 
     private static void VisitForStmt(Stmt stmt) {

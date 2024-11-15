@@ -13,7 +13,7 @@ public class StringConst extends BasicTokenNode {
     public void Parse() {
         this.token = GetCurrentToken();
         Read();
-        // 去除首位的引号
+        // 去除首尾的引号
         this.string = this.token.GetStringValue();
         this.string = this.string.substring(1, this.string.length() - 1);
     }

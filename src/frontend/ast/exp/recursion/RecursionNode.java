@@ -97,4 +97,8 @@ public abstract class RecursionNode extends ComputeExp {
             default -> throw new RuntimeException("invalid op");
         };
     }
+
+    public ArrayList<Node> GetNodeList() {
+        return this.nodeList;
+    }
 }

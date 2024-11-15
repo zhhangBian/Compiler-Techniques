@@ -34,7 +34,6 @@ public class VisitorFuncDef {
 
             AllocateInstr allocateInstr = new AllocateInstr(IrBuilder.GetFunctionVarName(),
                 irParameter.GetIrType());
-            IrBuilder.AddInstr(allocateInstr);
         }
 
         // 创建Block的IR

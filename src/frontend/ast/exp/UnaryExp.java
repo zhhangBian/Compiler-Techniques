@@ -190,4 +190,43 @@ public class UnaryExp extends ComputeExp {
             default -> throw new RuntimeException("Invalid UnaryOp");
         };
     }
+
+    public boolean IsPrimaryType() {
+        return this.components.get(0) instanceof PrimaryExp;
+    }
+
+    public PrimaryExp GetPrimaryExp() {
+        return (PrimaryExp) this.components.get(0);
+    }
+
+    public boolean IsIdentType() {
+        return this.components.get(0) instanceof Ident;
+    }
+
+    public Ident GetIdent() {
+        return (Ident) this.components.get(0);
+    }
+
+    public ArrayList<Exp> GetRealParamList() {
+        FuncRealParamS funcRealParamS = null;
+        for (Node component : this.components) {
+            if (component instanceof FuncRealParamS funcRealParam) {
+                funcRealParamS = funcRealParam;
+                break;
+            }
+        }
+        return funcRealParamS == null ? new ArrayList<>() : funcRealParamS.GetRealParamList();
+    }
+
+    public boolean IsUnaryType() {
+        return this.components.get(0) instanceof UnaryOp;
+    }
+
+    public UnaryOp GetUnaryOp() {
+        return (UnaryOp) this.components.get(0);
+    }
+
+    public UnaryExp GetUnaryExp() {
+        return (UnaryExp) this.components.get(1);
+    }
 }
