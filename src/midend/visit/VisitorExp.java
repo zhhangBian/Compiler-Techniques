@@ -86,7 +86,7 @@ public class VisitorExp {
         if (primaryExp.IsExpType()) {
             return VisitExp(primaryExp.GetExp());
         } else if (primaryExp.IsLValType()) {
-            return VisitorLVal.VisitLVal(primaryExp.GetLVal());
+            return VisitorLVal.VisitLVal(primaryExp.GetLVal(), false);
         } else if (primaryExp.IsNumberType()) {
             return new IrConstantInt(primaryExp.GetNumber().GetValue());
         } else if (primaryExp.IsCharacterType()) {

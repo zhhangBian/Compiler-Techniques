@@ -21,4 +21,13 @@ public class StoreInstr extends Instr {
     public IrValue GetToValue() {
         return this.useValueList.get(1);
     }
+
+    @Override
+    public String toString() {
+        IrValue fromValue = this.GetFromValue();
+        IrValue toValue = this.GetToValue();
+        return "store " +
+            fromValue.GetIrType() + " " + fromValue.GetIrName() + ", " +
+            toValue.GetIrType() + " " + toValue.GetIrName();
+    }
 }

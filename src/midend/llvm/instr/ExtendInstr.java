@@ -11,4 +11,15 @@ public class ExtendInstr extends Instr {
         this.targetType = targetType;
         this.AddUseValue(originValue);
     }
+
+    @Override
+    public String toString() {
+        IrValue originValue = this.GetOriginValue();
+        return "zext " + originValue.GetIrType() + " " +
+            originValue.GetIrName() + " to " + this.targetType;
+    }
+
+    private IrValue GetOriginValue() {
+        return this.useValueList.get(0);
+    }
 }

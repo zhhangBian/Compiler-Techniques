@@ -7,10 +7,10 @@ public class CompareInstr extends Instr {
     public enum CompareOp {
         EQ,
         NE,
-        GT,
-        GE,
-        LT,
-        LE
+        SGT,
+        SGE,
+        SLT,
+        SLE
     }
 
     private final CompareOp compareOp;
@@ -22,15 +22,32 @@ public class CompareInstr extends Instr {
         this.AddUseValue(valueR);
     }
 
+    @Override
+    public String toString() {
+        return this.GetValueL().GetIrName() + " " +
+            compareOp.toString().toLowerCase() + " " +
+            this.GetValueR().GetIrName();
+    }
+
     private CompareOp GetCompareOp(String op) {
         return switch (op) {
             case "==" -> CompareOp.EQ;
             case "!=" -> CompareOp.NE;
-            case ">=" -> CompareOp.GE;
-            case ">" -> CompareOp.GT;
-            case "<=" -> CompareOp.LE;
-            case "<" -> CompareOp.LT;
+            case ">=" -> CompareOp.SGE;
+            case ">" -> CompareOp.SGT;
+            case "<=" -> CompareOp.SLE;
+            case "<" -> CompareOp.SLT;
             default -> throw new RuntimeException("illegal compare op");
         };
     }
+
+    private IrValue GetValueL() {
+        return this.useValueList.get(0);
+    }
+
+    private IrValue GetValueR() {
+        return this.useValueList.get(1);
+    }
+
+
 }

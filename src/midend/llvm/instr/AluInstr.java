@@ -10,8 +10,8 @@ public class AluInstr extends Instr {
         AND,
         OR,
         MUL,
-        DIV,
-        MOD
+        SDIV,
+        SREM
     }
 
     private final AluType aluType;
@@ -23,24 +23,35 @@ public class AluInstr extends Instr {
         this.AddUseValue(valueR);
     }
 
-    public AluInstr(String name, AluType aluType, IrValue valueL, IrValue valueR) {
-        super(IrBaseType.INT32, name, InstrType.ALU);
-        this.aluType = aluType;
-        this.AddUseValue(valueL);
-        this.AddUseValue(valueR);
-    }
-
     public AluType GetAluType() {
         return this.aluType;
     }
+
+    @Override
+    public String toString() {
+        IrValue irValueL = this.GetValueL();
+        IrValue irValueR = this.GetValueR();
+
+        return this.irName + " = " + this.aluType.toString().toLowerCase() +
+            " i32 " + irValueL.GetIrName() + ", " + irValueR.GetIrName();
+    }
+
+    private IrValue GetValueL() {
+        return this.useValueList.get(0);
+    }
+
+    private IrValue GetValueR() {
+        return this.useValueList.get(1);
+    }
+
 
     private AluType GetAluType(String aluOp) {
         return switch (aluOp) {
             case "+" -> AluType.ADD;
             case "-" -> AluType.SUB;
             case "*" -> AluType.MUL;
-            case "/" -> AluType.DIV;
-            case "%" -> AluType.MOD;
+            case "/" -> AluType.SDIV;
+            case "%" -> AluType.SREM;
             case "&", "&&" -> AluType.AND;
             case "|", "||" -> AluType.OR;
             default -> throw new RuntimeException("illegal alu op");

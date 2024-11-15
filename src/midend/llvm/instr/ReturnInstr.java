@@ -14,4 +14,12 @@ public class ReturnInstr extends Instr {
     public IrValue GetReturnValue() {
         return this.useValueList.isEmpty() ? null : this.useValueList.get(0);
     }
+
+    @Override
+    public String toString() {
+        IrValue returnValue = this.GetReturnValue();
+
+        return returnValue == null ? "ret void" :
+            "ret " + returnValue.GetIrType() + " " + returnValue.GetIrName();
+    }
 }

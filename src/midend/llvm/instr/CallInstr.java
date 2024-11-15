@@ -22,4 +22,19 @@ public class CallInstr extends Instr {
     public ArrayList<IrValue> GetParamList() {
         return (ArrayList<IrValue>) this.useValueList.subList(1, this.useValueList.size());
     }
+
+    @Override
+    public String toString() {
+        IrFunction targetFunction = this.GetTargetFunction();
+        ArrayList<String> paramInfo = new ArrayList<>();
+        this.GetParamList().stream()
+            .map(param -> param.GetIrType() + " " + param.GetIrName())
+            .forEach(paramInfo::add);
+
+        return (this.irType.IsVoidType() ? "call void " : "call i32 ") +
+            targetFunction.GetIrName() +
+            "(" +
+            String.join(", ", paramInfo) +
+            ")";
+    }
 }

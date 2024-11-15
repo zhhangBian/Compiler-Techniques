@@ -55,21 +55,21 @@ public class VisitorStmt {
         LVal lval = stmt.GetLVal();
         Exp exp = stmt.GetAssignStmtExp();
 
-        IrValue irLVal = VisitorLVal.VisitLVal(lval);
+        IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
         IrValue irExp = VisitorExp.VisitExp(exp);
         StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(), irExp, irLVal);
     }
 
     private static void VisitGetIntStmt(Stmt stmt) {
         LVal lval = stmt.GetLVal();
-        IrValue irLVal = VisitorLVal.VisitLVal(lval);
+        IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
         GetIntInstr getIntInstr = new GetIntInstr(IrBuilder.GetFunctionVarName());
         StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(), irLVal, getIntInstr);
     }
 
     private static void VisitGetCharStmt(Stmt stmt) {
         LVal lval = stmt.GetLVal();
-        IrValue irLVal = VisitorLVal.VisitLVal(lval);
+        IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
         GetCharInstr getIntInstr = new GetCharInstr(IrBuilder.GetFunctionVarName());
         StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(), irLVal, getIntInstr);
     }

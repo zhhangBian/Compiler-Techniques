@@ -5,7 +5,7 @@ import midend.llvm.type.IrType;
 import midend.llvm.use.IrUser;
 
 // instr是一种User：使用其他的Value作为参数
-public class Instr extends IrUser {
+public abstract class Instr extends IrUser {
     private final InstrType instrType;
 
     public Instr(IrType irType, String name, InstrType instrType) {
@@ -18,4 +18,7 @@ public class Instr extends IrUser {
     public InstrType GetInstrType() {
         return this.instrType;
     }
+
+    @Override
+    public abstract String toString();
 }

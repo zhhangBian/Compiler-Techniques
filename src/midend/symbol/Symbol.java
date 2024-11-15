@@ -34,6 +34,10 @@ public class Symbol {
         return this.irValue;
     }
 
+    public boolean IsConstSymbol() {
+        return this.symbolType.IsConstType();
+    }
+
     @Override
     public String toString() {
         return symbolName + " " + symbolType.toString();
