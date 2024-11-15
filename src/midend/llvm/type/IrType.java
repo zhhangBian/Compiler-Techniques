@@ -35,4 +35,6 @@ public abstract class IrType {
     public boolean IsFunctionType() {
         return this instanceof IrFunctionType;
     }
+
+    public abstract String toString();
 }

@@ -4,21 +4,33 @@ import midend.llvm.type.IrArrayType;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.type.IrPointerType;
 
-public class IrConstantString extends IrConstant {
-    private final String value;
+import java.util.ArrayList;
 
-    public IrConstantString(String name, String value) {
-        super(new IrPointerType(new IrArrayType(value.length() + 1, IrBaseType.INT8)), name);
-        this.value = value;
+public class IrConstantString extends IrConstant {
+    private final String stringValue;
+
+    public IrConstantString(String name, String stringValue) {
+        super(new IrPointerType(
+            new IrArrayType(stringValue.length() + 1, IrBaseType.INT8)), name);
+        this.stringValue = stringValue;
     }
 
-    public String GetValue() {
-        return this.value;
+    public String GetStringValue() {
+        return this.stringValue;
     }
 
     @Override
     public String toString() {
         return this.irName + " = constant " +
-            ((IrPointerType) this.irType).GetTargetType() + " c\"" + this.value + "\\00\"";
+            ((IrPointerType) this.irType).GetTargetType() +
+            " c\"" + this.stringValue + "\\00\"";
+    }
+
+    public static String ConvertArrayToString(ArrayList<Integer> rawList) {
+        StringBuilder builder = new StringBuilder();
+        for (Integer num : rawList) {
+            builder.append((char) num.intValue());
+        }
+        return builder.toString();
     }
 }

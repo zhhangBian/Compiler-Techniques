@@ -29,7 +29,7 @@ public class VisitorLVal {
         if (dimension == 0) {
             return symbol.GetIrValue();
         } else {
-            return new GepInstr(IrBuilder.GetFunctionVarName(),
+            return new GepInstr(IrBuilder.GetLocalVarName(),
                 symbol.GetIrValue(), VisitorExp.VisitExp(expList.get(0)));
         }
     }
@@ -44,13 +44,13 @@ public class VisitorLVal {
         // TODO：常量优化
         // 不是数组
         if (dimension == 0) {
-            return new LoadInstr(IrBuilder.GetFunctionVarName(), symbol.GetIrValue());
+            return new LoadInstr(IrBuilder.GetLocalVarName(), symbol.GetIrValue());
         }
         // 是数组
         else {
-            GepInstr gepInstr = new GepInstr(IrBuilder.GetFunctionVarName(),
+            GepInstr gepInstr = new GepInstr(IrBuilder.GetLocalVarName(),
                 symbol.GetIrValue(), VisitorExp.VisitExp(expList.get(0)));
-            LoadInstr loadInstr = new LoadInstr(IrBuilder.GetFunctionVarName(), gepInstr);
+            LoadInstr loadInstr = new LoadInstr(IrBuilder.GetLocalVarName(), gepInstr);
             return loadInstr;
         }
     }

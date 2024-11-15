@@ -12,17 +12,16 @@ public class PrintStrInstr extends IoInstr {
         this.irConstantString = irConstantString;
     }
 
+    public static String GetDeclare() {
+        return "declare void @putstr(i8*)";
+    }
+
     @Override
-    public String GetDeclare() {
+    public String toString() {
         IrPointerType irPointerType = (IrPointerType) irConstantString.GetIrType();
         return "call void @putstr(i8* getelementptr inbounds (" +
             irPointerType.GetTargetType() + ", " +
             irPointerType + " " +
             irConstantString.GetIrName() + ", i64 0, i64 0))";
-    }
-
-    @Override
-    public String toString() {
-        return null;
     }
 }

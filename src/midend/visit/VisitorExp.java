@@ -42,7 +42,7 @@ public class VisitorExp {
             MulExp mulExp2 = (MulExp) nodeList.get(index++);
             irValue2 = VisitMulExp(mulExp2);
 
-            AluInstr aluInstr = new AluInstr(IrBuilder.GetFunctionVarName(),
+            AluInstr aluInstr = new AluInstr(IrBuilder.GetLocalVarName(),
                 op.GetSimpleName(), irValue1, irValue2);
             irValue1 = aluInstr;
         }
@@ -62,7 +62,7 @@ public class VisitorExp {
             UnaryExp unaryExp2 = (UnaryExp) nodeList.get(index++);
             irValue2 = VisitUnaryExp(unaryExp2);
 
-            AluInstr aluInstr = new AluInstr(IrBuilder.GetFunctionVarName(),
+            AluInstr aluInstr = new AluInstr(IrBuilder.GetLocalVarName(),
                 op.GetSimpleName(), irValue1, irValue2);
             irValue1 = aluInstr;
         }
@@ -101,7 +101,7 @@ public class VisitorExp {
         FuncSymbol funcSymbol = (FuncSymbol) SymbolManger.GetSymbol(identName);
         IrFunction irFunction = (IrFunction) funcSymbol.GetIrValue();
 
-        CallInstr callInstr = new CallInstr(IrBuilder.GetFunctionVarName(),
+        CallInstr callInstr = new CallInstr(IrBuilder.GetLocalVarName(),
             irFunction, realParamList);
         return callInstr;
     }
@@ -115,11 +115,11 @@ public class VisitorExp {
             case "+":
                 return irValue;
             case "-":
-                return new AluInstr(IrBuilder.GetFunctionVarName(), op, constantZero, irValue);
+                return new AluInstr(IrBuilder.GetLocalVarName(), op, constantZero, irValue);
             case "!":
-                CompareInstr compareInstr = new CompareInstr(IrBuilder.GetFunctionVarName(),
+                CompareInstr compareInstr = new CompareInstr(IrBuilder.GetLocalVarName(),
                     "==", constantZero, irValue);
-                ExtendInstr extendInstr = new ExtendInstr(IrBuilder.GetFunctionVarName(),
+                ExtendInstr extendInstr = new ExtendInstr(IrBuilder.GetLocalVarName(),
                     compareInstr, IrBaseType.INT32);
                 return extendInstr;
             default:

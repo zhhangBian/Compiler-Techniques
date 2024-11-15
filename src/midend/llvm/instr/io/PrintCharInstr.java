@@ -13,9 +13,8 @@ public class PrintCharInstr extends IoInstr {
         return this.useValueList.get(0);
     }
 
-    @Override
-    public String GetDeclare() {
-        return "declare void @putchar(i8)";
+    public static String GetDeclare() {
+        return "declare void @putchar(i32)";
     }
 
     @Override

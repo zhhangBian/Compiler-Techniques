@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class VisitorFuncDef {
     public static void VisitFuncDef(FuncDef funcDef) {
         FuncSymbol funcSymbol = funcDef.GetSymbol();
-        IrFunction irFunction = IrBuilder.GetNewFunctionIr(funcSymbol.GetSymbolName(),
+        final IrFunction irFunction = IrBuilder.GetNewFunctionIr(funcSymbol.GetSymbolName(),
             GetIrType(funcSymbol.GetSymbolType()));
 
         SymbolManger.GoToSonSymbolTable();
@@ -28,11 +28,12 @@ public class VisitorFuncDef {
         // 创建参数的IR
         ArrayList<Symbol> paramSymbolList = funcSymbol.GetFormalParamList();
         for (Symbol symbol : paramSymbolList) {
-            IrParameter irParameter = new IrParameter(GetIrType(symbol.GetSymbolType()),
-                IrBuilder.GetParamName(symbol.GetSymbolName()), irFunction);
+            IrParameter irParameter = new IrParameter(
+                GetIrType(symbol.GetSymbolType()),
+                IrBuilder.GetParamName(symbol.GetSymbolName()));
             symbol.SetIrValue(irParameter);
 
-            AllocateInstr allocateInstr = new AllocateInstr(IrBuilder.GetFunctionVarName(),
+            AllocateInstr allocateInstr = new AllocateInstr(IrBuilder.GetLocalVarName(),
                 irParameter.GetIrType());
         }
 

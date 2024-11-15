@@ -48,6 +48,4 @@ public class CompareInstr extends Instr {
     private IrValue GetValueR() {
         return this.useValueList.get(1);
     }
-
-
 }

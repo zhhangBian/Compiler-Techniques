@@ -13,4 +13,9 @@ public class IrConstantChar extends IrConstant {
     public int GetValue() {
         return this.value;
     }
+
+    @Override
+    public String toString() {
+        return "i8 " + this.value;
+    }
 }

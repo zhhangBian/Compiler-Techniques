@@ -5,4 +5,9 @@ public class IrFunctionType extends IrType {
 
     private IrFunctionType() {
     }
+
+    @Override
+    public String toString() {
+        return "";
+    }
 }

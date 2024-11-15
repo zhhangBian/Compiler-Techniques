@@ -8,6 +8,7 @@ import midend.llvm.type.IrFunctionType;
 import midend.llvm.type.IrType;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class IrFunction extends IrValue {
     private final IrType returnType;
@@ -52,8 +53,24 @@ public class IrFunction extends IrValue {
             } else if (this.returnType.IsInt32Type()) {
                 returnValue = new IrConstantInt(0);
             }
-            ReturnInstr returnInstr = new ReturnInstr(IrBuilder.GetFunctionVarName(), returnValue);
+            ReturnInstr returnInstr = new ReturnInstr(IrBuilder.GetLocalVarName(), returnValue);
         }
+    }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        // 函数声明
+        builder.append("define dso_local " + this.returnType + " " + this.irName);
+        // 参数声明
+        builder.append("(");
+        builder.append(this.parameterList.stream().map(IrParameter::toString).
+            collect(Collectors.joining(", ")));
+        builder.append(") {\n");
+        // 语句声明
+        builder.append(this.basicBlockList.stream().map(IrBasicBlock::toString).
+            collect(Collectors.joining("\n")));
+        builder.append("\n}");
+        return builder.toString();
     }
 }

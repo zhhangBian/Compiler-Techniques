@@ -5,4 +5,9 @@ public class IrBasicBlockType extends IrType {
 
     private IrBasicBlockType() {
     }
+
+    @Override
+    public String toString() {
+        return "";
+    }
 }

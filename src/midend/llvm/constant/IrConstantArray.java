@@ -7,19 +7,39 @@ import java.util.ArrayList;
 
 public class IrConstantArray extends IrConstant {
     private final ArrayList<Integer> valueList;
+    private final int arraySize;
 
-    public IrConstantArray(int size, IrType elementTyper, String irName) {
-        super(new IrArrayType(size, elementTyper), irName);
-        this.valueList = new ArrayList<>();
-    }
-
-    public IrConstantArray(int size, IrType elementType, String irName,
+    public IrConstantArray(int arraySize, IrType elementType, String irName,
                            ArrayList<Integer> initValues) {
-        super(new IrArrayType(size, elementType), irName);
-        this.valueList = new ArrayList<>(initValues);
+        super(new IrArrayType(arraySize, elementType), irName);
+        this.valueList = initValues == null ? new ArrayList<>() : new ArrayList<>(initValues);
+        this.arraySize = arraySize;
     }
 
     public ArrayList<Integer> GetValueList() {
         return this.valueList;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(this.irType);
+        builder.append(" ");
+
+        if (this.valueList.isEmpty()) {
+            builder.append("zeroinitializer");
+        } else {
+            builder.append("[");
+            for (int i = 0; i < this.valueList.size() - 1; i++) {
+                builder.append(this.valueList.get(i));
+                builder.append(", ");
+            }
+            builder.append(this.valueList.get(this.valueList.size() - 1));
+
+            builder.append(", 0".repeat(Math.max(0, this.arraySize - this.valueList.size())));
+            builder.append("]");
+        }
+
+        return builder.toString();
     }
 }

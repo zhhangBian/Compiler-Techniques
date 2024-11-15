@@ -13,8 +13,7 @@ public class PrintIntInstr extends IoInstr {
         return this.useValueList.get(0);
     }
 
-    @Override
-    public String GetDeclare() {
+    public static String GetDeclare() {
         return "declare void @putint(i32)";
     }
 

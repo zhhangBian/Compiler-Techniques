@@ -5,20 +5,15 @@ import java.util.ArrayList;
 public class ValueSymbol extends Symbol {
     private final int dimension;
     private final ArrayList<Integer> depthList;
-    private ArrayList<Integer> initValueList;
+    private final ArrayList<Integer> initValueList;
+    private boolean isGlobal;
 
     public ValueSymbol(String symbolName, SymbolType symbolType) {
         super(symbolName, symbolType);
         this.dimension = 0;
         this.depthList = new ArrayList<>();
         this.initValueList = new ArrayList<>();
-    }
-
-    public ValueSymbol(String symbolName, SymbolType symbolType, ArrayList<Integer> initValueList) {
-        super(symbolName, symbolType);
-        this.dimension = 0;
-        this.depthList = new ArrayList<>();
-        this.initValueList = initValueList;
+        this.isGlobal = false;
     }
 
     public ValueSymbol(String symbolName, SymbolType symbolType,
@@ -27,6 +22,7 @@ public class ValueSymbol extends Symbol {
         this.dimension = dimension;
         this.depthList = depthList;
         this.initValueList = new ArrayList<>();
+        this.isGlobal = false;
     }
 
     public ValueSymbol(String symbolName, SymbolType symbolType, int dimension,
@@ -34,7 +30,16 @@ public class ValueSymbol extends Symbol {
         super(symbolName, symbolType);
         this.dimension = dimension;
         this.depthList = depthList;
-        this.initValueList = initValueList;
+        this.initValueList = initValueList == null ? new ArrayList<>() : initValueList;
+        this.isGlobal = false;
+    }
+
+    public void SetIsGlobal(boolean isGlobal) {
+        this.isGlobal = isGlobal;
+    }
+
+    public boolean IsGlobal() {
+        return this.isGlobal;
     }
 
     public int GetDimension() {

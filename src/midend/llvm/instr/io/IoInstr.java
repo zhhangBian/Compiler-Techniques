@@ -9,8 +9,6 @@ public abstract class IoInstr extends Instr {
         super(irType, name, InstrType.IO);
     }
 
-    public abstract String GetDeclare();
-
     @Override
     public abstract String toString();
 }

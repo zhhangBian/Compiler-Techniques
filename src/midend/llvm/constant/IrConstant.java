@@ -7,4 +7,7 @@ public abstract class IrConstant extends IrValue {
     public IrConstant(IrType irType, String irName) {
         super(irType, irName);
     }
+
+    @Override
+    public abstract String toString();
 }

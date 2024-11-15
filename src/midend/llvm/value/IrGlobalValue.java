@@ -10,6 +10,10 @@ public class IrGlobalValue extends IrUser {
     public IrGlobalValue(IrType valueType, String name, IrConstant initValue) {
         super(valueType, name);
         this.initValue = initValue;
+    }
 
+    @Override
+    public String toString() {
+        return this.irName + " = dso_local global " + this.initValue;
     }
 }

@@ -66,6 +66,7 @@ public class VarDef extends Node {
 
         int dimension = 0;
         ArrayList<Integer> depthList = new ArrayList<>();
+        ArrayList<Integer> initValueList = null;
         // 获取维度：判断是否有维度信息
         for (Node component : this.components) {
             component.Visit();
@@ -74,15 +75,38 @@ public class VarDef extends Node {
                 // 计算维度信息
                 constExp.Compute();
                 depthList.add(constExp.GetValue());
+            } else if (component instanceof InitVal initVal) {
+                initValueList = initVal.GetInitValueList();
             }
         }
 
         SymbolType type = SymbolType.GetVarType(this.type, dimension);
-        this.symbol = new ValueSymbol(symbolName, type, dimension, depthList);
+
+        this.symbol = SymbolManger.IsGlobal() ?
+            new ValueSymbol(symbolName, type, dimension, depthList, initValueList) :
+            new ValueSymbol(symbolName, type, dimension, depthList);
         SymbolManger.AddSymbol(symbol, line);
     }
 
     public Ident GetIdent() {
         return (Ident) this.components.get(0);
+    }
+
+    public boolean HaveInitVal() {
+        for (Node node : this.components) {
+            if (node instanceof InitVal) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public InitVal GetInitVal() {
+        for (Node node : this.components) {
+            if (node instanceof InitVal initVal) {
+                return initVal;
+            }
+        }
+        throw new RuntimeException("no init value");
     }
 }

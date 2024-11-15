@@ -6,6 +6,8 @@ import frontend.FrontEnd;
 import frontend.ast.Node;
 import frontend.lexer.Token;
 import midend.MidEnd;
+import midend.llvm.IrBuilder;
+import midend.llvm.IrModule;
 import midend.symbol.SymbolTable;
 
 import java.io.FileInputStream;
@@ -56,8 +58,9 @@ public class IOhandler {
         symbolOutputFile.write(rootSymbolTable.toString().getBytes());
     }
 
-    public static void PrintLlvm() {
-        Debug.DebugThrow("not finish llvm print yet.");
+    public static void PrintLlvm() throws IOException {
+        IrModule irModule = IrBuilder.GetCurrentModule();
+        llvmOutputFile.write(irModule.toString().getBytes());
     }
 
     public static void PrintMips() {

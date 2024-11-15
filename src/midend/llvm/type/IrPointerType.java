@@ -10,4 +10,9 @@ public class IrPointerType extends IrType {
     public IrType GetTargetType() {
         return this.targetType;
     }
+
+    @Override
+    public String toString() {
+        return this.targetType + "*";
+    }
 }

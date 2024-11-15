@@ -23,10 +23,6 @@ public class AluInstr extends Instr {
         this.AddUseValue(valueR);
     }
 
-    public AluType GetAluType() {
-        return this.aluType;
-    }
-
     @Override
     public String toString() {
         IrValue irValueL = this.GetValueL();
@@ -43,7 +39,6 @@ public class AluInstr extends Instr {
     private IrValue GetValueR() {
         return this.useValueList.get(1);
     }
-
 
     private AluType GetAluType(String aluOp) {
         return switch (aluOp) {

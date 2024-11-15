@@ -1,6 +1,7 @@
 package midend.llvm;
 
 import midend.llvm.constant.IrConstant;
+import midend.llvm.constant.IrConstantString;
 import midend.llvm.instr.Instr;
 import midend.llvm.type.IrType;
 import midend.llvm.value.IrBasicBlock;
@@ -23,10 +24,15 @@ public class IrBuilder {
 
     private static int basicBlockCount = 0;
     private static int globalVarNameCount = 0;
-    private static final HashMap<IrFunction, Integer> functionVarNameCountMap = new HashMap<>();
+    private static int stringConstNameCount = 0;
+    private static final HashMap<IrFunction, Integer> localVarNameCountMap = new HashMap<>();
 
     public static void SetCurrentModule(IrModule irModule) {
         currentModule = irModule;
+    }
+
+    public static IrModule GetCurrentModule() {
+        return currentModule;
     }
 
     public static IrFunction GetNewFunctionIr(String name, IrType returnType) {
@@ -38,7 +44,7 @@ public class IrBuilder {
         irFunction.AddBasicBlock(GetNewBasicBlockIr());
 
         // 添加计数表
-        functionVarNameCountMap.put(irFunction, 0);
+        localVarNameCountMap.put(irFunction, 0);
 
         return irFunction;
     }
@@ -61,6 +67,10 @@ public class IrBuilder {
         return globalValue;
     }
 
+    public static IrConstantString GetNewIrConstantString(String string) {
+        return currentModule.GetNewIrConstantString(string);
+    }
+
     public static String GetFuncName(String name) {
         return name.equals("main") ? "@" + name : FUNC_NAME_PREFIX + name;
     }
@@ -73,10 +83,14 @@ public class IrBuilder {
         return GLOBAL_VAR_NAME_PREFIX + globalVarNameCount++;
     }
 
-    public static String GetFunctionVarName() {
-        int count = functionVarNameCountMap.get(currentFunction);
-        functionVarNameCountMap.put(currentFunction, count + 1);
+    public static String GetLocalVarName() {
+        int count = localVarNameCountMap.get(currentFunction);
+        localVarNameCountMap.put(currentFunction, count + 1);
         return LOCAL_VAR_NAME_PREFIX + count;
+    }
+
+    public static String GetStringConstName() {
+        return STRING_LITERAL_NAME_PREFIX + stringConstNameCount++;
     }
 
     public static String GetParamName(String name) {

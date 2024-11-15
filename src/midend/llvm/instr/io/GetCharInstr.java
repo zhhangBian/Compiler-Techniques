@@ -7,13 +7,12 @@ public class GetCharInstr extends IoInstr {
         super(IrBaseType.INT8, irName);
     }
 
-    @Override
-    public String GetDeclare() {
-        return "declare i8 @getchar(...) ";
+    public static String GetDeclare() {
+        return "declare i32 @getchar() ";
     }
 
     @Override
     public String toString() {
-        return this.irName + " = call i8 (...) @getint()";
+        return this.irName + " = call i8 (...) @getchar()";
     }
 }

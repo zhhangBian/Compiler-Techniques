@@ -57,21 +57,21 @@ public class VisitorStmt {
 
         IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
         IrValue irExp = VisitorExp.VisitExp(exp);
-        StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(), irExp, irLVal);
+        StoreInstr storeInstr = new StoreInstr(IrBuilder.GetLocalVarName(), irExp, irLVal);
     }
 
     private static void VisitGetIntStmt(Stmt stmt) {
         LVal lval = stmt.GetLVal();
         IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
-        GetIntInstr getIntInstr = new GetIntInstr(IrBuilder.GetFunctionVarName());
-        StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(), irLVal, getIntInstr);
+        GetIntInstr getIntInstr = new GetIntInstr(IrBuilder.GetLocalVarName());
+        StoreInstr storeInstr = new StoreInstr(IrBuilder.GetLocalVarName(), irLVal, getIntInstr);
     }
 
     private static void VisitGetCharStmt(Stmt stmt) {
         LVal lval = stmt.GetLVal();
         IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
-        GetCharInstr getIntInstr = new GetCharInstr(IrBuilder.GetFunctionVarName());
-        StoreInstr storeInstr = new StoreInstr(IrBuilder.GetFunctionVarName(), irLVal, getIntInstr);
+        GetCharInstr getIntInstr = new GetCharInstr(IrBuilder.GetLocalVarName());
+        StoreInstr storeInstr = new StoreInstr(IrBuilder.GetLocalVarName(), irLVal, getIntInstr);
     }
 
     private static void VisitPrintStmt(Stmt stmt) {
@@ -86,35 +86,43 @@ public class VisitorStmt {
                 // 遇到格式输出，先将之前的常量输出
                 if (!builder.isEmpty()) {
                     IrConstantString irConstantString =
-                        new IrConstantString(IrBuilder.GetFunctionVarName(), builder.toString());
+                        IrBuilder.GetNewIrConstantString(builder.toString());
+
                     PrintStrInstr printStrInstr =
-                        new PrintStrInstr(IrBuilder.GetFunctionVarName(), irConstantString);
+                        new PrintStrInstr(IrBuilder.GetLocalVarName(), irConstantString);
                     builder.setLength(0);
                 }
 
                 if (formatString.charAt(i + 1) == 'd') {
                     IrValue irValue = VisitorExp.VisitExp(expList.get(expCnt++));
                     PrintIntInstr printIntInstr =
-                        new PrintIntInstr(IrBuilder.GetFunctionVarName(), irValue);
+                        new PrintIntInstr(IrBuilder.GetLocalVarName(), irValue);
 
                     i++;
                 } else if (formatString.charAt(i + 1) == 'c') {
                     IrValue irValue = VisitorExp.VisitExp(expList.get(expCnt++));
                     PrintCharInstr printCharInstr =
-                        new PrintCharInstr(IrBuilder.GetFunctionVarName(), irValue);
+                        new PrintCharInstr(IrBuilder.GetLocalVarName(), irValue);
 
                     i++;
                 }
             }
             // 转义只会是换行
             else if (formatString.charAt(i) == '\\') {
-                builder.append('\n');
+                builder.append("\\n");
                 i++;
             }
             // 一般的字符
             else {
                 builder.append(formatString.charAt(i));
             }
+        }
+        // 还有剩余字符
+        if (!builder.isEmpty()) {
+            IrConstantString irConstantString =
+                IrBuilder.GetNewIrConstantString(builder.toString());
+            PrintStrInstr printStrInstr =
+                new PrintStrInstr(IrBuilder.GetLocalVarName(), irConstantString);
         }
     }
 
@@ -132,7 +140,7 @@ public class VisitorStmt {
             irReturn = new IrConstantChar(0);
         }
 
-        ReturnInstr returnInstr = new ReturnInstr(IrBuilder.GetFunctionVarName(), irReturn);
+        ReturnInstr returnInstr = new ReturnInstr(IrBuilder.GetLocalVarName(), irReturn);
     }
 
     private static void VisitForStmt(Stmt stmt) {

@@ -27,6 +27,9 @@ public class SymbolManger {
 
     public static void AddSymbol(Symbol symbol, int line) {
         currentSymbolTable.AddSymbol(symbol, line);
+        if (symbol instanceof ValueSymbol valueSymbol) {
+            valueSymbol.SetIsGlobal(IsGlobal());
+        }
     }
 
     public static Symbol GetSymbol(String name) {

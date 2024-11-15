@@ -9,11 +9,12 @@ public class IrArrayType extends IrType {
         this.elementType = elementType;
     }
 
-    public int GetArraySize() {
-        return this.arraySize;
-    }
-
     public IrType GetElementType() {
         return this.elementType;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + this.arraySize + " x " + this.elementType + "]";
     }
 }
