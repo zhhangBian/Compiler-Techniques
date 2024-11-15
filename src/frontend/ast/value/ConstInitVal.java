@@ -8,8 +8,6 @@ import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class ConstInitVal extends Node {
     public ConstInitVal() {

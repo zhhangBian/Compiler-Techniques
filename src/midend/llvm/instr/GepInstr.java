@@ -15,7 +15,7 @@ public class GepInstr extends Instr {
         return this.useValueList.get(0);
     }
 
-    public IrValue GetOffest() {
+    public IrValue GetOffset() {
         return this.useValueList.get(1);
     }
 }

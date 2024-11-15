@@ -41,6 +41,9 @@ public class VisitorFuncDef {
         Block block = funcDef.GetBlock();
         VisitorBlock.VisitBlock(block);
 
+        // 检查最后的return
+        irFunction.CheckHaveReturn();
+
         SymbolManger.GoToFatherSymbolTable();
     }
 

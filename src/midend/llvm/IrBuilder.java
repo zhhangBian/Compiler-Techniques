@@ -2,14 +2,10 @@ package midend.llvm;
 
 import midend.llvm.constant.IrConstant;
 import midend.llvm.instr.Instr;
-import midend.llvm.type.IrArrayType;
-import midend.llvm.type.IrBaseType;
 import midend.llvm.type.IrType;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrGlobalValue;
-import midend.symbol.SymbolType;
-import midend.symbol.ValueSymbol;
 
 import java.util.HashMap;
 
@@ -27,7 +23,7 @@ public class IrBuilder {
 
     private static int basicBlockCount = 0;
     private static int globalVarNameCount = 0;
-    private static HashMap<IrFunction, Integer> functionVarNameCountMap = new HashMap<>();
+    private static final HashMap<IrFunction, Integer> functionVarNameCountMap = new HashMap<>();
 
     public static void SetCurrentModule(IrModule irModule) {
         currentModule = irModule;
@@ -89,5 +85,13 @@ public class IrBuilder {
 
     public static void AddInstr(Instr instr) {
         currentBasicBlock.AddInstr(instr);
+    }
+
+    public static IrBasicBlock GetCurrentBasicBlock() {
+        return currentBasicBlock;
+    }
+
+    public static IrType GetCurrentFunctionReturnType() {
+        return currentFunction.GetReturnType();
     }
 }

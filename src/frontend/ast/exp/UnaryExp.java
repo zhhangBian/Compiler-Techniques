@@ -13,7 +13,6 @@ import midend.symbol.FuncSymbol;
 import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
-import utils.Debug;
 import utils.Setting;
 
 import java.util.ArrayList;

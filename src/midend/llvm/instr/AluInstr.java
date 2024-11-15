@@ -18,4 +18,8 @@ public class AluInstr extends Instr {
         super(irType, name, InstrType.ALU);
         this.aluType = aluType;
     }
+
+    public AluType GetAluType() {
+        return this.aluType;
+    }
 }

@@ -1,5 +1,9 @@
 package midend.llvm.value;
 
+import midend.llvm.IrBuilder;
+import midend.llvm.constant.IrConstantChar;
+import midend.llvm.constant.IrConstantInt;
+import midend.llvm.instr.ReturnInstr;
 import midend.llvm.type.IrFunctionType;
 import midend.llvm.type.IrType;
 
@@ -36,5 +40,21 @@ public class IrFunction extends IrValue {
 
     public ArrayList<IrBasicBlock> GetBasicBlockList() {
         return this.basicBlockList;
+    }
+
+    // 对于void类型的函数，文法允许不含return，但是LLVM一定需要return
+    public void CheckHaveReturn() {
+        IrBasicBlock basicBlock = IrBuilder.GetCurrentBasicBlock();
+        if (!basicBlock.LastInstrIsReturn()) {
+            IrValue returnValue = null;
+            if (this.returnType.IsInt8Type()) {
+                returnValue = new IrConstantChar(0);
+            } else if (this.returnType.IsInt32Type()) {
+                returnValue = new IrConstantInt(0);
+            }
+            ReturnInstr returnInstr = new ReturnInstr(IrBuilder.GetFunctionVarName(), returnValue);
+            IrBuilder.AddInstr(returnInstr);
+        }
+
     }
 }

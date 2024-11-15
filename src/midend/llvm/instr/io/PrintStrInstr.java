@@ -1,0 +1,28 @@
+package midend.llvm.instr.io;
+
+import midend.llvm.constant.IrConstantString;
+import midend.llvm.type.IrBaseType;
+import midend.llvm.type.IrPointerType;
+
+public class PrintStrInstr extends IoInstr {
+    private final IrConstantString irConstantString;
+
+    public PrintStrInstr(String irName, IrConstantString irConstantString) {
+        super(IrBaseType.VOID, irName);
+        this.irConstantString = irConstantString;
+    }
+
+    @Override
+    public String GetDeclare() {
+        IrPointerType irPointerType = (IrPointerType) irConstantString.GetIrType();
+        return "call void @putstr(i8* getelementptr inbounds (" +
+            irPointerType.GetTargetType() + ", " +
+            irPointerType + " " +
+            irConstantString.GetIrName() + ", i64 0, i64 0))";
+    }
+
+    @Override
+    public String toString() {
+        return null;
+    }
+}

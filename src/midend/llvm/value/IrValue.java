@@ -21,6 +21,10 @@ public class IrValue {
         return this.irType;
     }
 
+    public String GetIrName() {
+        return this.irName;
+    }
+
     public void AddUse(IrUse use) {
         this.usedList.add(use);
     }

@@ -15,9 +15,31 @@ import frontend.lexer.TokenType;
 import midend.symbol.SymbolManger;
 import utils.Setting;
 
+import java.util.ArrayList;
+
 public class Stmt extends Node {
+    public enum StmtType {
+        BlockStmt,
+        IfStmt,
+        ForStmt,
+        AssignStmt,
+        ReturnStmt,
+        ExpStmt,
+        BreakStmt,
+        ContinueStmt,
+        GetIntStmt,
+        GetChatStmt,
+        PrintStmt,
+    }
+
+    private StmtType stmtType;
+
     public Stmt() {
         super(SyntaxType.STMT);
+    }
+
+    public StmtType GetStmtType() {
+        return this.stmtType;
     }
 
     @Override
@@ -52,10 +74,13 @@ public class Stmt extends Node {
     }
 
     private void ParseBlockStmt() {
+        this.stmtType = StmtType.BlockStmt;
         this.AddNode(new Block());
     }
 
     private void ParseIfStmt() {
+        this.stmtType = StmtType.IfStmt;
+
         // if
         this.AddNode(new TokenNode());
         // (
@@ -82,6 +107,8 @@ public class Stmt extends Node {
     }
 
     private void ParseForStmt() {
+        this.stmtType = StmtType.ForStmt;
+
         // for
         this.AddNode(new TokenNode());
         // (
@@ -120,6 +147,8 @@ public class Stmt extends Node {
     }
 
     private void ParseBreakStmt() {
+        this.stmtType = StmtType.BreakStmt;
+
         // break
         if (!SymbolManger.InForBlock()) {
             ErrorRecorder.AddError(new Error(ErrorType.BREAK_OR_CONTINUE_IN_NOT_LOOP,
@@ -135,6 +164,8 @@ public class Stmt extends Node {
     }
 
     private void ParseContinueStmt() {
+        this.stmtType = StmtType.ContinueStmt;
+
         // continue
         if (!SymbolManger.InForBlock()) {
             ErrorRecorder.AddError(new Error(ErrorType.BREAK_OR_CONTINUE_IN_NOT_LOOP,
@@ -150,6 +181,8 @@ public class Stmt extends Node {
     }
 
     private void ParseReturnStmt() {
+        this.stmtType = StmtType.ReturnStmt;
+
         // return
         TokenNode tokenNode = new TokenNode();
         tokenNode.Parse();
@@ -170,6 +203,8 @@ public class Stmt extends Node {
     }
 
     private void ParsePrintStmt() {
+        this.stmtType = StmtType.PrintStmt;
+
         // printf
         TokenNode printNode = new TokenNode();
         printNode.Parse();
@@ -223,6 +258,8 @@ public class Stmt extends Node {
     }
 
     private void ParseExpStmt() {
+        this.stmtType = StmtType.ExpStmt;
+
         if (this.IsExpStmt()) {
             // Exp
             this.AddNode(new Exp());
@@ -237,6 +274,8 @@ public class Stmt extends Node {
     }
 
     private void AssignStmt() {
+        this.stmtType = StmtType.AssignStmt;
+
         // LVal
         this.AddNode(new LVal());
         // =
@@ -245,6 +284,9 @@ public class Stmt extends Node {
         // getint | getchar
         if (GetCurrentTokenType().equals(TokenType.GETINTTK) ||
             GetCurrentTokenType().equals(TokenType.GETCHARTK)) {
+            this.stmtType = GetCurrentToken().GetStringValue().equals("getint") ?
+                StmtType.GetIntStmt : StmtType.GetChatStmt;
+
             // getint | getchar
             this.AddNode(new TokenNode());
             // (
@@ -321,5 +363,49 @@ public class Stmt extends Node {
             }
         }
         return count;
+    }
+
+    public Block GetBlockStmtBlock() {
+        return (Block) this.components.get(0);
+    }
+
+    public boolean ExpStmtHaveExp() {
+        return this.stmtType.equals(StmtType.ExpStmt) && this.components.size() > 1;
+    }
+
+    public Exp GetExpStmtExp() {
+        return (Exp) this.components.get(0);
+    }
+
+    public boolean ReturnStmtHaveExp() {
+        return this.stmtType.equals(StmtType.ReturnStmt) &&
+            this.components.size() > 2 &&
+            this.components.get(1) instanceof Exp;
+    }
+
+    public Exp GetReturnStmtExp() {
+        return (Exp) this.components.get(1);
+    }
+
+    public LVal GetLVal() {
+        return (LVal) this.components.get(0);
+    }
+
+    public Exp GetAssignStmtExp() {
+        return (Exp) this.components.get(2);
+    }
+
+    public StringConst GetPrintStmtStringConst() {
+        return (StringConst) this.components.get(2);
+    }
+
+    public ArrayList<Exp> GetPrintStmtExpList() {
+        ArrayList<Exp> expList = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof Exp exp) {
+                expList.add(exp);
+            }
+        }
+        return expList;
     }
 }

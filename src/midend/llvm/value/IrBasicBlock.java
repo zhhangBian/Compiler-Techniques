@@ -1,6 +1,7 @@
 package midend.llvm.value;
 
 import midend.llvm.instr.Instr;
+import midend.llvm.instr.ReturnInstr;
 import midend.llvm.type.IrBasicBlockType;
 
 import java.util.ArrayList;
@@ -21,5 +22,12 @@ public class IrBasicBlock extends IrValue {
 
     public void AddInstr(Instr instr) {
         this.instrList.add(instr);
+    }
+
+    public boolean LastInstrIsReturn() {
+        if (this.instrList.isEmpty()) {
+            return false;
+        }
+        return this.instrList.get(this.instrList.size() - 1) instanceof ReturnInstr;
     }
 }

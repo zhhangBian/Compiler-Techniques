@@ -29,8 +29,8 @@ public class ValueSymbol extends Symbol {
         this.initValueList = new ArrayList<>();
     }
 
-    public ValueSymbol(String symbolName, SymbolType symbolType,
-                       int dimension, ArrayList<Integer> depthList, ArrayList<Integer> initValueList) {
+    public ValueSymbol(String symbolName, SymbolType symbolType, int dimension,
+                       ArrayList<Integer> depthList, ArrayList<Integer> initValueList) {
         super(symbolName, symbolType);
         this.dimension = dimension;
         this.depthList = depthList;

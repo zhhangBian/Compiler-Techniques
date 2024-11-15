@@ -1,6 +1,5 @@
 package midend.llvm.value;
 
-import midend.llvm.IrBuilder;
 import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrType;
 import midend.llvm.use.IrUser;

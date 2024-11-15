@@ -13,6 +13,8 @@ import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
 import utils.Setting;
 
+import java.util.ArrayList;
+
 public class LVal extends Node {
     public LVal() {
         super(SyntaxType.LVAL_EXP);
@@ -85,5 +87,19 @@ public class LVal extends Node {
 
     public int GetLine() {
         return ((Ident) this.components.get(0)).GetLine();
+    }
+
+    public Ident GetIdent() {
+        return (Ident) this.components.get(0);
+    }
+
+    public ArrayList<Exp> GetExpList() {
+        ArrayList<Exp> expList = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof Exp exp) {
+                expList.add(exp);
+            }
+        }
+        return expList;
     }
 }

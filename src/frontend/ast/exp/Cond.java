@@ -1,7 +1,6 @@
 package frontend.ast.exp;
 
 import frontend.ast.SyntaxType;
-import frontend.ast.exp.recursion.AddExp;
 import frontend.ast.exp.recursion.LOrExp;
 
 public class Cond extends ComputeExp {
