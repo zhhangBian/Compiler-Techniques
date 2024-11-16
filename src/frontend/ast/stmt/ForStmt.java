@@ -38,4 +38,12 @@ public class ForStmt extends Node {
             }
         }
     }
+
+    public LVal GetLVal() {
+        return (LVal) this.components.get(0);
+    }
+
+    public Exp GetExp() {
+        return (Exp) this.components.get(2);
+    }
 }

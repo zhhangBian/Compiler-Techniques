@@ -22,4 +22,8 @@ public class Cond extends ComputeExp {
         this.isConst = lorExp.GetIfConst();
         this.value = lorExp.GetValue();
     }
+
+    public LOrExp GetLOrExp() {
+        return (LOrExp) this.components.get(0);
+    }
 }

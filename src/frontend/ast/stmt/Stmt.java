@@ -340,18 +340,11 @@ public class Stmt extends Node {
     }
 
     private boolean IsAssignStmt() {
-        return this.components.get(0) instanceof LVal &&
-            this.components.get(1) instanceof TokenNode tokenNode &&
-            tokenNode.GetTokenString().equals("=");
+        return this.stmtType.equals(StmtType.AssignStmt);
     }
 
     public boolean IsReturnStmt() {
-        Node component = this.components.get(0);
-        if (component instanceof TokenNode tokenNode) {
-            return tokenNode.GetTokenString().equals("return") &&
-                this.components.size() > 2;
-        }
-        return false;
+        return this.stmtType.equals(StmtType.ReturnStmt);
     }
 
     private int GetFormatStringCount(String formatString) {
@@ -407,5 +400,59 @@ public class Stmt extends Node {
             }
         }
         return expList;
+    }
+
+    public boolean IfStmtHaveElse() {
+        return this.stmtType.equals(StmtType.IfStmt) && this.components.size() > 5;
+    }
+
+    public Cond GetIfStmtCond() {
+        return (Cond) this.components.get(2);
+    }
+
+    public Stmt GetIfStmtIfStmt() {
+        return (Stmt) this.components.get(4);
+    }
+
+    public Stmt GetIfStmtElseStmt() {
+        return (Stmt) this.components.get(4);
+    }
+
+    public ForStmt GetForStmtInit() {
+        for (int i = 0; i < this.components.size(); i++) {
+            if (this.components.get(i) instanceof TokenNode token) {
+                if (token.GetSimpleName().equals("(")) {
+                    return this.components.get(i + 1) instanceof ForStmt forStmt ? forStmt : null;
+                }
+            }
+        }
+        throw new RuntimeException("illegal for stmt");
+    }
+
+    public Cond GetForStmtCond() {
+        for (int i = 0; i < this.components.size(); i++) {
+            if (this.components.get(i) instanceof TokenNode token) {
+                // 找到的一定是第一个 ;
+                if (token.GetSimpleName().equals(";")) {
+                    return this.components.get(i + 1) instanceof Cond cond ? cond : null;
+                }
+            }
+        }
+        throw new RuntimeException("illegal for stmt");
+    }
+
+    public ForStmt GetForStmtStep() {
+        for (int i = 0; i < this.components.size(); i++) {
+            if (this.components.get(i) instanceof TokenNode token) {
+                if (token.GetSimpleName().equals(")")) {
+                    return this.components.get(i - 1) instanceof ForStmt forStmt ? forStmt : null;
+                }
+            }
+        }
+        throw new RuntimeException("illegal for stmt");
+    }
+
+    public Stmt GetForStmtStmt() {
+        return (Stmt) this.components.get(this.components.size() - 1);
     }
 }

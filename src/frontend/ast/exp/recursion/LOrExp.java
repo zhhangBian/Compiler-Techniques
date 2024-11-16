@@ -5,6 +5,8 @@ import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 
+import java.util.ArrayList;
+
 public class LOrExp extends RecursionNode {
     public LOrExp() {
         super(SyntaxType.LOR_EXP);
@@ -33,5 +35,15 @@ public class LOrExp extends RecursionNode {
             this.AddNodeList(new LAndExp());
         }
         this.HandleRecursion(LOrExp::new, LOrExp::new);
+    }
+
+    public ArrayList<LAndExp> GetLAndExpList() {
+        ArrayList<LAndExp> landExpList = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof LAndExp lAndExp) {
+                landExpList.add(lAndExp);
+            }
+        }
+        return landExpList;
     }
 }

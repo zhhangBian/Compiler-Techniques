@@ -5,6 +5,8 @@ import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 
+import java.util.ArrayList;
+
 public class RelExp extends RecursionNode {
     public RelExp() {
         super(SyntaxType.REL_EXP);
@@ -36,5 +38,25 @@ public class RelExp extends RecursionNode {
             this.AddNodeList(new AddExp());
         }
         this.HandleRecursion(RelExp::new, RelExp::new);
+    }
+
+    public ArrayList<AddExp> GetAddExpList() {
+        ArrayList<AddExp> addExpList = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof AddExp addExp) {
+                addExpList.add(addExp);
+            }
+        }
+        return addExpList;
+    }
+
+    public ArrayList<String> GetOpList() {
+        ArrayList<String> opList = new ArrayList<>();
+        for (Node node : this.components) {
+            if (node instanceof TokenNode op) {
+                opList.add(op.GetTokenString());
+            }
+        }
+        return opList;
     }
 }

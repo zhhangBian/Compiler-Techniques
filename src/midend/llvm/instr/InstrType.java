@@ -11,6 +11,7 @@ public enum InstrType {
     STORE,
 
     BRANCH,
+    JUMP,
     CALL,
     RETURN,
 

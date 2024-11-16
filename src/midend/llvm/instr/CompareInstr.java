@@ -24,8 +24,9 @@ public class CompareInstr extends Instr {
 
     @Override
     public String toString() {
-        return this.GetValueL().GetIrName() + " " +
-            compareOp.toString().toLowerCase() + " " +
+        return this.GetValueL().GetIrName() + " = icmp " +
+            compareOp.toString().toLowerCase() + " i32 " +
+            this.GetValueL().GetIrName() + ", " +
             this.GetValueR().GetIrName();
     }
 

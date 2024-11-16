@@ -1,13 +1,16 @@
 package midend.visit;
 
 import frontend.ast.block.Block;
+import frontend.ast.exp.Cond;
 import frontend.ast.exp.Exp;
 import frontend.ast.exp.LVal;
+import frontend.ast.stmt.ForStmt;
 import frontend.ast.stmt.Stmt;
 import midend.llvm.IrBuilder;
 import midend.llvm.constant.IrConstantChar;
 import midend.llvm.constant.IrConstantInt;
 import midend.llvm.constant.IrConstantString;
+import midend.llvm.instr.JumpInstr;
 import midend.llvm.instr.ReturnInstr;
 import midend.llvm.instr.StoreInstr;
 import midend.llvm.instr.io.GetCharInstr;
@@ -18,6 +21,8 @@ import midend.llvm.instr.io.PrintStrInstr;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.type.IrPointerType;
 import midend.llvm.type.IrType;
+import midend.llvm.value.IrBasicBlock;
+import midend.llvm.value.IrLoop;
 import midend.llvm.value.IrValue;
 import midend.symbol.SymbolManger;
 
@@ -34,7 +39,7 @@ public class VisitorStmt {
             case PrintStmt -> VisitPrintStmt(stmt);
             case ReturnStmt -> VisitReturnStmt(stmt);
             case IfStmt -> VisitIfStmt(stmt);
-            case ForStmt -> VisitForStmt(stmt);
+            case ForStmt -> VisitStmtForStmt(stmt);
             case BreakStmt -> VisitBreakStmt(stmt);
             case ContinueStmt -> VisitContinueStmt(stmt);
             default -> throw new RuntimeException("illegal stmt type");
@@ -129,7 +134,51 @@ public class VisitorStmt {
     }
 
     private static void VisitIfStmt(Stmt stmt) {
-        // TODO
+        Cond cond = stmt.GetIfStmtCond();
+        Stmt ifStmt = stmt.GetIfStmtIfStmt();
+        // if条件为真进入的block
+        IrBasicBlock ifBlock = IrBuilder.GetNewBasicBlockIr();
+
+        // 有else的情况
+        if (stmt.IfStmtHaveElse()) {
+            // 获取block块
+            IrBasicBlock elseBlock = IrBuilder.GetNewBasicBlockIr();
+
+            // 解析Cond部分
+            VisitorExp.VisitCond(cond, ifBlock, elseBlock);
+
+            // 解析if部分
+            IrBuilder.SetCurrentBasicBlock(ifBlock);
+            VisitStmt(ifStmt);
+
+            IrBasicBlock followBlock = IrBuilder.GetNewBasicBlockIr();
+            JumpInstr jumpInstr = new JumpInstr(followBlock);
+
+            // 解析else部分
+            Stmt elseStmt = stmt.GetIfStmtElseStmt();
+            IrBuilder.SetCurrentBasicBlock(elseBlock);
+            VisitStmt(elseStmt);
+            JumpInstr jumpInstr1 = new JumpInstr(followBlock);
+
+            // 设置follow部分
+            IrBuilder.SetCurrentBasicBlock(followBlock);
+        }
+        // 无else的情况
+        else {
+            // 获取block块
+            IrBasicBlock followBlock = IrBuilder.GetNewBasicBlockIr();
+
+            // 解析Cond部分
+            VisitorExp.VisitCond(cond, ifBlock, followBlock);
+
+            // 解析if部分
+            IrBuilder.SetCurrentBasicBlock(ifBlock);
+            VisitStmt(ifStmt);
+            JumpInstr jumpInstr = new JumpInstr(followBlock);
+
+            // 设置follow部分
+            IrBuilder.SetCurrentBasicBlock(followBlock);
+        }
     }
 
     private static void VisitReturnStmt(Stmt stmt) {
@@ -145,15 +194,64 @@ public class VisitorStmt {
         ReturnInstr returnInstr = new ReturnInstr(irReturn);
     }
 
-    private static void VisitForStmt(Stmt stmt) {
-        // TODO
+    private static void VisitStmtForStmt(Stmt stmt) {
+        // 为Cond单独创建一个基本块
+        final IrBasicBlock condBlock = IrBuilder.GetNewBasicBlockIr();
+        final IrBasicBlock bodyBlock = IrBuilder.GetNewBasicBlockIr();
+        final IrBasicBlock followBlock = IrBuilder.GetNewBasicBlockIr();
+
+        // 将loop入栈：方便分析continue和break
+        IrBuilder.LoopStackPush(new IrLoop(condBlock, bodyBlock, followBlock));
+
+        // 解析初始化stmt
+        ForStmt forStmtInit = stmt.GetForStmtInit();
+        if (forStmtInit != null) {
+            VisitForStmt(forStmtInit);
+        }
+        JumpInstr jumpCond = new JumpInstr(condBlock);
+
+        // 解析条件cond
+        IrBuilder.SetCurrentBasicBlock(condBlock);
+        Cond cond = stmt.GetForStmtCond();
+        if (cond != null) {
+            VisitorExp.VisitCond(cond, bodyBlock, followBlock);
+        }
+
+        // 处理for循环体
+        IrBuilder.SetCurrentBasicBlock(bodyBlock);
+        // 解析循环函数体stmt
+        Stmt bodyStmt = stmt.GetForStmtStmt();
+        VisitStmt(bodyStmt);
+        // 解析步进stmt
+        ForStmt stepStmt = stmt.GetForStmtStep();
+        if (stepStmt != null) {
+            VisitForStmt(stepStmt);
+        }
+        // 进行跳转
+        JumpInstr jumpBack = new JumpInstr(condBlock);
+
+        // loop出栈
+        IrBuilder.LoopStackPop();
+
+        // 处理后续块
+        IrBuilder.SetCurrentBasicBlock(followBlock);
+    }
+
+    public static void VisitForStmt(ForStmt forStmt) {
+        LVal lval = forStmt.GetLVal();
+        Exp exp = forStmt.GetExp();
+
+        IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
+        IrValue irExp = VisitorExp.VisitExp(exp);
+        irExp = IrType.ConvertType(irExp, ((IrPointerType) irLVal.GetIrType()).GetTargetType());
+        StoreInstr storeInstr = new StoreInstr(irExp, irLVal);
     }
 
     private static void VisitBreakStmt(Stmt stmt) {
-        // TODO
+        JumpInstr jumpInstr = new JumpInstr(IrBuilder.LoopStackPeek().GetFollowBlock());
     }
 
     private static void VisitContinueStmt(Stmt stmt) {
-        // TODO
+        JumpInstr jumpInstr = new JumpInstr(IrBuilder.LoopStackPeek().GetCondBlock());
     }
 }

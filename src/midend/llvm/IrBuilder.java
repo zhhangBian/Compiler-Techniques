@@ -7,8 +7,10 @@ import midend.llvm.type.IrType;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrGlobalValue;
+import midend.llvm.value.IrLoop;
 
 import java.util.HashMap;
+import java.util.Stack;
 
 public class IrBuilder {
     private static final String GLOBAL_VAR_NAME_PREFIX = "@g_";
@@ -21,6 +23,7 @@ public class IrBuilder {
     private static IrModule currentModule = null;
     private static IrBasicBlock currentBasicBlock = null;
     private static IrFunction currentFunction = null;
+    private static final Stack<IrLoop> loopStack = new Stack<>();
 
     private static int basicBlockCount = 0;
     private static int globalVarNameCount = 0;
@@ -41,7 +44,10 @@ public class IrBuilder {
         // 设置为当前处理的Function
         currentFunction = irFunction;
         // 为Function添加一个基础basic block
-        irFunction.AddBasicBlock(GetNewBasicBlockIr());
+        IrBasicBlock irBasicBlock = GetNewBasicBlockIr();
+        irFunction.AddBasicBlock(irBasicBlock);
+        // 设置当前的basic block
+        currentBasicBlock = irBasicBlock;
 
         // 添加计数表
         localVarNameCountMap.put(irFunction, 0);
@@ -54,10 +60,12 @@ public class IrBuilder {
         IrBasicBlock basicBlock = new IrBasicBlock(irName);
         // 设置从属关系
         basicBlock.SetParentFunction(currentFunction);
-        // 设置为当前解析的basicBlock
-        currentBasicBlock = basicBlock;
 
         return basicBlock;
+    }
+
+    public static void SetCurrentBasicBlock(IrBasicBlock irBasicBlock) {
+        currentBasicBlock = irBasicBlock;
     }
 
     public static IrGlobalValue GetNewIrGlobalValue(IrType valueType, IrConstant initValue) {
@@ -107,5 +115,17 @@ public class IrBuilder {
 
     public static IrType GetCurrentFunctionReturnType() {
         return currentFunction.GetReturnType();
+    }
+
+    public static void LoopStackPush(IrLoop loop) {
+        loopStack.push(loop);
+    }
+
+    public static void LoopStackPop() {
+        loopStack.pop();
+    }
+
+    public static IrLoop LoopStackPeek() {
+        return loopStack.peek();
     }
 }
