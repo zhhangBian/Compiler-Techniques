@@ -7,8 +7,8 @@ import midend.llvm.type.IrPointerType;
 public class PrintStrInstr extends IoInstr {
     private final IrConstantString irConstantString;
 
-    public PrintStrInstr(String irName, IrConstantString irConstantString) {
-        super(IrBaseType.VOID, irName);
+    public PrintStrInstr(IrConstantString irConstantString) {
+        super(IrBaseType.VOID);
         this.irConstantString = irConstantString;
     }
 

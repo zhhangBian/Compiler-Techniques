@@ -4,8 +4,8 @@ import midend.llvm.type.IrPointerType;
 import midend.llvm.value.IrValue;
 
 public class LoadInstr extends Instr {
-    public LoadInstr(String irName, IrValue pointer) {
-        super(((IrPointerType) pointer.GetIrType()).GetTargetType(), irName, InstrType.LOAD);
+    public LoadInstr(IrValue pointer) {
+        super(((IrPointerType) pointer.GetIrType()).GetTargetType(), InstrType.LOAD);
         this.AddUseValue(pointer);
     }
 

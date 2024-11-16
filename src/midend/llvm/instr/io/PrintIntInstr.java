@@ -4,8 +4,8 @@ import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
 
 public class PrintIntInstr extends IoInstr {
-    public PrintIntInstr(String irName, IrValue printValue) {
-        super(IrBaseType.VOID, irName);
+    public PrintIntInstr(IrValue printValue) {
+        super(IrBaseType.VOID);
         this.AddUseValue(printValue);
     }
 

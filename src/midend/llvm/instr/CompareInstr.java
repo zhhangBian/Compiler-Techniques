@@ -15,8 +15,8 @@ public class CompareInstr extends Instr {
 
     private final CompareOp compareOp;
 
-    public CompareInstr(String irName, String op, IrValue valueL, IrValue valueR) {
-        super(IrBaseType.INT1, irName, InstrType.CMP);
+    public CompareInstr(String op, IrValue valueL, IrValue valueR) {
+        super(IrBaseType.INT1, InstrType.CMP);
         this.compareOp = this.GetCompareOp(op);
         this.AddUseValue(valueL);
         this.AddUseValue(valueR);

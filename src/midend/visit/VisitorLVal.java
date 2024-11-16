@@ -3,7 +3,6 @@ package midend.visit;
 import frontend.ast.exp.Exp;
 import frontend.ast.exp.LVal;
 import frontend.ast.token.Ident;
-import midend.llvm.IrBuilder;
 import midend.llvm.instr.GepInstr;
 import midend.llvm.instr.LoadInstr;
 import midend.llvm.value.IrValue;
@@ -29,8 +28,7 @@ public class VisitorLVal {
         if (dimension == 0) {
             return symbol.GetIrValue();
         } else {
-            return new GepInstr(IrBuilder.GetLocalVarName(),
-                symbol.GetIrValue(), VisitorExp.VisitExp(expList.get(0)));
+            return new GepInstr(symbol.GetIrValue(), VisitorExp.VisitExp(expList.get(0)));
         }
     }
 
@@ -44,13 +42,13 @@ public class VisitorLVal {
         // TODO：常量优化
         // 不是数组
         if (dimension == 0) {
-            return new LoadInstr(IrBuilder.GetLocalVarName(), symbol.GetIrValue());
+            return new LoadInstr(symbol.GetIrValue());
         }
         // 是数组
         else {
-            GepInstr gepInstr = new GepInstr(IrBuilder.GetLocalVarName(),
-                symbol.GetIrValue(), VisitorExp.VisitExp(expList.get(0)));
-            LoadInstr loadInstr = new LoadInstr(IrBuilder.GetLocalVarName(), gepInstr);
+            GepInstr gepInstr =
+                new GepInstr(symbol.GetIrValue(), VisitorExp.VisitExp(expList.get(0)));
+            LoadInstr loadInstr = new LoadInstr(gepInstr);
             return loadInstr;
         }
     }

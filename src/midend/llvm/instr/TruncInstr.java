@@ -3,10 +3,10 @@ package midend.llvm.instr;
 import midend.llvm.type.IrType;
 import midend.llvm.value.IrValue;
 
-public class ExtendInstr extends Instr {
+public class TruncInstr extends Instr {
     private final IrType targetType;
 
-    public ExtendInstr(IrValue originValue, IrType targetType) {
+    public TruncInstr(IrValue originValue, IrType targetType) {
         super(targetType, InstrType.EXTEND);
         this.targetType = targetType;
         this.AddUseValue(originValue);
@@ -15,7 +15,7 @@ public class ExtendInstr extends Instr {
     @Override
     public String toString() {
         IrValue originValue = this.GetOriginValue();
-        return this.irName + " = zext " + originValue.GetIrType() + " " +
+        return this.irName + " = trunc " + originValue.GetIrType() + " " +
             originValue.GetIrName() + " to " + this.targetType;
     }
 

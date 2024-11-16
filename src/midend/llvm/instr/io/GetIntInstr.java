@@ -3,8 +3,8 @@ package midend.llvm.instr.io;
 import midend.llvm.type.IrBaseType;
 
 public class GetIntInstr extends IoInstr {
-    public GetIntInstr(String irName) {
-        super(IrBaseType.INT32, irName);
+    public GetIntInstr() {
+        super(IrBaseType.INT32);
     }
 
     public static String GetDeclare() {
@@ -13,6 +13,6 @@ public class GetIntInstr extends IoInstr {
 
     @Override
     public String toString() {
-        return this.irName + " = call i32 (...) @getint()";
+        return this.irName + " = call i32 @getint()";
     }
 }

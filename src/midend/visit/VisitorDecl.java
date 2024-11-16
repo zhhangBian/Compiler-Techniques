@@ -60,25 +60,21 @@ public class VisitorDecl {
         }
         // 局部变量
         else {
-            AllocateInstr allocateInstr =
-                new AllocateInstr(IrBuilder.GetLocalVarName(), GetSymbolIrType(symbol));
+            AllocateInstr allocateInstr = new AllocateInstr(GetSymbolIrType(symbol));
             symbol.SetIrValue(allocateInstr);
 
             ArrayList<Integer> initValueList = symbol.GetInitValueList();
             // 如果不是数组，添加存储指令：建立空间、赋初值
             if (symbol.GetDimension() == 0) {
-                StoreInstr storeInstr = new StoreInstr(IrBuilder.GetLocalVarName(),
-                    GetValueConstant(symbol), allocateInstr);
+                StoreInstr storeInstr = new StoreInstr(GetValueConstant(symbol), allocateInstr);
             } else {
                 // 生成一系列GEP+store指令，将初始值存入常量
                 int offset = 0;
                 for (Integer initValue : initValueList) {
                     // 计算偏移值
-                    GepInstr gepInstr = new GepInstr(IrBuilder.GetLocalVarName(),
-                        allocateInstr, new IrConstantInt(offset++));
+                    GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(offset++));
                     // 将初始值存储到偏移量中
-                    StoreInstr storeInstr = new StoreInstr(IrBuilder.GetLocalVarName(),
-                        new IrConstantInt(initValue), gepInstr);
+                    StoreInstr storeInstr = new StoreInstr(new IrConstantInt(initValue), gepInstr);
                 }
             }
         }
@@ -102,8 +98,7 @@ public class VisitorDecl {
     }
 
     private static void VisitLocalVarDef(VarDef varDef, ValueSymbol symbol) {
-        AllocateInstr allocateInstr =
-            new AllocateInstr(IrBuilder.GetLocalVarName(), GetSymbolIrType(symbol));
+        AllocateInstr allocateInstr = new AllocateInstr(GetSymbolIrType(symbol));
         symbol.SetIrValue(allocateInstr);
 
         // 如果不是数组，添加存储指令：建立空间、赋初值
@@ -112,8 +107,7 @@ public class VisitorDecl {
             if (varDef.HaveInitVal()) {
                 Exp exp = varDef.GetInitVal().GetExpList().get(0);
                 IrValue irExp = VisitorExp.VisitExp(exp);
-                StoreInstr storeInstr = new StoreInstr(IrBuilder.GetLocalVarName(),
-                    irExp, allocateInstr);
+                StoreInstr storeInstr = new StoreInstr(irExp, allocateInstr);
             }
         } else {
             // 生成一系列GEP+store指令，将初始值存入常量
@@ -122,11 +116,9 @@ public class VisitorDecl {
             for (Exp exp : expList) {
                 IrValue irExp = VisitorExp.VisitExp(exp);
                 // 计算偏移值
-                GepInstr gepInstr = new GepInstr(IrBuilder.GetLocalVarName(),
-                    allocateInstr, new IrConstantInt(offset++));
+                GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(offset++));
                 // 将初始值存储到偏移量中
-                StoreInstr storeInstr = new StoreInstr(IrBuilder.GetLocalVarName(),
-                    irExp, gepInstr);
+                StoreInstr storeInstr = new StoreInstr(irExp, gepInstr);
             }
         }
     }

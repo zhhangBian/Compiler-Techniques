@@ -11,11 +11,11 @@ import midend.llvm.value.IrGlobalValue;
 import java.util.HashMap;
 
 public class IrBuilder {
-    private static final String GLOBAL_VAR_NAME_PREFIX = "@g";
-    private static final String STRING_LITERAL_NAME_PREFIX = "@s";
+    private static final String GLOBAL_VAR_NAME_PREFIX = "@g_";
+    private static final String STRING_LITERAL_NAME_PREFIX = "@s_";
     private static final String LOCAL_VAR_NAME_PREFIX = "%v";
-    private static final String PARAM_NAME_PREFIX = "%a";
-    private static final String BasicBlock_NAME_PREFIX = "b";
+    private static final String PARAM_NAME_PREFIX = "%a_";
+    private static final String BasicBlock_NAME_PREFIX = "b_";
     private static final String FUNC_NAME_PREFIX = "@f_";
 
     private static IrModule currentModule = null;

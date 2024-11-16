@@ -30,13 +30,6 @@ public enum SymbolType {
         return this.typeName;
     }
 
-    public boolean IsConstType() {
-        return switch (this) {
-            case CONST_CHAR, CONST_INT, CONST_CHAR_ARRAY, CONST_INT_ARRAY -> true;
-            default -> false;
-        };
-    }
-
     public static SymbolType GetVarType(String typeString) {
         return switch (typeString) {
             case "int" -> INT;

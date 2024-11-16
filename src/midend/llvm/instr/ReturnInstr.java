@@ -4,8 +4,8 @@ import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
 
 public class ReturnInstr extends Instr {
-    public ReturnInstr(String name, IrValue returnValue) {
-        super(IrBaseType.VOID, name, InstrType.RETURN);
+    public ReturnInstr(IrValue returnValue) {
+        super(IrBaseType.VOID, InstrType.RETURN, "return");
         if (returnValue != null) {
             this.AddUseValue(returnValue);
         }

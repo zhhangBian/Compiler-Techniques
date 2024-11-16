@@ -9,9 +9,9 @@ import midend.visit.VisitorExp;
 import java.util.ArrayList;
 
 public class CallInstr extends Instr {
-    public CallInstr(String irName, IrFunction targetFuction, ArrayList<Exp> paramList) {
-        super(IrFunctionType.FUNCTION_TYPE, irName, InstrType.CALL);
-        this.AddUseValue(targetFuction);
+    public CallInstr(IrFunction targetFunction, ArrayList<Exp> paramList) {
+        super(IrFunctionType.FUNCTION_TYPE, InstrType.CALL, "call");
+        this.AddUseValue(targetFunction);
         paramList.stream().map(VisitorExp::VisitExp).forEach(this::AddUseValue);
     }
 

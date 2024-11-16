@@ -8,8 +8,15 @@ import midend.llvm.use.IrUser;
 public abstract class Instr extends IrUser {
     private final InstrType instrType;
 
-    public Instr(IrType irType, String name, InstrType instrType) {
-        super(irType, name);
+    public Instr(IrType irType, InstrType instrType) {
+        super(irType, IrBuilder.GetLocalVarName());
+        this.instrType = instrType;
+        // 自动插入
+        IrBuilder.AddInstr(this);
+    }
+
+    public Instr(IrType irType, InstrType instrType, String irName) {
+        super(irType, irName);
         this.instrType = instrType;
         // 自动插入
         IrBuilder.AddInstr(this);

@@ -5,6 +5,7 @@ import frontend.ast.func.FuncDef;
 import frontend.ast.func.MainFuncDef;
 import midend.llvm.IrBuilder;
 import midend.llvm.instr.AllocateInstr;
+import midend.llvm.instr.StoreInstr;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.type.IrPointerType;
 import midend.llvm.type.IrType;
@@ -27,14 +28,21 @@ public class VisitorFuncDef {
 
         // 创建参数的IR
         ArrayList<Symbol> paramSymbolList = funcSymbol.GetFormalParamList();
+        ArrayList<IrParameter> irParameterList = new ArrayList<>();
         for (Symbol symbol : paramSymbolList) {
             IrParameter irParameter = new IrParameter(
-                GetIrType(symbol.GetSymbolType()),
-                IrBuilder.GetParamName(symbol.GetSymbolName()));
-            symbol.SetIrValue(irParameter);
+                GetIrType(symbol.GetSymbolType()), IrBuilder.GetLocalVarName());
+            irFunction.AddParameter(irParameter);
+            irParameterList.add(irParameter);
+        }
 
-            AllocateInstr allocateInstr = new AllocateInstr(IrBuilder.GetLocalVarName(),
-                irParameter.GetIrType());
+        for (int i = 0; i < irParameterList.size(); i++) {
+            IrParameter irParameter = irParameterList.get(i);
+            Symbol symbol = paramSymbolList.get(i);
+
+            AllocateInstr allocateInstr = new AllocateInstr(irParameter.GetIrType());
+            StoreInstr storeInstr = new StoreInstr(irParameter, allocateInstr);
+            symbol.SetIrValue(allocateInstr);
         }
 
         // 创建Block的IR

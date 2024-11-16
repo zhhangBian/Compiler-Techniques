@@ -16,8 +16,8 @@ public class AluInstr extends Instr {
 
     private final AluType aluType;
 
-    public AluInstr(String name, String aluOp, IrValue valueL, IrValue valueR) {
-        super(IrBaseType.INT32, name, InstrType.ALU);
+    public AluInstr(String aluOp, IrValue valueL, IrValue valueR) {
+        super(IrBaseType.INT32, InstrType.ALU);
         this.aluType = this.GetAluType(aluOp);
         this.AddUseValue(valueL);
         this.AddUseValue(valueR);

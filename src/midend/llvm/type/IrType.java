@@ -1,5 +1,9 @@
 package midend.llvm.type;
 
+import midend.llvm.instr.ExtendInstr;
+import midend.llvm.instr.TruncInstr;
+import midend.llvm.value.IrValue;
+
 public abstract class IrType {
     // 每一个IR的Value都有一个type
     // TODO：现在的实现太丑了，可以进行优化
@@ -37,4 +41,29 @@ public abstract class IrType {
     }
 
     public abstract String toString();
+
+    public static IrValue ConvertType(IrValue originValue, IrType targetType) {
+        IrType originType = originValue.GetIrType();
+        if (targetType.IsInt32Type()) {
+            if (originType.IsInt32Type()) {
+                return originValue;
+            } else {
+                return new ExtendInstr(originValue, targetType);
+            }
+        } else if (targetType.IsInt8Type()) {
+            if (originType.IsInt32Type()) {
+                return new TruncInstr(originValue, targetType);
+            } else if (originType.IsInt8Type()) {
+                return originValue;
+            } else {
+                return new ExtendInstr(originValue, targetType);
+            }
+        } else {
+            if (originType.IsInt1Type()) {
+                return originValue;
+            } else {
+                return new ExtendInstr(originValue, targetType);
+            }
+        }
+    }
 }

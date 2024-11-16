@@ -53,7 +53,7 @@ public class IrFunction extends IrValue {
             } else if (this.returnType.IsInt32Type()) {
                 returnValue = new IrConstantInt(0);
             }
-            ReturnInstr returnInstr = new ReturnInstr(IrBuilder.GetLocalVarName(), returnValue);
+            ReturnInstr returnInstr = new ReturnInstr(returnValue);
         }
     }
 

@@ -4,6 +4,7 @@ public enum InstrType {
     ALU,
     CMP,
     EXTEND,
+    TRUNC,
 
     ALLOCATE,
     LOAD,

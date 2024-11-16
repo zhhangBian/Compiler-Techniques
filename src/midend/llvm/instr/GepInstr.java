@@ -6,8 +6,8 @@ import midend.llvm.type.IrType;
 import midend.llvm.value.IrValue;
 
 public class GepInstr extends Instr {
-    public GepInstr(String irName, IrValue pointer, IrValue offset) {
-        super(new IrPointerType(IrBaseType.INT32), irName, InstrType.GEP);
+    public GepInstr(IrValue pointer, IrValue offset) {
+        super(new IrPointerType(IrBaseType.INT32), InstrType.GEP);
         this.AddUseValue(pointer);
         this.AddUseValue(offset);
     }

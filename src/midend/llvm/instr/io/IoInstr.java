@@ -5,8 +5,8 @@ import midend.llvm.instr.InstrType;
 import midend.llvm.type.IrType;
 
 public abstract class IoInstr extends Instr {
-    public IoInstr(IrType irType, String name) {
-        super(irType, name, InstrType.IO);
+    public IoInstr(IrType irType) {
+        super(irType, InstrType.IO);
     }
 
     @Override

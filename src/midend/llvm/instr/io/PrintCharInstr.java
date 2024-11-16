@@ -4,8 +4,8 @@ import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
 
 public class PrintCharInstr extends IoInstr {
-    public PrintCharInstr(String irName, IrValue printValue) {
-        super(IrBaseType.VOID, irName);
+    public PrintCharInstr(IrValue printValue) {
+        super(IrBaseType.VOID);
         this.AddUseValue(printValue);
     }
 
@@ -20,6 +20,6 @@ public class PrintCharInstr extends IoInstr {
     @Override
     public String toString() {
         IrValue printValue = this.GetPrintValue();
-        return "call void @putchar(i8 " + printValue.GetIrName() + ")";
+        return "call void @putchar(i32 " + printValue.GetIrName() + ")";
     }
 }

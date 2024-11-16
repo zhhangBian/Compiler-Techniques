@@ -15,6 +15,9 @@ import midend.llvm.instr.io.GetIntInstr;
 import midend.llvm.instr.io.PrintCharInstr;
 import midend.llvm.instr.io.PrintIntInstr;
 import midend.llvm.instr.io.PrintStrInstr;
+import midend.llvm.type.IrBaseType;
+import midend.llvm.type.IrPointerType;
+import midend.llvm.type.IrType;
 import midend.llvm.value.IrValue;
 import midend.symbol.SymbolManger;
 
@@ -57,21 +60,22 @@ public class VisitorStmt {
 
         IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
         IrValue irExp = VisitorExp.VisitExp(exp);
-        StoreInstr storeInstr = new StoreInstr(IrBuilder.GetLocalVarName(), irExp, irLVal);
+        irExp = IrType.ConvertType(irExp, ((IrPointerType) irLVal.GetIrType()).GetTargetType());
+        StoreInstr storeInstr = new StoreInstr(irExp, irLVal);
     }
 
     private static void VisitGetIntStmt(Stmt stmt) {
         LVal lval = stmt.GetLVal();
         IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
-        GetIntInstr getIntInstr = new GetIntInstr(IrBuilder.GetLocalVarName());
-        StoreInstr storeInstr = new StoreInstr(IrBuilder.GetLocalVarName(), irLVal, getIntInstr);
+        GetIntInstr getIntInstr = new GetIntInstr();
+        StoreInstr storeInstr = new StoreInstr(irLVal, getIntInstr);
     }
 
     private static void VisitGetCharStmt(Stmt stmt) {
         LVal lval = stmt.GetLVal();
         IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
-        GetCharInstr getIntInstr = new GetCharInstr(IrBuilder.GetLocalVarName());
-        StoreInstr storeInstr = new StoreInstr(IrBuilder.GetLocalVarName(), irLVal, getIntInstr);
+        GetCharInstr getIntInstr = new GetCharInstr();
+        StoreInstr storeInstr = new StoreInstr(irLVal, getIntInstr);
     }
 
     private static void VisitPrintStmt(Stmt stmt) {
@@ -88,21 +92,20 @@ public class VisitorStmt {
                     IrConstantString irConstantString =
                         IrBuilder.GetNewIrConstantString(builder.toString());
 
-                    PrintStrInstr printStrInstr =
-                        new PrintStrInstr(IrBuilder.GetLocalVarName(), irConstantString);
+                    PrintStrInstr printStrInstr = new PrintStrInstr(irConstantString);
                     builder.setLength(0);
                 }
 
                 if (formatString.charAt(i + 1) == 'd') {
                     IrValue irValue = VisitorExp.VisitExp(expList.get(expCnt++));
-                    PrintIntInstr printIntInstr =
-                        new PrintIntInstr(IrBuilder.GetLocalVarName(), irValue);
+                    PrintIntInstr printIntInstr = new PrintIntInstr(irValue);
 
                     i++;
                 } else if (formatString.charAt(i + 1) == 'c') {
                     IrValue irValue = VisitorExp.VisitExp(expList.get(expCnt++));
-                    PrintCharInstr printCharInstr =
-                        new PrintCharInstr(IrBuilder.GetLocalVarName(), irValue);
+                    // 输出时进行类型转换
+                    IrValue printValue = IrType.ConvertType(irValue, IrBaseType.INT32);
+                    PrintCharInstr printCharInstr = new PrintCharInstr(printValue);
 
                     i++;
                 }
@@ -121,8 +124,7 @@ public class VisitorStmt {
         if (!builder.isEmpty()) {
             IrConstantString irConstantString =
                 IrBuilder.GetNewIrConstantString(builder.toString());
-            PrintStrInstr printStrInstr =
-                new PrintStrInstr(IrBuilder.GetLocalVarName(), irConstantString);
+            PrintStrInstr printStrInstr = new PrintStrInstr(irConstantString);
         }
     }
 
@@ -140,7 +142,7 @@ public class VisitorStmt {
             irReturn = new IrConstantChar(0);
         }
 
-        ReturnInstr returnInstr = new ReturnInstr(IrBuilder.GetLocalVarName(), irReturn);
+        ReturnInstr returnInstr = new ReturnInstr(irReturn);
     }
 
     private static void VisitForStmt(Stmt stmt) {

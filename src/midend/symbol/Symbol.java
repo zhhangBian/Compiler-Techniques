@@ -26,16 +26,13 @@ public class Symbol {
         return this.symbolType;
     }
 
+    // 设置的一定是一个allocate类型的
     public void SetIrValue(IrValue irValue) {
         this.irValue = irValue;
     }
 
     public IrValue GetIrValue() {
         return this.irValue;
-    }
-
-    public boolean IsConstSymbol() {
-        return this.symbolType.IsConstType();
     }
 
     @Override

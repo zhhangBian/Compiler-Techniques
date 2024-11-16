@@ -6,8 +6,8 @@ import midend.llvm.type.IrType;
 public class AllocateInstr extends Instr {
     private final IrType targetType;
 
-    public AllocateInstr(String name, IrType targetType) {
-        super(new IrPointerType(targetType), name, InstrType.ALLOCATE);
+    public AllocateInstr(IrType targetType) {
+        super(new IrPointerType(targetType), InstrType.ALLOCATE);
         this.targetType = targetType;
     }
 

@@ -9,14 +9,15 @@ import frontend.ast.exp.recursion.AddExp;
 import frontend.ast.exp.recursion.MulExp;
 import frontend.ast.token.Ident;
 import frontend.ast.token.TokenNode;
-import midend.llvm.IrBuilder;
 import midend.llvm.constant.IrConstantChar;
 import midend.llvm.constant.IrConstantInt;
 import midend.llvm.instr.AluInstr;
 import midend.llvm.instr.CallInstr;
 import midend.llvm.instr.CompareInstr;
 import midend.llvm.instr.ExtendInstr;
+import midend.llvm.instr.TruncInstr;
 import midend.llvm.type.IrBaseType;
+import midend.llvm.type.IrType;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
 import midend.symbol.FuncSymbol;
@@ -42,8 +43,11 @@ public class VisitorExp {
             MulExp mulExp2 = (MulExp) nodeList.get(index++);
             irValue2 = VisitMulExp(mulExp2);
 
-            AluInstr aluInstr = new AluInstr(IrBuilder.GetLocalVarName(),
-                op.GetSimpleName(), irValue1, irValue2);
+            // 进行类型转换
+            irValue1 = IrType.ConvertType(irValue1, IrBaseType.INT32);
+            irValue2 = IrType.ConvertType(irValue2, IrBaseType.INT32);
+
+            AluInstr aluInstr = new AluInstr(op.GetSimpleName(), irValue1, irValue2);
             irValue1 = aluInstr;
         }
 
@@ -62,8 +66,11 @@ public class VisitorExp {
             UnaryExp unaryExp2 = (UnaryExp) nodeList.get(index++);
             irValue2 = VisitUnaryExp(unaryExp2);
 
-            AluInstr aluInstr = new AluInstr(IrBuilder.GetLocalVarName(),
-                op.GetSimpleName(), irValue1, irValue2);
+            // 进行类型转换
+            irValue1 = IrType.ConvertType(irValue1, IrBaseType.INT32);
+            irValue2 = IrType.ConvertType(irValue2, IrBaseType.INT32);
+
+            AluInstr aluInstr = new AluInstr(op.GetSimpleName(), irValue1, irValue2);
             irValue1 = aluInstr;
         }
 
@@ -101,8 +108,7 @@ public class VisitorExp {
         FuncSymbol funcSymbol = (FuncSymbol) SymbolManger.GetSymbol(identName);
         IrFunction irFunction = (IrFunction) funcSymbol.GetIrValue();
 
-        CallInstr callInstr = new CallInstr(IrBuilder.GetLocalVarName(),
-            irFunction, realParamList);
+        CallInstr callInstr = new CallInstr(irFunction, realParamList);
         return callInstr;
     }
 
@@ -115,12 +121,10 @@ public class VisitorExp {
             case "+":
                 return irValue;
             case "-":
-                return new AluInstr(IrBuilder.GetLocalVarName(), op, constantZero, irValue);
+                return new AluInstr(op, constantZero, irValue);
             case "!":
-                CompareInstr compareInstr = new CompareInstr(IrBuilder.GetLocalVarName(),
-                    "==", constantZero, irValue);
-                ExtendInstr extendInstr = new ExtendInstr(IrBuilder.GetLocalVarName(),
-                    compareInstr, IrBaseType.INT32);
+                CompareInstr compareInstr = new CompareInstr("==", constantZero, irValue);
+                ExtendInstr extendInstr = new ExtendInstr(compareInstr, IrBaseType.INT32);
                 return extendInstr;
             default:
                 throw new RuntimeException("illegal unary op");

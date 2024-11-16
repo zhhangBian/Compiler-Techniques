@@ -8,8 +8,8 @@ import midend.llvm.value.IrValue;
     store i32 %2, i32* %1
  */
 public class StoreInstr extends Instr {
-    public StoreInstr(String name, IrValue fromValue, IrValue toValue) {
-        super(IrBaseType.VOID, name, InstrType.STORE);
+    public StoreInstr(IrValue fromValue, IrValue toValue) {
+        super(IrBaseType.VOID, InstrType.STORE, "store");
         this.AddUseValue(fromValue);
         this.AddUseValue(toValue);
     }
