@@ -104,6 +104,7 @@ public class VisitorStmt {
 
                 if (formatString.charAt(i + 1) == 'd') {
                     IrValue irValue = VisitorExp.VisitExp(expList.get(expCnt++));
+                    irValue = IrType.ConvertType(irValue, IrBaseType.INT32);
                     PrintIntInstr printIntInstr = new PrintIntInstr(irValue);
 
                     i++;

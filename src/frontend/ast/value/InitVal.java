@@ -76,4 +76,14 @@ public class InitVal extends Node {
         }
         return initValueList;
     }
+
+    public String GetInitialString() {
+        for (Node node : this.components) {
+            // exp形式
+            if (node instanceof StringConst stringConst) {
+                return stringConst.GetStringValue();
+            }
+        }
+        throw new RuntimeException("no string init");
+    }
 }

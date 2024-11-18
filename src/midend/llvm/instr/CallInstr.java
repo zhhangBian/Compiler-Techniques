@@ -1,10 +1,8 @@
 package midend.llvm.instr;
 
-import frontend.ast.exp.Exp;
 import midend.llvm.IrBuilder;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
-import midend.visit.VisitorExp;
 
 import java.util.ArrayList;
 

@@ -6,18 +6,14 @@ import midend.llvm.type.IrType;
 import java.util.ArrayList;
 
 public class IrConstantArray extends IrConstant {
-    private final ArrayList<Integer> valueList;
+    private final ArrayList<IrConstant> valueList;
     private final int arraySize;
 
     public IrConstantArray(int arraySize, IrType elementType, String irName,
-                           ArrayList<Integer> initValues) {
+                           ArrayList<IrConstant> initValues) {
         super(new IrArrayType(arraySize, elementType), irName);
         this.valueList = initValues == null ? new ArrayList<>() : new ArrayList<>(initValues);
         this.arraySize = arraySize;
-    }
-
-    public ArrayList<Integer> GetValueList() {
-        return this.valueList;
     }
 
     @Override
@@ -36,7 +32,8 @@ public class IrConstantArray extends IrConstant {
             }
             builder.append(this.valueList.get(this.valueList.size() - 1));
 
-            builder.append(", 0".repeat(Math.max(0, this.arraySize - this.valueList.size())));
+            String padding = ", " + this.valueList.get(0).GetIrType() + " 0";
+            builder.append(padding.repeat(Math.max(0, this.arraySize - this.valueList.size())));
             builder.append("]");
         }
 

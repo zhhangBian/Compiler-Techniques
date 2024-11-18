@@ -6,7 +6,6 @@ import midend.llvm.instr.io.GetIntInstr;
 import midend.llvm.instr.io.PrintCharInstr;
 import midend.llvm.instr.io.PrintIntInstr;
 import midend.llvm.instr.io.PrintStrInstr;
-import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrGlobalValue;
 

@@ -9,6 +9,11 @@ public class JumpInstr extends Instr {
         this.AddUseValue(targetBlock);
     }
 
+    public JumpInstr(IrBasicBlock targetBlock, boolean autoAdd) {
+        super(IrBaseType.VOID, InstrType.JUMP, "jump", false);
+        this.AddUseValue(targetBlock);
+    }
+
     private IrBasicBlock GetTargetBlock() {
         return (IrBasicBlock) this.useValueList.get(0);
     }

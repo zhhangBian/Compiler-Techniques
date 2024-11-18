@@ -11,7 +11,6 @@ import midend.llvm.constant.IrConstant;
 import midend.llvm.constant.IrConstantArray;
 import midend.llvm.constant.IrConstantChar;
 import midend.llvm.constant.IrConstantInt;
-import midend.llvm.constant.IrConstantString;
 import midend.llvm.instr.AllocateInstr;
 import midend.llvm.instr.GepInstr;
 import midend.llvm.instr.StoreInstr;
@@ -22,6 +21,7 @@ import midend.llvm.type.IrType;
 import midend.llvm.value.IrGlobalValue;
 import midend.llvm.value.IrValue;
 import midend.symbol.SymbolManger;
+import midend.symbol.SymbolType;
 import midend.symbol.ValueSymbol;
 
 import java.util.ArrayList;
@@ -68,13 +68,16 @@ public class VisitorDecl {
             if (symbol.GetDimension() == 0) {
                 StoreInstr storeInstr = new StoreInstr(GetValueConstant(symbol), allocateInstr);
             } else {
-                // 生成一系列GEP+store指令，将初始值存入常量
-                int offset = 0;
-                for (Integer initValue : initValueList) {
+                SymbolType symbolType = symbol.GetSymbolType();
+
+                for (int i = 0; i < initValueList.size(); i++) {
                     // 计算偏移值
-                    GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(offset++));
+                    GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(i));
+                    IrValue initValue = symbolType.equals(SymbolType.CONST_CHAR_ARRAY) ?
+                        new IrConstantChar(initValueList.get(i)) :
+                        new IrConstantInt(initValueList.get(i));
                     // 将初始值存储到偏移量中
-                    StoreInstr storeInstr = new StoreInstr(new IrConstantInt(initValue), gepInstr);
+                    StoreInstr storeInstr = new StoreInstr(initValue, gepInstr);
                 }
             }
         }
@@ -107,18 +110,34 @@ public class VisitorDecl {
             if (varDef.HaveInitVal()) {
                 Exp exp = varDef.GetInitVal().GetExpList().get(0);
                 IrValue irExp = VisitorExp.VisitExp(exp);
+
+                if (symbol.GetSymbolType().equals(SymbolType.CHAR)) {
+                    irExp = IrType.ConvertType(irExp, IrBaseType.INT8);
+                }
                 StoreInstr storeInstr = new StoreInstr(irExp, allocateInstr);
             }
         } else {
-            // 生成一系列GEP+store指令，将初始值存入常量
-            int offset = 0;
-            ArrayList<Exp> expList = varDef.GetInitVal().GetExpList();
-            for (Exp exp : expList) {
-                IrValue irExp = VisitorExp.VisitExp(exp);
-                // 计算偏移值
-                GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(offset++));
-                // 将初始值存储到偏移量中
-                StoreInstr storeInstr = new StoreInstr(irExp, gepInstr);
+            if (varDef.HaveInitVal()) {
+                if (symbol.GetSymbolType().equals(SymbolType.CHAR_ARRAY)) {
+                    String initialString = varDef.GetInitVal().GetInitialString();
+                    for (int i = 0; i < initialString.length(); i++) {
+                        // 计算偏移值
+                        GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(i));
+                        // 将初始值存储到偏移量中
+                        StoreInstr storeInstr = new StoreInstr(
+                            new IrConstantChar(initialString.charAt(i)), gepInstr);
+                    }
+                } else {
+                    // 生成一系列GEP+store指令，将初始值存入常量
+                    ArrayList<Exp> expList = varDef.GetInitVal().GetExpList();
+                    for (int i = 0; i < expList.size(); i++) {
+                        IrValue irExp = VisitorExp.VisitExp(expList.get(i));
+                        // 计算偏移值
+                        GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(i));
+                        // 将初始值存储到偏移量中
+                        StoreInstr storeInstr = new StoreInstr(irExp, gepInstr);
+                    }
+                }
             }
         }
     }
@@ -150,15 +169,18 @@ public class VisitorDecl {
         else {
             IrArrayType irArrayType = (IrArrayType) GetSymbolIrType(symbol);
             IrType irType = irArrayType.GetElementType();
-
+            ArrayList<IrConstant> constantList = new ArrayList<>();
             if (irType.IsInt8Type()) {
-                //return IrArrayType(new IrPointerType(IrBaseType.INT8))
-                return IrBuilder.GetNewIrConstantString(
-                    IrConstantString.ConvertArrayToString(initValueList));
+                for (Integer num : initValueList) {
+                    constantList.add(new IrConstantChar(num));
+                }
             } else {
-                return new IrConstantArray(symbol.GetTotalDepth(), IrBaseType.INT32,
-                    symbol.GetSymbolName(), initValueList);
+                for (Integer num : initValueList) {
+                    constantList.add(new IrConstantInt(num));
+                }
             }
+            return new IrConstantArray(symbol.GetTotalDepth(), irType,
+                symbol.GetSymbolName(), constantList);
         }
     }
 }

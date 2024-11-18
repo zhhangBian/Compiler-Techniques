@@ -59,7 +59,7 @@ public class IrFunction extends IrValue {
         for (int i = 0; i < this.basicBlockList.size(); i++) {
             IrBasicBlock block = this.basicBlockList.get(i);
             if (block.IsEmptyBlock()) {
-                block.AddInstr(new JumpInstr(this.basicBlockList.get(i + 1)));
+                block.AddInstr(new JumpInstr(this.basicBlockList.get(i + 1), false));
             }
         }
     }

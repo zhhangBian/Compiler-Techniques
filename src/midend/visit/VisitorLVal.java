@@ -3,8 +3,10 @@ package midend.visit;
 import frontend.ast.exp.Exp;
 import frontend.ast.exp.LVal;
 import frontend.ast.token.Ident;
+import midend.llvm.constant.IrConstantInt;
 import midend.llvm.instr.GepInstr;
 import midend.llvm.instr.LoadInstr;
+import midend.llvm.type.IrPointerType;
 import midend.llvm.value.IrValue;
 import midend.symbol.SymbolManger;
 import midend.symbol.ValueSymbol;
@@ -28,7 +30,13 @@ public class VisitorLVal {
         if (dimension == 0) {
             return symbol.GetIrValue();
         } else {
-            return new GepInstr(symbol.GetIrValue(), VisitorExp.VisitExp(expList.get(0)));
+            // 如果是二维数组，那么需要再取一次
+            IrValue pointer = symbol.GetIrValue();
+            IrPointerType pointerType = (IrPointerType) pointer.GetIrType();
+            if (pointerType.GetTargetType() instanceof IrPointerType) {
+                pointer = new LoadInstr(pointer);
+            }
+            return new GepInstr(pointer, VisitorExp.VisitExp(expList.get(0)));
         }
     }
 
@@ -46,10 +54,26 @@ public class VisitorLVal {
         }
         // 是数组
         else {
-            GepInstr gepInstr =
-                new GepInstr(symbol.GetIrValue(), VisitorExp.VisitExp(expList.get(0)));
-            LoadInstr loadInstr = new LoadInstr(gepInstr);
-            return loadInstr;
+            // 是指针
+            if (expList.isEmpty()) {
+                GepInstr gepInstr =
+                    new GepInstr(symbol.GetIrValue(), new IrConstantInt(0));
+                return gepInstr;
+            }
+            // 不是指针
+            else {
+                // 如果是二维数组，那么需要再取一次
+                IrValue pointer = symbol.GetIrValue();
+                IrPointerType pointerType = (IrPointerType) pointer.GetIrType();
+                if (pointerType.GetTargetType() instanceof IrPointerType) {
+                    pointer = new LoadInstr(pointer);
+                }
+
+                GepInstr gepInstr =
+                    new GepInstr(pointer, VisitorExp.VisitExp(expList.get(0)));
+                LoadInstr loadInstr = new LoadInstr(gepInstr);
+                return loadInstr;
+            }
         }
     }
 }

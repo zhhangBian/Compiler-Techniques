@@ -26,20 +26,33 @@ public class GepInstr extends Instr {
         IrValue offset = this.GetOffset();
 
         IrPointerType pointerType = (IrPointerType) pointer.GetIrType();
-        IrArrayType targetType = (IrArrayType) pointerType.GetTargetType();
+        IrType targetType = pointerType.GetTargetType();
 
-        return this.irName + " = getelementptr inbounds " +
-            targetType + ", " +
-            pointerType + " " +
-            pointer.GetIrName() + ", i32 0, " +
-            targetType.GetElementType() + " " +
-            offset.GetIrName();
+        if (targetType.IsArrayType()) {
+            IrArrayType arrayType = (IrArrayType) targetType;
+            targetType = arrayType.GetElementType();
+            return this.irName + " = getelementptr inbounds " +
+                arrayType + ", " +
+                pointerType + " " +
+                pointer.GetIrName() + ", i32 0, " +
+                offset.GetIrType() + " " +
+                offset.GetIrName();
+        } else {
+            return this.irName + " = getelementptr inbounds " +
+                targetType + ", " +
+                pointerType + " " +
+                pointer.GetIrName() + ", " +
+                offset.GetIrType() + " " +
+                offset.GetIrName();
+        }
     }
 
     public static IrType GetTargetType(IrValue pointer) {
         IrType targetType = ((IrPointerType) pointer.GetIrType()).GetTargetType();
         if (targetType instanceof IrArrayType arrayType) {
             return arrayType.GetElementType();
+        } else if (targetType instanceof IrPointerType pointerType) {
+            return pointerType.GetTargetType();
         } else {
             return targetType;
         }

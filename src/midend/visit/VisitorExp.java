@@ -17,7 +17,11 @@ import frontend.ast.token.TokenNode;
 import midend.llvm.IrBuilder;
 import midend.llvm.constant.IrConstantChar;
 import midend.llvm.constant.IrConstantInt;
-import midend.llvm.instr.*;
+import midend.llvm.instr.AluInstr;
+import midend.llvm.instr.BranchInstr;
+import midend.llvm.instr.CallInstr;
+import midend.llvm.instr.CompareInstr;
+import midend.llvm.instr.ExtendInstr;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.type.IrType;
 import midend.llvm.value.IrBasicBlock;
@@ -27,7 +31,6 @@ import midend.symbol.FuncSymbol;
 import midend.symbol.SymbolManger;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 public class VisitorExp {
     public static IrValue VisitExp(Exp exp) {

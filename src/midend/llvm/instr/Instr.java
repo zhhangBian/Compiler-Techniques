@@ -22,6 +22,15 @@ public abstract class Instr extends IrUser {
         IrBuilder.AddInstr(this);
     }
 
+    public Instr(IrType irType, InstrType instrType, String irName, boolean autoAdd) {
+        super(irType, irName);
+        this.instrType = instrType;
+        // 自动插入
+        if (autoAdd) {
+            IrBuilder.AddInstr(this);
+        }
+    }
+
     public InstrType GetInstrType() {
         return this.instrType;
     }
