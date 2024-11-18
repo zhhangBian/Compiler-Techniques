@@ -135,6 +135,7 @@ public class VisitorExp {
             case "-":
                 return new AluInstr(op, constantZero, irValue);
             case "!":
+                irValue = IrType.ConvertType(irValue, IrBaseType.INT32);
                 CompareInstr compareInstr = new CompareInstr("==", constantZero, irValue);
                 ExtendInstr extendInstr = new ExtendInstr(compareInstr, IrBaseType.INT32);
                 return extendInstr;

@@ -51,6 +51,8 @@ public class IrFunction extends IrValue {
             } else if (this.GetReturnType().IsInt32Type()) {
                 returnValue = new IrConstantInt(0);
             }
+            returnValue = returnValue == null ? null :
+                IrType.ConvertType(returnValue, this.GetReturnType());
             ReturnInstr returnInstr = new ReturnInstr(returnValue);
         }
     }

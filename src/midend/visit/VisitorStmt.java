@@ -195,6 +195,9 @@ public class VisitorStmt {
             irReturn = new IrConstantChar(0);
         }
 
+        if (irReturn != null) {
+            irReturn = IrType.ConvertType(irReturn, IrBuilder.GetCurrentFunctionReturnType());
+        }
         ReturnInstr returnInstr = new ReturnInstr(irReturn);
     }
 
