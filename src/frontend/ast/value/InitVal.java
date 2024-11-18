@@ -68,8 +68,14 @@ public class InitVal extends Node {
             else if (node instanceof StringConst stringConst) {
                 String string = stringConst.GetStringValue();
                 ArrayList<Integer> asciiList = new ArrayList<>();
-                for (char c : string.toCharArray()) {
-                    asciiList.add((int) c);
+                for (int i = 0; i < string.length(); i++) {
+                    char ch = string.charAt(i);
+                    if (ch == '\\' && i < string.length() - 1 && string.charAt(i + 1) == 'n') {
+                        asciiList.add((int) ('\n'));
+                        i++;
+                    } else {
+                        asciiList.add((int) ch);
+                    }
                 }
                 return asciiList;
             }
@@ -77,9 +83,17 @@ public class InitVal extends Node {
         return initValueList;
     }
 
-    public String GetInitialString() {
+    public boolean HaveStringConst() {
         for (Node node : this.components) {
-            // exp形式
+            if (node instanceof StringConst) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String GetStringConst() {
+        for (Node node : this.components) {
             if (node instanceof StringConst stringConst) {
                 return stringConst.GetStringValue();
             }

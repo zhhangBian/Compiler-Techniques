@@ -46,6 +46,10 @@ public class VisitorLVal {
         ArrayList<Exp> expList = lval.GetExpList();
 
         ValueSymbol symbol = (ValueSymbol) SymbolManger.GetSymbol(ident.GetSimpleName());
+        if (symbol.GetIrValue() == null) {
+            symbol = (ValueSymbol) SymbolManger.GetSymbolFromFather(ident.GetSimpleName());
+        }
+
         int dimension = symbol.GetDimension();
         // TODO：常量优化
         // 不是数组
@@ -54,23 +58,21 @@ public class VisitorLVal {
         }
         // 是数组
         else {
-            // 是指针
+            // 如果是二维数组，那么需要再取一次
+            IrValue pointer = symbol.GetIrValue();
+            IrPointerType pointerType = (IrPointerType) pointer.GetIrType();
+            if (pointerType.GetTargetType() instanceof IrPointerType) {
+                pointer = new LoadInstr(pointer);
+            }
+
+            // 没带参数，是指针
             if (expList.isEmpty()) {
-                GepInstr gepInstr =
-                    new GepInstr(symbol.GetIrValue(), new IrConstantInt(0));
+                GepInstr gepInstr = new GepInstr(pointer, new IrConstantInt(0));
                 return gepInstr;
             }
             // 不是指针
             else {
-                // 如果是二维数组，那么需要再取一次
-                IrValue pointer = symbol.GetIrValue();
-                IrPointerType pointerType = (IrPointerType) pointer.GetIrType();
-                if (pointerType.GetTargetType() instanceof IrPointerType) {
-                    pointer = new LoadInstr(pointer);
-                }
-
-                GepInstr gepInstr =
-                    new GepInstr(pointer, VisitorExp.VisitExp(expList.get(0)));
+                GepInstr gepInstr = new GepInstr(pointer, VisitorExp.VisitExp(expList.get(0)));
                 LoadInstr loadInstr = new LoadInstr(gepInstr);
                 return loadInstr;
             }

@@ -52,7 +52,6 @@ public class IrConstantString extends IrConstant {
                 }
             }
         }
-        // 最后加上一个
         return length + 1;
     }
 }

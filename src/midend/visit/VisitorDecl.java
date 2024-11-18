@@ -71,13 +71,25 @@ public class VisitorDecl {
                 SymbolType symbolType = symbol.GetSymbolType();
 
                 for (int i = 0; i < initValueList.size(); i++) {
-                    // 计算偏移值
-                    GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(i));
-                    IrValue initValue = symbolType.equals(SymbolType.CONST_CHAR_ARRAY) ?
-                        new IrConstantChar(initValueList.get(i)) :
-                        new IrConstantInt(initValueList.get(i));
-                    // 将初始值存储到偏移量中
-                    StoreInstr storeInstr = new StoreInstr(initValue, gepInstr);
+                    if (symbolType.equals(SymbolType.CONST_CHAR_ARRAY)) {
+                        char ch = (char) initValueList.get(i).intValue();
+                        if (ch == '\\' && i < initValueList.size() - 1 &&
+                            (char) initValueList.get(i + 1).intValue() == 'n') {
+                            ch = '\n';
+                            i++;
+                        }
+                        // 计算偏移值
+                        GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(i));
+                        IrValue initValue = new IrConstantChar(ch);
+                        // 将初始值存储到偏移量中
+                        StoreInstr storeInstr = new StoreInstr(initValue, gepInstr);
+                    } else {
+                        // 计算偏移值
+                        GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(i));
+                        IrValue initValue = new IrConstantInt(initValueList.get(i));
+                        // 将初始值存储到偏移量中
+                        StoreInstr storeInstr = new StoreInstr(initValue, gepInstr);
+                    }
                 }
             }
         }
@@ -91,8 +103,6 @@ public class VisitorDecl {
             IrGlobalValue irGlobalValue = IrBuilder.GetNewIrGlobalValue(
                 new IrPointerType(GetSymbolIrType(symbol)), GetValueConstant(symbol));
             symbol.SetIrValue(irGlobalValue);
-
-            IrConstant irConstant = GetValueConstant(symbol);
         }
         // 局部变量
         else {
@@ -119,13 +129,33 @@ public class VisitorDecl {
         } else {
             if (varDef.HaveInitVal()) {
                 if (symbol.GetSymbolType().equals(SymbolType.CHAR_ARRAY)) {
-                    String initialString = varDef.GetInitVal().GetInitialString();
-                    for (int i = 0; i < initialString.length(); i++) {
-                        // 计算偏移值
-                        GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(i));
-                        // 将初始值存储到偏移量中
-                        StoreInstr storeInstr = new StoreInstr(
-                            new IrConstantChar(initialString.charAt(i)), gepInstr);
+                    if (varDef.GetInitVal().HaveStringConst()) {
+                        String initialString = varDef.GetInitVal().GetStringConst();
+                        for (int i = 0; i < initialString.length(); i++) {
+                            char ch = initialString.charAt(i);
+                            if (ch == '\\' && i < initialString.length() - 1 &&
+                                initialString.charAt(i + 1) == 'n') {
+                                ch = '\n';
+                                i++;
+                            }
+
+                            // 计算偏移值
+                            GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(i));
+                            // 将初始值存储到偏移量中
+                            StoreInstr storeInstr = new StoreInstr(
+                                new IrConstantChar(ch), gepInstr);
+                        }
+                    } else {
+                        // 生成一系列GEP+store指令，将初始值存入常量
+                        ArrayList<Exp> expList = varDef.GetInitVal().GetExpList();
+                        for (int i = 0; i < expList.size(); i++) {
+                            IrValue irExp = VisitorExp.VisitExp(expList.get(i));
+                            irExp = IrType.ConvertType(irExp, IrBaseType.INT8);
+                            // 计算偏移值
+                            GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(i));
+                            // 将初始值存储到偏移量中
+                            StoreInstr storeInstr = new StoreInstr(irExp, gepInstr);
+                        }
                     }
                 } else {
                     // 生成一系列GEP+store指令，将初始值存入常量

@@ -44,6 +44,18 @@ public class SymbolManger {
         return null;
     }
 
+    public static Symbol GetSymbolFromFather(String name) {
+        SymbolTable table = currentSymbolTable.GetFatherTable();
+        while (table != null) {
+            Symbol symbol = table.GetSymbol(name);
+            if (symbol != null) {
+                return symbol;
+            }
+            table = table.GetFatherTable();
+        }
+        return null;
+    }
+
     public static SymbolTable GetSymbolTable() {
         return rootSymbolTable;
     }

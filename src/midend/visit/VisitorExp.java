@@ -34,8 +34,7 @@ import java.util.ArrayList;
 
 public class VisitorExp {
     public static IrValue VisitExp(Exp exp) {
-        AddExp addExp = exp.GetAddExp();
-        return VisitAddExp(addExp);
+        return VisitAddExp(exp.GetAddExp());
     }
 
     public static IrValue VisitAddExp(AddExp addExp) {
