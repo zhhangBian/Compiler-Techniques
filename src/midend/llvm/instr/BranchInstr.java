@@ -30,7 +30,7 @@ public class BranchInstr extends Instr {
         IrBasicBlock trueBlock = this.GetTrueBlock();
         IrBasicBlock falseBlock = this.GetFalseBlock();
 
-        return "br i1 " + cond.GetIrType() +
+        return "br i1 " + cond.GetIrName() +
             ", label %" + trueBlock.GetIrName() +
             ", label %" + falseBlock.GetIrName();
     }

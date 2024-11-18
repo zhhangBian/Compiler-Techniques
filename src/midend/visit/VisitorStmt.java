@@ -73,14 +73,15 @@ public class VisitorStmt {
         LVal lval = stmt.GetLVal();
         IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
         GetIntInstr getIntInstr = new GetIntInstr();
-        StoreInstr storeInstr = new StoreInstr(irLVal, getIntInstr);
+        StoreInstr storeInstr = new StoreInstr(getIntInstr, irLVal);
     }
 
     private static void VisitGetCharStmt(Stmt stmt) {
         LVal lval = stmt.GetLVal();
         IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
-        GetCharInstr getIntInstr = new GetCharInstr();
-        StoreInstr storeInstr = new StoreInstr(irLVal, getIntInstr);
+        GetCharInstr getCharInstr = new GetCharInstr();
+        IrValue charValue = IrType.ConvertType(getCharInstr, IrBaseType.INT8);
+        StoreInstr storeInstr = new StoreInstr(charValue, irLVal);
     }
 
     private static void VisitPrintStmt(Stmt stmt) {
@@ -109,7 +110,7 @@ public class VisitorStmt {
                 } else if (formatString.charAt(i + 1) == 'c') {
                     IrValue irValue = VisitorExp.VisitExp(expList.get(expCnt++));
                     // 输出时进行类型转换
-                    IrValue printValue = IrType.ConvertType(irValue, IrBaseType.INT32);
+                    IrValue printValue = IrType.ConvertType(irValue, IrBaseType.INT8);
                     PrintCharInstr printCharInstr = new PrintCharInstr(printValue);
 
                     i++;
@@ -146,19 +147,20 @@ public class VisitorStmt {
 
             // 解析Cond部分
             VisitorExp.VisitCond(cond, ifBlock, elseBlock);
+            JumpInstr ifJump = new JumpInstr(ifBlock);
 
             // 解析if部分
             IrBuilder.SetCurrentBasicBlock(ifBlock);
             VisitStmt(ifStmt);
 
             IrBasicBlock followBlock = IrBuilder.GetNewBasicBlockIr();
-            JumpInstr jumpInstr = new JumpInstr(followBlock);
+            JumpInstr followJump = new JumpInstr(followBlock);
 
             // 解析else部分
             Stmt elseStmt = stmt.GetIfStmtElseStmt();
             IrBuilder.SetCurrentBasicBlock(elseBlock);
             VisitStmt(elseStmt);
-            JumpInstr jumpInstr1 = new JumpInstr(followBlock);
+            JumpInstr elseJump = new JumpInstr(followBlock);
 
             // 设置follow部分
             IrBuilder.SetCurrentBasicBlock(followBlock);
@@ -170,11 +172,12 @@ public class VisitorStmt {
 
             // 解析Cond部分
             VisitorExp.VisitCond(cond, ifBlock, followBlock);
+            JumpInstr ifJump = new JumpInstr(ifBlock);
 
             // 解析if部分
             IrBuilder.SetCurrentBasicBlock(ifBlock);
             VisitStmt(ifStmt);
-            JumpInstr jumpInstr = new JumpInstr(followBlock);
+            JumpInstr followJump = new JumpInstr(followBlock);
 
             // 设置follow部分
             IrBuilder.SetCurrentBasicBlock(followBlock);
@@ -198,10 +201,11 @@ public class VisitorStmt {
         // 为Cond单独创建一个基本块
         final IrBasicBlock condBlock = IrBuilder.GetNewBasicBlockIr();
         final IrBasicBlock bodyBlock = IrBuilder.GetNewBasicBlockIr();
+        final IrBasicBlock stepBlock = IrBuilder.GetNewBasicBlockIr();
         final IrBasicBlock followBlock = IrBuilder.GetNewBasicBlockIr();
 
         // 将loop入栈：方便分析continue和break
-        IrBuilder.LoopStackPush(new IrLoop(condBlock, bodyBlock, followBlock));
+        IrBuilder.LoopStackPush(new IrLoop(condBlock, bodyBlock, stepBlock, followBlock));
 
         // 解析初始化stmt
         ForStmt forStmtInit = stmt.GetForStmtInit();
@@ -222,7 +226,9 @@ public class VisitorStmt {
         // 解析循环函数体stmt
         Stmt bodyStmt = stmt.GetForStmtStmt();
         VisitStmt(bodyStmt);
+        JumpInstr jumpStep = new JumpInstr(stepBlock);
         // 解析步进stmt
+        IrBuilder.SetCurrentBasicBlock(stepBlock);
         ForStmt stepStmt = stmt.GetForStmtStep();
         if (stepStmt != null) {
             VisitForStmt(stepStmt);
@@ -252,6 +258,6 @@ public class VisitorStmt {
     }
 
     private static void VisitContinueStmt(Stmt stmt) {
-        JumpInstr jumpInstr = new JumpInstr(IrBuilder.LoopStackPeek().GetCondBlock());
+        JumpInstr jumpInstr = new JumpInstr(IrBuilder.LoopStackPeek().GetStepBlock());
     }
 }

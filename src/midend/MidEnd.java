@@ -7,19 +7,24 @@ import midend.llvm.IrModule;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolTable;
 import midend.visit.Visitor;
+import utils.IOhandler;
+
+import java.io.IOException;
 
 public class MidEnd {
     private static CompUnit rootNode;
 
-    public static void Visit() {
+    public static void Visit() throws IOException {
         SymbolManger.Init();
         rootNode = FrontEnd.GetAstTree();
         rootNode.Visit();
         SymbolManger.GoBackToRootSymbolTable();
+        IOhandler.PrintSymbolTable();
 
         IrBuilder.SetCurrentModule(new IrModule());
         Visitor visitor = new Visitor(rootNode);
         visitor.Visit();
+        IrBuilder.Check();
     }
 
     public static SymbolTable GetSymbolTable() {

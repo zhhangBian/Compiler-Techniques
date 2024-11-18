@@ -40,7 +40,7 @@ public class EqExp extends RecursionNode {
 
     public ArrayList<RelExp> GetRelExpList() {
         ArrayList<RelExp> relExpList = new ArrayList<>();
-        for (Node node : this.components) {
+        for (Node node : this.nodeList) {
             if (node instanceof RelExp relExp) {
                 relExpList.add(relExp);
             }
@@ -50,7 +50,7 @@ public class EqExp extends RecursionNode {
 
     public ArrayList<String> GetOpList() {
         ArrayList<String> opList = new ArrayList<>();
-        for (Node node : this.components) {
+        for (Node node : this.nodeList) {
             if (node instanceof TokenNode op) {
                 opList.add(op.GetTokenString());
             }

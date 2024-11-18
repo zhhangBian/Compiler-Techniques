@@ -14,12 +14,12 @@ public class PrintCharInstr extends IoInstr {
     }
 
     public static String GetDeclare() {
-        return "declare void @putchar(i32)";
+        return "declare void @putch(i8)";
     }
 
     @Override
     public String toString() {
         IrValue printValue = this.GetPrintValue();
-        return "call void @putchar(i32 " + printValue.GetIrName() + ")";
+        return "call void @putch(i8 " + printValue.GetIrName() + ")";
     }
 }

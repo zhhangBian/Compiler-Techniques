@@ -1,7 +1,7 @@
 package midend.llvm.instr;
 
 import frontend.ast.exp.Exp;
-import midend.llvm.type.IrFunctionType;
+import midend.llvm.IrBuilder;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
 import midend.visit.VisitorExp;
@@ -9,10 +9,11 @@ import midend.visit.VisitorExp;
 import java.util.ArrayList;
 
 public class CallInstr extends Instr {
-    public CallInstr(IrFunction targetFunction, ArrayList<Exp> paramList) {
-        super(IrFunctionType.FUNCTION_TYPE, InstrType.CALL, "call");
+    public CallInstr(IrFunction targetFunction, ArrayList<IrValue> paramList) {
+        super(targetFunction.GetReturnType(), InstrType.CALL,
+            targetFunction.GetReturnType().IsVoidType() ? "call" : IrBuilder.GetLocalVarName());
         this.AddUseValue(targetFunction);
-        paramList.stream().map(VisitorExp::VisitExp).forEach(this::AddUseValue);
+        paramList.forEach(this::AddUseValue);
     }
 
     public IrFunction GetTargetFunction() {
@@ -20,21 +21,36 @@ public class CallInstr extends Instr {
     }
 
     public ArrayList<IrValue> GetParamList() {
-        return (ArrayList<IrValue>) this.useValueList.subList(1, this.useValueList.size());
+        return new ArrayList<>(this.useValueList.subList(1, this.useValueList.size()));
+    }
+
+    private boolean IsVoidReturnType() {
+        return this.GetTargetFunction().GetReturnType().IsVoidType();
     }
 
     @Override
     public String toString() {
-        IrFunction targetFunction = this.GetTargetFunction();
+        final IrFunction targetFunction = this.GetTargetFunction();
         ArrayList<String> paramInfo = new ArrayList<>();
         this.GetParamList().stream()
             .map(param -> param.GetIrType() + " " + param.GetIrName())
             .forEach(paramInfo::add);
 
-        return (this.irType.IsVoidType() ? "call void " : "call i32 ") +
-            targetFunction.GetIrName() +
-            "(" +
-            String.join(", ", paramInfo) +
-            ")";
+        StringBuilder builder = new StringBuilder();
+        // 如果不是void
+        if (!this.IsVoidReturnType()) {
+            builder.append(this.irName + " = ");
+        }
+
+        builder.append("call ");
+        builder.append(this.IsVoidReturnType() ? "void" : targetFunction.GetReturnType());
+        builder.append(" ");
+        builder.append(targetFunction.GetIrName());
+        // 填充参数
+        builder.append("(");
+        builder.append(String.join(", ", paramInfo));
+        builder.append(")");
+
+        return builder.toString();
     }
 }

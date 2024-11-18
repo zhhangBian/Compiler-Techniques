@@ -26,7 +26,7 @@ public class Char extends Node {
     private int GetAsciiValue(String charString) {
         String string = charString.replace("'", "");
         if (string.length() == 1) {
-            return Character.getNumericValue(string.charAt(0));
+            return string.charAt(0);
         } else {
             return switch (string) {
                 case "\\a" -> 7;

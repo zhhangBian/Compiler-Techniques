@@ -58,12 +58,16 @@ public abstract class IrType {
             } else {
                 return new ExtendInstr(originValue, targetType);
             }
-        } else {
+        } else if (targetType.IsInt1Type()) {
             if (originType.IsInt1Type()) {
                 return originValue;
             } else {
-                return new ExtendInstr(originValue, targetType);
+                return new TruncInstr(originValue, targetType);
             }
+        } else if (targetType.IsArrayType()) {
+            IrArrayType arrayType = (IrArrayType) targetType;
+            return ConvertType(originValue, arrayType.GetElementType());
         }
+        return originValue;
     }
 }

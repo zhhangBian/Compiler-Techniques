@@ -19,7 +19,7 @@ public class ReturnInstr extends Instr {
     public String toString() {
         IrValue returnValue = this.GetReturnValue();
 
-        return returnValue == null ? "ret void" :
-            "ret " + returnValue.GetIrType() + " " + returnValue.GetIrName();
+        return "ret " + (returnValue == null ? "void" :
+            returnValue.GetIrType() + " " + returnValue.GetIrName());
     }
 }

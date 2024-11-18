@@ -23,6 +23,7 @@ public class VisitorFuncDef {
         FuncSymbol funcSymbol = funcDef.GetSymbol();
         final IrFunction irFunction = IrBuilder.GetNewFunctionIr(funcSymbol.GetSymbolName(),
             GetIrType(funcSymbol.GetSymbolType()));
+        funcSymbol.SetIrValue(irFunction);
 
         SymbolManger.GoToSonSymbolTable();
 

@@ -39,7 +39,7 @@ public class LOrExp extends RecursionNode {
 
     public ArrayList<LAndExp> GetLAndExpList() {
         ArrayList<LAndExp> landExpList = new ArrayList<>();
-        for (Node node : this.components) {
+        for (Node node : this.nodeList) {
             if (node instanceof LAndExp lAndExp) {
                 landExpList.add(lAndExp);
             }

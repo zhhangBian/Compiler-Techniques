@@ -1,13 +1,18 @@
 package midend.llvm.type;
 
 public class IrFunctionType extends IrType {
-    public static final IrFunctionType FUNCTION_TYPE = new IrFunctionType();
+    private final IrType returnType;
 
-    private IrFunctionType() {
+    public IrFunctionType(IrType returnType) {
+        this.returnType = returnType;
+    }
+
+    public IrType GetReturnType() {
+        return this.returnType;
     }
 
     @Override
     public String toString() {
-        return "";
+        return this.returnType.toString();
     }
 }

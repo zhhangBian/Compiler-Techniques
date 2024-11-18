@@ -9,16 +9,16 @@ import java.util.stream.Collectors;
 
 public class IrBasicBlock extends IrValue {
     private final ArrayList<Instr> instrList;
-    private IrFunction irFunction;
+    private final IrFunction irFunction;
 
-    public IrBasicBlock(String irName) {
+    public IrBasicBlock(String irName, IrFunction irFunction) {
         super(IrBasicBlockType.BASIC_BLOCK, irName);
         this.instrList = new ArrayList<>();
-        this.irFunction = null;
+        this.irFunction = irFunction;
     }
 
-    public void SetParentFunction(IrFunction irFunction) {
-        this.irFunction = irFunction;
+    public boolean IsEmptyBlock() {
+        return this.instrList.isEmpty();
     }
 
     public void AddInstr(Instr instr) {

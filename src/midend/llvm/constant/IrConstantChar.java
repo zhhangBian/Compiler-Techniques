@@ -3,11 +3,11 @@ package midend.llvm.constant;
 import midend.llvm.type.IrBaseType;
 
 public class IrConstantChar extends IrConstant {
-    private final int value;
+    private final char value;
 
     public IrConstantChar(int value) {
         super(IrBaseType.INT8, String.valueOf(value));
-        this.value = value;
+        this.value = (char) value;
     }
 
     public int GetValue() {
@@ -16,6 +16,6 @@ public class IrConstantChar extends IrConstant {
 
     @Override
     public String toString() {
-        return "i8 " + this.value;
+        return "i8 " + (int)(this.value);
     }
 }

@@ -13,6 +13,8 @@ testfile.txt
 *.zip
 *.rar
 *.jar
+*.ll
+*.sh
 
 src/META-INF
 META-INF/*

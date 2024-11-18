@@ -6,6 +6,7 @@ import midend.llvm.instr.io.GetIntInstr;
 import midend.llvm.instr.io.PrintCharInstr;
 import midend.llvm.instr.io.PrintIntInstr;
 import midend.llvm.instr.io.PrintStrInstr;
+import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrGlobalValue;
 
@@ -35,6 +36,12 @@ public class IrModule extends IrNode {
         this.declares.add(PrintCharInstr.GetDeclare());
         this.declares.add(PrintIntInstr.GetDeclare());
         this.declares.add(PrintStrInstr.GetDeclare());
+    }
+
+    public void Check() {
+        for (IrFunction irFunction : this.functions) {
+            irFunction.CheckNoEmptyBlock();
+        }
     }
 
     public IrConstantString GetNewIrConstantString(String string) {
@@ -86,7 +93,6 @@ public class IrModule extends IrNode {
             builder.append(irFunction);
             builder.append("\n\n");
         }
-        builder.append("\n");
 
         return builder.toString();
     }

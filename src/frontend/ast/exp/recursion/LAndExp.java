@@ -39,7 +39,7 @@ public class LAndExp extends RecursionNode {
 
     public ArrayList<EqExp> GetEqExpList() {
         ArrayList<EqExp> eqExpList = new ArrayList<>();
-        for (Node node : this.components) {
+        for (Node node : this.nodeList) {
             if (node instanceof EqExp eqExp) {
                 eqExpList.add(eqExp);
             }

@@ -3,6 +3,7 @@ package midend.llvm.value;
 import midend.llvm.IrBuilder;
 import midend.llvm.constant.IrConstantChar;
 import midend.llvm.constant.IrConstantInt;
+import midend.llvm.instr.JumpInstr;
 import midend.llvm.instr.ReturnInstr;
 import midend.llvm.type.IrFunctionType;
 import midend.llvm.type.IrType;
@@ -11,20 +12,17 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class IrFunction extends IrValue {
-    private final IrType returnType;
     private final ArrayList<IrParameter> parameterList;
     private final ArrayList<IrBasicBlock> basicBlockList;
 
     public IrFunction(String name, IrType returnType) {
-        super(IrFunctionType.FUNCTION_TYPE, name);
-        this.returnType = returnType;
-
+        super(new IrFunctionType(returnType), name);
         this.parameterList = new ArrayList<>();
         this.basicBlockList = new ArrayList<>();
     }
 
     public IrType GetReturnType() {
-        return this.returnType;
+        return ((IrFunctionType) (this.irType)).GetReturnType();
     }
 
     public void AddParameter(IrParameter parameter) {
@@ -48,12 +46,21 @@ public class IrFunction extends IrValue {
         IrBasicBlock basicBlock = IrBuilder.GetCurrentBasicBlock();
         if (!basicBlock.LastInstrIsReturn()) {
             IrValue returnValue = null;
-            if (this.returnType.IsInt8Type()) {
+            if (this.GetReturnType().IsInt8Type()) {
                 returnValue = new IrConstantChar(0);
-            } else if (this.returnType.IsInt32Type()) {
+            } else if (this.GetReturnType().IsInt32Type()) {
                 returnValue = new IrConstantInt(0);
             }
             ReturnInstr returnInstr = new ReturnInstr(returnValue);
+        }
+    }
+
+    public void CheckNoEmptyBlock() {
+        for (int i = 0; i < this.basicBlockList.size(); i++) {
+            IrBasicBlock block = this.basicBlockList.get(i);
+            if (block.IsEmptyBlock()) {
+                block.AddInstr(new JumpInstr(this.basicBlockList.get(i + 1)));
+            }
         }
     }
 
@@ -61,7 +68,7 @@ public class IrFunction extends IrValue {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         // 函数声明
-        builder.append("define dso_local " + this.returnType + " " + this.irName);
+        builder.append("define dso_local " + this.GetReturnType() + " " + this.irName);
         // 参数声明
         builder.append("(");
         builder.append(this.parameterList.stream().map(IrParameter::toString).

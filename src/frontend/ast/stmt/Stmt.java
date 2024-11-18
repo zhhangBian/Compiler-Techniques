@@ -415,7 +415,7 @@ public class Stmt extends Node {
     }
 
     public Stmt GetIfStmtElseStmt() {
-        return (Stmt) this.components.get(4);
+        return (Stmt) this.components.get(6);
     }
 
     public ForStmt GetForStmtInit() {

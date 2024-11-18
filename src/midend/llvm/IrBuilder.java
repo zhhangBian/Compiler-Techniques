@@ -38,14 +38,18 @@ public class IrBuilder {
         return currentModule;
     }
 
+    public static void Check() {
+        currentModule.Check();
+    }
+
     public static IrFunction GetNewFunctionIr(String name, IrType returnType) {
+        // 创建新Function
         IrFunction irFunction = new IrFunction(GetFuncName(name), returnType);
         currentModule.AddIrFunction(irFunction);
         // 设置为当前处理的Function
         currentFunction = irFunction;
         // 为Function添加一个基础basic block
         IrBasicBlock irBasicBlock = GetNewBasicBlockIr();
-        irFunction.AddBasicBlock(irBasicBlock);
         // 设置当前的basic block
         currentBasicBlock = irBasicBlock;
 
@@ -56,10 +60,9 @@ public class IrBuilder {
     }
 
     public static IrBasicBlock GetNewBasicBlockIr() {
-        String irName = GetBasicBlockName();
-        IrBasicBlock basicBlock = new IrBasicBlock(irName);
-        // 设置从属关系
-        basicBlock.SetParentFunction(currentFunction);
+        IrBasicBlock basicBlock = new IrBasicBlock(GetBasicBlockName(), currentFunction);
+        // 添加到当前的处理中
+        currentFunction.AddBasicBlock(basicBlock);
 
         return basicBlock;
     }

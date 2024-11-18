@@ -11,7 +11,7 @@ public class IrConstantString extends IrConstant {
 
     public IrConstantString(String name, String stringValue) {
         super(new IrPointerType(
-            new IrArrayType(stringValue.length() + 1, IrBaseType.INT8)), name);
+            new IrArrayType(GetStringLength(stringValue), IrBaseType.INT8)), name);
         this.stringValue = stringValue;
     }
 
@@ -21,9 +21,15 @@ public class IrConstantString extends IrConstant {
 
     @Override
     public String toString() {
-        return this.irName + " = constant " +
-            ((IrPointerType) this.irType).GetTargetType() +
-            " c\"" + this.stringValue + "\\00\"";
+        StringBuilder builder = new StringBuilder();
+        builder.append(this.irName);
+        builder.append(" = constant ");
+        builder.append(((IrPointerType) this.irType).GetTargetType());
+        // 拼接字符串
+        builder.append(" c\"");
+        builder.append(this.stringValue.replaceAll("\\\\n", "\\\\0A"));
+        builder.append("\\00\"");
+        return builder.toString();
     }
 
     public static String ConvertArrayToString(ArrayList<Integer> rawList) {
@@ -32,5 +38,21 @@ public class IrConstantString extends IrConstant {
             builder.append((char) num.intValue());
         }
         return builder.toString();
+    }
+
+    private static int GetStringLength(String string) {
+        int length = 0;
+        for (int i = 0; i < string.length(); i++) {
+            if (string.charAt(i) != '\\') {
+                length++;
+            } else {
+                if (i != string.length() - 1 && string.charAt(i + 1) == 'n') {
+                    i++;
+                    length++;
+                }
+            }
+        }
+        // 最后加上一个
+        return length + 1;
     }
 }

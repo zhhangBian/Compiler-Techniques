@@ -6,7 +6,12 @@ import frontend.ast.exp.Exp;
 import frontend.ast.exp.PrimaryExp;
 import frontend.ast.exp.UnaryExp;
 import frontend.ast.exp.UnaryOp;
-import frontend.ast.exp.recursion.*;
+import frontend.ast.exp.recursion.AddExp;
+import frontend.ast.exp.recursion.EqExp;
+import frontend.ast.exp.recursion.LAndExp;
+import frontend.ast.exp.recursion.LOrExp;
+import frontend.ast.exp.recursion.MulExp;
+import frontend.ast.exp.recursion.RelExp;
 import frontend.ast.token.Ident;
 import frontend.ast.token.TokenNode;
 import midend.llvm.IrBuilder;
@@ -22,6 +27,7 @@ import midend.symbol.FuncSymbol;
 import midend.symbol.SymbolManger;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class VisitorExp {
     public static IrValue VisitExp(Exp exp) {
@@ -106,7 +112,12 @@ public class VisitorExp {
         FuncSymbol funcSymbol = (FuncSymbol) SymbolManger.GetSymbol(identName);
         IrFunction irFunction = (IrFunction) funcSymbol.GetIrValue();
 
-        CallInstr callInstr = new CallInstr(irFunction, realParamList);
+        ArrayList<IrValue> paramList = new ArrayList<>();
+        for (Exp para : realParamList) {
+            paramList.add(VisitExp(para));
+        }
+
+        CallInstr callInstr = new CallInstr(irFunction, paramList);
         return callInstr;
     }
 
@@ -140,6 +151,7 @@ public class VisitorExp {
             IrBasicBlock nextOrBlock = IrBuilder.GetNewBasicBlockIr();
             IrValue andValue = VisitLAndExp(landExpList.get(i), trueBlock, nextOrBlock);
             // 短路求值
+            andValue = IrType.ConvertType(andValue, IrBaseType.INT1);
             BranchInstr branchInstr = new BranchInstr(andValue, trueBlock, nextOrBlock);
             // 进入下一个block
             IrBuilder.SetCurrentBasicBlock(nextOrBlock);
@@ -159,6 +171,7 @@ public class VisitorExp {
             IrBuilder.SetCurrentBasicBlock(nextEqBlock);
         }
         IrValue eqValue = VisitEqExp(eqExpList.get(eqExpList.size() - 1));
+        BranchInstr branchInstr = new BranchInstr(eqValue, trueBlock, falseBlock);
 
         return eqValue;
     }
@@ -177,7 +190,8 @@ public class VisitorExp {
 
             valueL = new CompareInstr(opList.get(i - 1), valueL, valueR);
         }
-        // 这样节省指令，和位宽转换实际一致
+        valueL = IrType.ConvertType(valueL, IrBaseType.INT32);
+
         CompareInstr compareInstr = new CompareInstr("!=", valueL, new IrConstantInt(0));
         return compareInstr;
     }
