@@ -10,4 +10,7 @@ public abstract class IrConstant extends IrValue {
 
     @Override
     public abstract String toString();
+
+    @Override
+    public abstract void toMips();
 }

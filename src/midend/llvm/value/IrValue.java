@@ -28,4 +28,7 @@ public class IrValue {
     public void AddUse(IrUse use) {
         this.usedList.add(use);
     }
+
+    public void toMips() {
+    }
 }

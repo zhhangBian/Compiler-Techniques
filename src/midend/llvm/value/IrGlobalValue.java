@@ -16,4 +16,9 @@ public class IrGlobalValue extends IrUser {
     public String toString() {
         return this.irName + " = dso_local global " + this.initValue;
     }
+
+    @Override
+    public void toMips() {
+        throw new RuntimeException("not finished yet");
+    }
 }
