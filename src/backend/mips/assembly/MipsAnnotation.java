@@ -7,7 +7,6 @@ public class MipsAnnotation extends MipsAssembly {
         this.annotation = annotation;
     }
 
-
     @Override
     public String toString() {
         return "# " + this.annotation;

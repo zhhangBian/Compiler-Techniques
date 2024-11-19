@@ -8,12 +8,18 @@ public class ValueSymbol extends Symbol {
     private final ArrayList<Integer> initValueList;
     private boolean isGlobal;
 
+    private boolean isConst;
+    private ArrayList<Integer> valueList;
+
     public ValueSymbol(String symbolName, SymbolType symbolType) {
         super(symbolName, symbolType);
         this.dimension = 0;
         this.depthList = new ArrayList<>();
         this.initValueList = new ArrayList<>();
         this.isGlobal = false;
+
+        this.isConst = false;
+        this.valueList = new ArrayList<>();
     }
 
     public ValueSymbol(String symbolName, SymbolType symbolType,
@@ -23,6 +29,9 @@ public class ValueSymbol extends Symbol {
         this.depthList = depthList;
         this.initValueList = new ArrayList<>();
         this.isGlobal = false;
+
+        this.isConst = false;
+        this.valueList = new ArrayList<>();
     }
 
     public ValueSymbol(String symbolName, SymbolType symbolType, int dimension,
@@ -32,6 +41,9 @@ public class ValueSymbol extends Symbol {
         this.depthList = depthList;
         this.initValueList = initValueList == null ? new ArrayList<>() : initValueList;
         this.isGlobal = false;
+
+        this.isConst = false;
+        this.valueList = new ArrayList<>();
     }
 
     public void SetIsGlobal(boolean isGlobal) {
@@ -60,5 +72,21 @@ public class ValueSymbol extends Symbol {
 
     public ArrayList<Integer> GetDepthList() {
         return this.depthList;
+    }
+
+    public void SetIsConst(boolean isConst) {
+        this.isConst = isConst;
+    }
+
+    public boolean IsConst() {
+        return this.isConst;
+    }
+
+    public void SetValueList(ArrayList<Integer> valueList) {
+        this.valueList = valueList;
+    }
+
+    public ArrayList<Integer> GetValueList() {
+        return this.valueList;
     }
 }

@@ -6,7 +6,6 @@ import frontend.FrontEnd;
 import frontend.ast.Node;
 import frontend.lexer.Token;
 import midend.MidEnd;
-import midend.llvm.IrBuilder;
 import midend.llvm.IrModule;
 import midend.symbol.SymbolTable;
 

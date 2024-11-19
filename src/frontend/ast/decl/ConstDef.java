@@ -62,7 +62,6 @@ public class ConstDef extends Node {
     public void Visit() {
         Ident ident = (Ident) this.components.get(0);
         String symbolName = ident.GetTokenString();
-        int line = ident.GetLine();
 
         int dimension = 0;
         ArrayList<Integer> depthList = new ArrayList<>();
@@ -81,8 +80,14 @@ public class ConstDef extends Node {
         }
 
         SymbolType type = SymbolType.GetConstType(this.type, dimension);
-        this.symbol = new ValueSymbol(symbolName, type, dimension, depthList, initValueList);
-        SymbolManger.AddSymbol(this.symbol, line);
+        ValueSymbol symbol = new ValueSymbol(symbolName, type, dimension, depthList, initValueList);
+
+        // 设置const值
+        symbol.SetValueList(initValueList);
+        symbol.SetIsConst(true);
+
+        this.symbol = symbol;
+        SymbolManger.AddSymbol(this.symbol, ident.GetLine());
     }
 
     public Ident GetIdent() {

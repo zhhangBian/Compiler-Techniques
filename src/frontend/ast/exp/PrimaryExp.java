@@ -54,6 +54,10 @@ public class PrimaryExp extends ComputeExp {
             exp.Compute();
             this.isConst = exp.GetIfConst();
             this.value = exp.GetValue();
+        } else if (node instanceof LVal lVal) {
+            lVal.Compute();
+            this.isConst = lVal.GetIfConst();
+            this.value = lVal.GetValue();
         }
     }
 

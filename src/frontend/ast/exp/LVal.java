@@ -11,11 +11,12 @@ import frontend.lexer.TokenType;
 import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
+import midend.symbol.ValueSymbol;
 import utils.Setting;
 
 import java.util.ArrayList;
 
-public class LVal extends Node {
+public class LVal extends ComputeExp {
     public LVal() {
         super(SyntaxType.LVAL_EXP);
     }
@@ -101,5 +102,34 @@ public class LVal extends Node {
             }
         }
         return expList;
+    }
+
+    @Override
+    public void Compute() {
+        Ident ident = this.GetIdent();
+        String symbolName = ident.GetSimpleName();
+        Symbol symbol = SymbolManger.GetSymbol(symbolName);
+
+        if (symbol instanceof ValueSymbol valueSymbol) {
+            if (valueSymbol.IsConst()) {
+                // 如果不是数组
+                if (this.components.size() == 1) {
+                    this.isConst = true;
+                    this.value = valueSymbol.GetInitValueList().get(0);
+                }
+                //如果是数组
+                else {
+                    Exp exp = (Exp) this.components.get(2);
+                    exp.Compute();
+                    if (exp.GetIfConst()) {
+                        this.isConst = true;
+                        int index = exp.GetValue();
+                        // 字符串数组越界的情况
+                        this.value = index >= valueSymbol.GetValueList().size() ?
+                            0 : valueSymbol.GetInitValueList().get(exp.GetValue());
+                    }
+                }
+            }
+        }
     }
 }
