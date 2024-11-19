@@ -1,13 +1,18 @@
 package backend;
 
-import midend.llvm.IrBuilder;
+import backend.mips.MipsBuilder;
+import backend.mips.MipsModule;
+import midend.MidEnd;
 import midend.llvm.IrModule;
 
 public class BackEnd {
-    private static IrModule irModule;
+    private static IrModule midEndModule;
+    private static MipsModule backEndModule;
 
-    public static void SetIr() {
-        irModule = IrBuilder.GetCurrentModule();
+    public static void GenerateMips() {
+        midEndModule = MidEnd.GetIrModule();
 
+        backEndModule = new MipsModule();
+        MipsBuilder.SetBackEndModule(backEndModule);
     }
 }

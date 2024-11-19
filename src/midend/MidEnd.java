@@ -12,6 +12,7 @@ import java.io.IOException;
 
 public class MidEnd {
     private static CompUnit rootNode;
+    private static IrModule irModule;
 
     public static void GenerateSymbolTable() throws IOException {
         SymbolManger.Init();
@@ -21,7 +22,8 @@ public class MidEnd {
     }
 
     public static void GenerateIr() {
-        IrBuilder.SetCurrentModule(new IrModule());
+        irModule = new IrModule();
+        IrBuilder.SetCurrentModule(irModule);
         Visitor visitor = new Visitor(rootNode);
         visitor.Visit();
         IrBuilder.Check();
@@ -29,5 +31,9 @@ public class MidEnd {
 
     public static SymbolTable GetSymbolTable() {
         return SymbolManger.GetSymbolTable();
+    }
+
+    public static IrModule GetIrModule() {
+        return irModule;
     }
 }

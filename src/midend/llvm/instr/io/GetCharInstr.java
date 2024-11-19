@@ -15,4 +15,9 @@ public class GetCharInstr extends IoInstr {
     public String toString() {
         return this.irName + " = call i32 @getchar()";
     }
+
+    @Override
+    public void toMips() {
+
+    }
 }

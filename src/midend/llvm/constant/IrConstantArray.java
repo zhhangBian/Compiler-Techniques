@@ -39,4 +39,9 @@ public class IrConstantArray extends IrConstant {
 
         return builder.toString();
     }
+
+    @Override
+    public void toMips() {
+
+    }
 }

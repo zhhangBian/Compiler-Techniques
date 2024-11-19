@@ -59,7 +59,7 @@ public class IOhandler {
     }
 
     public static void PrintLlvm() throws IOException {
-        IrModule irModule = IrBuilder.GetCurrentModule();
+        IrModule irModule = MidEnd.GetIrModule();
         llvmOutputFile.write(irModule.toString().getBytes());
     }
 

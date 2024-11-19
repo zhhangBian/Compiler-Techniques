@@ -95,4 +95,18 @@ public class IrModule extends IrNode {
 
         return builder.toString();
     }
+
+    public void toMips() {
+        for (Map.Entry<String, IrConstantString> entry : this.stringConstantMap.entrySet()) {
+            entry.getValue().toMips();
+        }
+
+        for (IrGlobalValue globalValue : this.globalValues) {
+            globalValue.toMips();
+        }
+
+        for (IrFunction irFunction : this.functions) {
+            irFunction.toMips();
+        }
+    }
 }

@@ -32,6 +32,11 @@ public class IrConstantString extends IrConstant {
         return builder.toString();
     }
 
+    @Override
+    public void toMips() {
+
+    }
+
     public static String ConvertArrayToString(ArrayList<Integer> rawList) {
         StringBuilder builder = new StringBuilder();
         for (Integer num : rawList) {

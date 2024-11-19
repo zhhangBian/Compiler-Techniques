@@ -18,4 +18,9 @@ public class IrConstantInt extends IrConstant {
     public String toString() {
         return "i32 " + this.value;
     }
+
+    @Override
+    public void toMips() {
+
+    }
 }

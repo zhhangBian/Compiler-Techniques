@@ -38,6 +38,6 @@ public abstract class Instr extends IrUser {
     @Override
     public abstract String toString();
 
-    @Override
-    public abstract void toMips();
+//    @Override
+//    public abstract void toMips();
 }

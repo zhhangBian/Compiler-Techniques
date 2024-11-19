@@ -18,4 +18,9 @@ public class IrConstantChar extends IrConstant {
     public String toString() {
         return "i8 " + (int)(this.value);
     }
+
+    @Override
+    public void toMips() {
+
+    }
 }
