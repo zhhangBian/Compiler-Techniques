@@ -112,7 +112,6 @@ public class VisitorDecl {
 
     private static void VisitLocalVarDef(VarDef varDef, ValueSymbol symbol) {
         AllocateInstr allocateInstr = new AllocateInstr(GetSymbolIrType(symbol));
-        symbol.SetIrValue(allocateInstr);
 
         // 如果不是数组，添加存储指令：建立空间、赋初值
         if (symbol.GetDimension() == 0) {
@@ -162,6 +161,7 @@ public class VisitorDecl {
                     ArrayList<Exp> expList = varDef.GetInitVal().GetExpList();
                     for (int i = 0; i < expList.size(); i++) {
                         IrValue irExp = VisitorExp.VisitExp(expList.get(i));
+                        irExp = IrType.ConvertType(irExp, IrBaseType.INT32);
                         // 计算偏移值
                         GepInstr gepInstr = new GepInstr(allocateInstr, new IrConstantInt(i));
                         // 将初始值存储到偏移量中
@@ -170,6 +170,7 @@ public class VisitorDecl {
                 }
             }
         }
+        symbol.SetIrValue(allocateInstr);
     }
 
     private static IrType GetSymbolIrType(ValueSymbol symbol) {
