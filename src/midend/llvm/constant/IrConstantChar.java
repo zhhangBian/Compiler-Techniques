@@ -22,6 +22,6 @@ public class IrConstantChar extends IrConstant {
 
     @Override
     public void toMips() {
-        new MipsWord(this.irName, this.value);
+        new MipsWord(this.GetMipsLabel(), this.value);
     }
 }

@@ -1,5 +1,8 @@
 package midend.llvm.instr;
 
+import backend.mips.Register;
+import backend.mips.assembly.MipsAlu;
+import backend.mips.assembly.MipsMdu;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
 
@@ -32,6 +35,26 @@ public class AluInstr extends Instr {
             " i32 " + irValueL.GetIrName() + ", " + irValueR.GetIrName();
     }
 
+    @Override
+    public void toMips() {
+        IrValue valueL = this.GetValueL();
+        IrValue valueR = this.GetValueR();
+
+        Register registerL = Register.K0;
+        Register registerR = Register.K1;
+        LoadValueToRegister(valueL, registerL);
+        LoadValueToRegister(valueR, registerR);
+
+        // 为计算结果分配寄存器
+        Register registerResult = this.GetRegisterOrK0ForValue(this);
+
+        // 生成计算指令
+        this.GenerateAluMipsInstr(registerL, registerR, registerResult);
+
+        // 如果没有寄存器保留结果，则应该把结果存到栈上
+        this.SaveResult(this, registerResult);
+    }
+
     private IrValue GetValueL() {
         return this.useValueList.get(0);
     }
@@ -51,5 +74,28 @@ public class AluInstr extends Instr {
             case "|", "||" -> AluType.OR;
             default -> throw new RuntimeException("illegal alu op");
         };
+    }
+
+    private void GenerateAluMipsInstr(Register registerL, Register registerR,
+                                      Register registerResult) {
+        switch (this.aluType) {
+            case ADD -> new MipsAlu(MipsAlu.AluType.ADDU, registerResult, registerL, registerR);
+            case SUB -> new MipsAlu(MipsAlu.AluType.SUBU, registerResult, registerL, registerR);
+            case AND -> new MipsAlu(MipsAlu.AluType.AND, registerResult, registerL, registerR);
+            case OR -> new MipsAlu(MipsAlu.AluType.OR, registerResult, registerL, registerR);
+            case MUL -> {
+                new MipsMdu(MipsMdu.MduType.MULT, registerL, registerR);
+                new MipsMdu(MipsMdu.MduType.MFLO, registerR);
+            }
+            case SDIV -> {
+                new MipsMdu(MipsMdu.MduType.DIV, registerL, registerR);
+                new MipsMdu(MipsMdu.MduType.MFLO, registerR);
+            }
+            case SREM -> {
+                new MipsMdu(MipsMdu.MduType.DIV, registerL, registerR);
+                new MipsMdu(MipsMdu.MduType.MFHI, registerR);
+            }
+            default -> throw new RuntimeException("illegal alu type");
+        }
     }
 }

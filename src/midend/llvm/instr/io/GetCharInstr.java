@@ -1,5 +1,8 @@
 package midend.llvm.instr.io;
 
+import backend.mips.Register;
+import backend.mips.assembly.MipsSyscall;
+import backend.mips.assembly.fake.MarsLi;
 import midend.llvm.type.IrBaseType;
 
 public class GetCharInstr extends IoInstr {
@@ -18,6 +21,8 @@ public class GetCharInstr extends IoInstr {
 
     @Override
     public void toMips() {
-
+        new MarsLi(Register.V0, 12);
+        new MipsSyscall();
+        this.SaveResult(this, Register.V0);
     }
 }

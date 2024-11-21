@@ -1,5 +1,7 @@
 package midend.llvm.instr;
 
+import backend.mips.Register;
+import backend.mips.assembly.MipsAlu;
 import midend.llvm.type.IrArrayType;
 import midend.llvm.type.IrPointerType;
 import midend.llvm.type.IrType;
@@ -30,7 +32,6 @@ public class GepInstr extends Instr {
 
         if (targetType.IsArrayType()) {
             IrArrayType arrayType = (IrArrayType) targetType;
-            targetType = arrayType.GetElementType();
             return this.irName + " = getelementptr inbounds " +
                 arrayType + ", " +
                 pointerType + " " +
@@ -45,6 +46,25 @@ public class GepInstr extends Instr {
                 offset.GetIrType() + " " +
                 offset.GetIrName();
         }
+    }
+
+    @Override
+    public void toMips() {
+        IrValue pointerValue = this.GetPointer();
+        IrValue offsetValue = this.GetOffset();
+
+        Register pointerRegister = Register.K0;
+        Register offsetRegister = Register.K1;
+
+        // 加载数组的首地址
+        this.LoadValueToRegister(pointerValue, pointerRegister);
+        // 加载offset的值
+        this.LoadValueToRegister(offsetValue, offsetRegister);
+        // 将offset左移两位
+        new MipsAlu(MipsAlu.AluType.SLL, Register.K1, offsetRegister, 2);
+        // 相加得到地址
+        Register targetRegister = this.GetRegisterOrK0ForValue(this);
+        new MipsAlu(MipsAlu.AluType.ADDU, targetRegister, Register.K1, pointerRegister);
     }
 
     public static IrType GetTargetType(IrValue pointer) {

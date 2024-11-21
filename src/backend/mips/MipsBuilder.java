@@ -3,8 +3,10 @@ package backend.mips;
 import backend.mips.assembly.MipsAssembly;
 import backend.mips.assembly.data.MipsDataAssembly;
 import midend.llvm.value.IrFunction;
+import midend.llvm.value.IrParameter;
 import midend.llvm.value.IrValue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MipsBuilder {
@@ -12,10 +14,10 @@ public class MipsBuilder {
     private static IrFunction currentFunction = null;
     // value-register分配表
     private static HashMap<IrFunction, HashMap<IrValue, Register>> functionRegisterMap = null;
-    private static HashMap<IrValue, Register> currentValueMap = null;
+    private static HashMap<IrValue, Register> valueRegisterMap = null;
     // 函数栈偏移量分配表
     private static int stackOffset = 0;
-    private static HashMap<IrValue, Integer> stackOffsetMap = null;
+    private static HashMap<IrValue, Integer> stackOffsetValueMap = null;
 
     public static void SetBackEndModule(MipsModule mipsModule) {
         currentModule = mipsModule;
@@ -35,9 +37,59 @@ public class MipsBuilder {
         // 设置相应的寄存器分配表
         HashMap<IrValue, Register> valueMap = new HashMap<>();
         functionRegisterMap.put(irFunction, valueMap);
-        currentValueMap = valueMap;
+        valueRegisterMap = valueMap;
         // 初始化栈分配表
         stackOffset = 0;
-        stackOffsetMap = new HashMap<>();
+        stackOffsetValueMap = new HashMap<>();
+    }
+
+    public static Register GetValueToRegister(IrValue irValue) {
+        return valueRegisterMap.get(irValue);
+    }
+
+    public static void AllocateRegForParam(IrParameter irParameter, Register register) {
+        valueRegisterMap.put(irParameter, register);
+    }
+
+    public static ArrayList<Register> GetAllocatedRegList() {
+        return new ArrayList<>(valueRegisterMap.values());
+    }
+
+    public static int GetCurrentStackOffset() {
+        return stackOffset;
+    }
+
+    public static Integer GetStackValueOffset(IrValue irValue) {
+        return stackOffsetValueMap.get(irValue);
+    }
+
+    public static Integer AllocateStackForValue(IrValue irValue) {
+        Integer address = stackOffsetValueMap.get(irValue);
+        if (address == null) {
+            address = stackOffset;
+            stackOffsetValueMap.put(irValue, stackOffset);
+            stackOffset -= 4;
+        }
+
+        return address;
+    }
+
+    public static Integer AllocateStackForValue(IrValue irValue, int offset) {
+        Integer address = stackOffsetValueMap.get(irValue);
+        if (address == null) {
+            address = stackOffset;
+            stackOffsetValueMap.put(irValue, stackOffset);
+            stackOffset -= offset;
+        }
+
+        return address;
+    }
+
+    public static void AddValueStackMapping(IrValue newValue, IrValue oldValue) {
+        stackOffsetValueMap.put(newValue, stackOffsetValueMap.get(oldValue));
+    }
+
+    public static void AllocateStackSpace(int offset) {
+        stackOffset -= offset;
     }
 }

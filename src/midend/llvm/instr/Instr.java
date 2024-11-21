@@ -1,8 +1,13 @@
 package midend.llvm.instr;
 
+import backend.mips.MipsBuilder;
+import backend.mips.Register;
+import backend.mips.assembly.MipsLsu;
+import backend.mips.assembly.fake.MarsMove;
 import midend.llvm.IrBuilder;
 import midend.llvm.type.IrType;
 import midend.llvm.use.IrUser;
+import midend.llvm.value.IrValue;
 
 // instr是一种User：使用其他的Value作为参数
 public abstract class Instr extends IrUser {
@@ -38,6 +43,33 @@ public abstract class Instr extends IrUser {
     @Override
     public abstract String toString();
 
-    //@Override
-    //public abstract void toMips();
+    @Override
+    public abstract void toMips();
+
+    // 将在内存中的值加载到寄存器
+    protected void LoadValueToRegister(IrValue irValue, Register register) {
+        Integer stackValueOffset = MipsBuilder.GetStackValueOffset(irValue);
+        // 若不在内存中，则分配一块
+        if (stackValueOffset == null) {
+            stackValueOffset = MipsBuilder.AllocateStackForValue(irValue);
+        }
+        new MipsLsu(MipsLsu.LsuType.LW, register, Register.SP, stackValueOffset);
+    }
+
+    // 得到分配的寄存器，若没有则使用K0
+    protected Register GetRegisterOrK0ForValue(IrValue irValue) {
+        Register register = MipsBuilder.GetValueToRegister(irValue);
+        return register == null ? Register.K0 : register;
+    }
+
+    // 保存计算结果，若没分配寄存器则保留到栈上
+    protected void SaveResult(IrValue irValue, Register targetRegister) {
+        Register register = MipsBuilder.GetValueToRegister(irValue);
+        if (register == null) {
+            int offset = MipsBuilder.AllocateStackForValue(irValue);
+            new MipsLsu(MipsLsu.LsuType.SW, targetRegister, Register.SP, offset);
+        } else {
+            new MarsMove(targetRegister, register);
+        }
+    }
 }

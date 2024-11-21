@@ -1,5 +1,6 @@
 package midend.llvm.value;
 
+import backend.mips.assembly.MipsLabel;
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.ReturnInstr;
 import midend.llvm.type.IrBasicBlockType;
@@ -44,5 +45,17 @@ public class IrBasicBlock extends IrValue {
         builder.append(this.instrList.stream().map(Instr::toString).
             collect(Collectors.joining("\n\t")));
         return builder.toString();
+    }
+
+    @Override
+    public void toMips() {
+        new MipsLabel(this.GetMipsLabel());
+        for (Instr instr : this.instrList) {
+            instr.toMips();
+        }
+    }
+
+    public String GetMipsLabel() {
+        return this.irName.substring(1);
     }
 }

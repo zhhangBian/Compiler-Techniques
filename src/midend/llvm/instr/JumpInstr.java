@@ -1,5 +1,6 @@
 package midend.llvm.instr;
 
+import backend.mips.assembly.MipsJump;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrBasicBlock;
 
@@ -22,5 +23,10 @@ public class JumpInstr extends Instr {
     public String toString() {
         IrBasicBlock targetBlock = this.GetTargetBlock();
         return "br label %" + targetBlock.GetIrName();
+    }
+
+    @Override
+    public void toMips() {
+        new MipsJump(MipsJump.JumpType.J, this.GetTargetBlock().GetMipsLabel());
     }
 }

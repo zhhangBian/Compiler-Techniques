@@ -46,7 +46,7 @@ public enum Register {
         this.registerName = registerName;
     }
 
-    public static Register indexToReg(int index) {
+    public static Register get(int index) {
         return values()[index];
     }
 

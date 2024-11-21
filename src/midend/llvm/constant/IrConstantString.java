@@ -36,7 +36,7 @@ public class IrConstantString extends IrConstant {
     @Override
     public void toMips() {
         // 创建在 asciiz
-        new MipsAsciiz(this.irName.substring(1), this.stringValue);
+        new MipsAsciiz(this.GetMipsLabel(), this.stringValue);
     }
 
     public static String ConvertArrayToString(ArrayList<Integer> rawList) {

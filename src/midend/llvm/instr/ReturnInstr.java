@@ -1,5 +1,9 @@
 package midend.llvm.instr;
 
+import backend.mips.MipsBuilder;
+import backend.mips.Register;
+import backend.mips.assembly.MipsJump;
+import backend.mips.assembly.fake.MarsMove;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
 
@@ -21,5 +25,23 @@ public class ReturnInstr extends Instr {
 
         return "ret " + (returnValue == null ? "void" :
             returnValue.GetIrType() + " " + returnValue.GetIrName());
+    }
+
+    @Override
+    public void toMips() {
+        IrValue returnValue = this.GetReturnValue();
+        // 不为void
+        if (returnValue != null) {
+            Register returnRegister = MipsBuilder.GetValueToRegister(returnValue);
+            // 已经分配了寄存器
+            if (returnRegister != null) {
+                new MarsMove(Register.V0, returnRegister);
+            }
+            // 从内存中加载数据
+            else {
+                this.LoadValueToRegister(returnValue, Register.V0);
+            }
+        }
+        new MipsJump(MipsJump.JumpType.JR, Register.RA);
     }
 }

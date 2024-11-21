@@ -13,6 +13,10 @@ public class IrArrayType extends IrType {
         return this.elementType;
     }
 
+    public int GetArraySize() {
+        return this.arraySize;
+    }
+
     @Override
     public String toString() {
         return "[" + this.arraySize + " x " + this.elementType + "]";

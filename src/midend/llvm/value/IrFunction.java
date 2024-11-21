@@ -1,6 +1,7 @@
 package midend.llvm.value;
 
 import backend.mips.MipsBuilder;
+import backend.mips.Register;
 import backend.mips.assembly.MipsLabel;
 import midend.llvm.IrBuilder;
 import midend.llvm.constant.IrConstantChar;
@@ -87,11 +88,25 @@ public class IrFunction extends IrValue {
 
     @Override
     public void toMips() {
-        new MipsLabel(this.irName.substring(1));
+        new MipsLabel(this.GetMipsLabel());
         MipsBuilder.SetCurrentFunction(this);
 
         for (int i = 0; i < this.parameterList.size(); i++) {
-            throw new RuntimeException("not finished yet");
+            // 为前三个参数分配寄存器
+            if (i < 3) {
+                MipsBuilder.AllocateRegForParam(this.parameterList.get(i),
+                    Register.get(Register.A0.ordinal() + i + 1));
+            }
+            // 在运行栈上分配空间
+            MipsBuilder.AllocateStackForValue(this.parameterList.get(i));
         }
+
+        for (IrBasicBlock irBasicBlock : this.basicBlockList) {
+            irBasicBlock.toMips();
+        }
+    }
+
+    public String GetMipsLabel() {
+        return this.irName.substring(1);
     }
 }
