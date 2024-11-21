@@ -10,9 +10,14 @@ public class BackEnd {
     private static MipsModule backEndModule;
 
     public static void GenerateMips() {
-        midEndModule = MidEnd.GetIrModule();
-
         backEndModule = new MipsModule();
         MipsBuilder.SetBackEndModule(backEndModule);
+
+        midEndModule = MidEnd.GetIrModule();
+        midEndModule.toMips();
+    }
+
+    public static MipsModule GetMipsModule() {
+        return backEndModule;
     }
 }

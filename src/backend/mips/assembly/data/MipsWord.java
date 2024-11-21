@@ -1,10 +1,15 @@
 package backend.mips.assembly.data;
 
-import backend.mips.assembly.MipsAssembly;
+public class MipsWord extends MipsDataAssembly {
+    private final String name;
+    private final int value;
 
-public class MipsWord extends MipsAssembly {
-    @Override
+    public MipsWord(String name, int value) {
+        this.name = name;
+        this.value = value;
+    }
+
     public String toString() {
-        return null;
+        return this.name + ": .word " + this.value;
     }
 }

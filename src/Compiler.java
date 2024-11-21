@@ -1,3 +1,4 @@
+import backend.BackEnd;
 import frontend.FrontEnd;
 import midend.MidEnd;
 import utils.IOhandler;
@@ -15,11 +16,13 @@ public class Compiler {
         MidEnd.GenerateSymbolTable();
         MidEnd.GenerateIr();
 
+        BackEnd.GenerateMips();
+
         IOhandler.PrintTokenList();
         IOhandler.PrintAstTree();
         IOhandler.PrintSymbolTable();
         IOhandler.PrintErrorMessage();
         IOhandler.PrintLlvm();
-        //IOhandler.PrintMips();
+        IOhandler.PrintMips();
     }
 }

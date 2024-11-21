@@ -1,5 +1,6 @@
 package midend.llvm.constant;
 
+import backend.mips.assembly.data.MipsWord;
 import midend.llvm.type.IrBaseType;
 
 public class IrConstantInt extends IrConstant {
@@ -21,6 +22,6 @@ public class IrConstantInt extends IrConstant {
 
     @Override
     public void toMips() {
-
+        new MipsWord(this.irName, this.value);
     }
 }

@@ -5,20 +5,20 @@ import midend.llvm.type.IrType;
 import midend.llvm.use.IrUser;
 
 public class IrGlobalValue extends IrUser {
-    private final IrConstant initValue;
+    private final IrConstant globalValue;
 
-    public IrGlobalValue(IrType valueType, String name, IrConstant initValue) {
+    public IrGlobalValue(IrType valueType, String name, IrConstant globalValue) {
         super(valueType, name);
-        this.initValue = initValue;
+        this.globalValue = globalValue;
     }
 
     @Override
     public String toString() {
-        return this.irName + " = dso_local global " + this.initValue;
+        return this.irName + " = dso_local global " + this.globalValue;
     }
 
     @Override
     public void toMips() {
-        throw new RuntimeException("not finished yet");
+        globalValue.toMips();
     }
 }

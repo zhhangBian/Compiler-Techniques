@@ -1,10 +1,16 @@
 package backend.mips.assembly.data;
 
-import backend.mips.assembly.MipsAssembly;
+public class MipsSpace extends MipsDataAssembly {
+    private final String name;
+    private final int size;
 
-public class MipsSpace extends MipsAssembly {
+    public MipsSpace(String name, int size) {
+        this.name = name;
+        this.size = size;
+    }
+
     @Override
     public String toString() {
-        return null;
+        return this.name + ": .space " + this.size;
     }
 }

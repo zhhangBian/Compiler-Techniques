@@ -1,5 +1,9 @@
 package midend.llvm.constant;
 
+import backend.mips.Register;
+import backend.mips.assembly.MipsLsu;
+import backend.mips.assembly.data.MipsSpace;
+import backend.mips.assembly.fake.MarsLi;
 import midend.llvm.type.IrArrayType;
 import midend.llvm.type.IrType;
 
@@ -42,6 +46,20 @@ public class IrConstantArray extends IrConstant {
 
     @Override
     public void toMips() {
-
+        // 先申请空间
+        // TODO：按照char类型细化大小
+        new MipsSpace(this.irName, this.arraySize * 4);
+        // 进行值初始化
+        int offset = 0;
+        for (IrConstant irConstant : this.valueList) {
+            if (irConstant instanceof IrConstantInt irConstantInt) {
+                new MarsLi(Register.T0, irConstantInt.GetValue());
+                new MipsLsu(MipsLsu.LsuType.SW, Register.T0, this.irName, offset);
+            } else if (irConstant instanceof IrConstantChar irConstantChar) {
+                new MarsLi(Register.T0, irConstantChar.GetValue());
+                new MipsLsu(MipsLsu.LsuType.SW, Register.T0, this.irName, offset);
+            }
+            offset += 4;
+        }
     }
 }

@@ -1,5 +1,11 @@
 package midend.llvm;
 
+import backend.mips.Register;
+import backend.mips.assembly.MipsAnnotation;
+import backend.mips.assembly.MipsJump;
+import backend.mips.assembly.MipsLabel;
+import backend.mips.assembly.MipsSyscall;
+import backend.mips.assembly.fake.MarsLi;
 import midend.llvm.constant.IrConstantString;
 import midend.llvm.instr.io.GetCharInstr;
 import midend.llvm.instr.io.GetIntInstr;
@@ -105,8 +111,19 @@ public class IrModule extends IrNode {
             globalValue.toMips();
         }
 
+        // 插入跳转到main函数
+        new MipsAnnotation("jump to main");
+        new MipsJump(MipsJump.JumpType.JAL, "main");
+        new MipsJump(MipsJump.JumpType.J, "end");
+
         for (IrFunction irFunction : this.functions) {
             irFunction.toMips();
         }
+
+        // 设置标签
+        new MipsLabel("end");
+        // 设置syscall
+        new MarsLi(Register.V0, 10);
+        new MipsSyscall();
     }
 }

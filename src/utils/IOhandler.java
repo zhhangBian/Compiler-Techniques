@@ -1,5 +1,7 @@
 package utils;
 
+import backend.BackEnd;
+import backend.mips.MipsModule;
 import error.Error;
 import error.ErrorRecorder;
 import frontend.FrontEnd;
@@ -62,8 +64,9 @@ public class IOhandler {
         llvmOutputFile.write(irModule.toString().getBytes());
     }
 
-    public static void PrintMips() {
-        Debug.DebugThrow("not finish mips print yet.");
+    public static void PrintMips() throws IOException {
+        MipsModule mipsModule = BackEnd.GetMipsModule();
+        mipsOutputFile.write(mipsModule.toString().getBytes());
     }
 
     public static void PrintErrorMessage() throws IOException {

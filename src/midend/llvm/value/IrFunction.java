@@ -1,5 +1,7 @@
 package midend.llvm.value;
 
+import backend.mips.MipsBuilder;
+import backend.mips.assembly.MipsLabel;
 import midend.llvm.IrBuilder;
 import midend.llvm.constant.IrConstantChar;
 import midend.llvm.constant.IrConstantInt;
@@ -81,5 +83,15 @@ public class IrFunction extends IrValue {
             collect(Collectors.joining("\n")));
         builder.append("\n}");
         return builder.toString();
+    }
+
+    @Override
+    public void toMips() {
+        new MipsLabel(this.irName.substring(1));
+        MipsBuilder.SetCurrentFunction(this);
+
+        for (int i = 0; i < this.parameterList.size(); i++) {
+            throw new RuntimeException("not finished yet");
+        }
     }
 }
