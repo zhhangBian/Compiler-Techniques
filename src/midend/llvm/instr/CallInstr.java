@@ -132,7 +132,7 @@ public class CallInstr extends Instr {
                 Register tempRegister = Register.K0;
                 this.LoadValueToRegister(param, tempRegister);
                 new MipsLsu(MipsLsu.LsuType.SW, tempRegister, Register.SP,
-                    currentOffset - 4 * i);
+                    currentOffset - 4 * i - 4);
             }
         }
     }

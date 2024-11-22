@@ -1,9 +1,7 @@
 .data
-	g_0: .space 40
-	g_1: .word 0
-	s_1: .asciiz " "
-	s_2: .asciiz "\n"
-	s_0: .asciiz "x[i]-i: "
+	s_0: .asciiz "->"
+	s_1: .asciiz "\n"
+	s_2: .asciiz "fun1:\n"
 
 
 .text
@@ -12,156 +10,50 @@
 	jal main
 	j end
 	
-main:
+f_move:
 	
 _0:
 	
-# br label %b_1
-	j _1
-	
-_1:
-	
-# %v0 = load i32, i32* @g_1
-	la $k0, g_1
-	lw $k0 0($k0)
-	sw $k0 -4($sp)
-	
-# %v1 = icmp sle i32 %v0, 10
-	lw $k0 -4($sp)
-	li $k1 10
-	sle $k0 $k0 $k1
-	sw $k0 -8($sp)
-	
-# %v2 = zext i1 %v1 to i32
-	
-# %v3 = icmp ne i32 %v2, 0
-	lw $k0 -8($sp)
-	li $k1 0
-	sne $k0 $k0 $k1
-	sw $k0 -12($sp)
-	
-# br i1 %v3, label %b_2, label %b_4
-	lw $k0 -12($sp)
-	bne $k0 $zero _2
-	j _4
-	
-_2:
-	
-# %v5 = load i32, i32* @g_1
-	la $k0, g_1
-	lw $k0 0($k0)
+# %v2 = alloca i32
+	addi $k0 $sp -12
 	sw $k0 -16($sp)
 	
-# %v6 = icmp eq i32 %v5, 2
-	lw $k0 -16($sp)
-	li $k1 2
-	seq $k0 $k0 $k1
-	sw $k0 -20($sp)
-	
-# %v7 = zext i1 %v6 to i32
-	
-# %v8 = icmp ne i32 %v7, 0
-	lw $k0 -20($sp)
-	li $k1 0
-	sne $k0 $k0 $k1
-	sw $k0 -24($sp)
-	
-# br i1 %v8, label %b_5, label %b_6
-	lw $k0 -24($sp)
-	bne $k0 $zero _5
-	j _6
-	
-# br label %b_5
-	j _5
-	
-_3:
-	
-# br label %b_1
-	j _1
-	
-_4:
-	
-# ret i32 0
-	li $v0 0
-	jr $ra
-	
-_5:
-	
-# store i32 4, i32* @g_1
-	li $k0 4
-	la $k1, g_1
+# store i32 %v0, i32* %v2
+	move $k0 $a1
+	lw $k1 -16($sp)
 	sw $k0 0($k1)
 	
-# br label %b_3
-	j _3
+# %v3 = alloca i32
+	addi $k0 $sp -20
+	sw $k0 -24($sp)
 	
-# br label %b_6
-	j _6
+# store i32 %v1, i32* %v3
+	move $k0 $a2
+	lw $k1 -24($sp)
+	sw $k0 0($k1)
 	
-_6:
-	
-# %v10 = load i32, i32* @g_1
-	la $k0, g_1
+# %v4 = load i32, i32* %v2
+	lw $k0 -16($sp)
 	lw $k0 0($k0)
 	sw $k0 -28($sp)
 	
-# %v11 = getelementptr inbounds [10 x i32], [10 x i32]* @g_0, i32 0, i32 %v10
-	la $k0, g_0
-	lw $k1 -28($sp)
-	sll $k1 $k1 2
-	addu $k0 $k1 $k0
-	sw $k0 -32($sp)
+# call void @putint(i32 %v4)
+	lw $a0 -28($sp)
+	li $v0 1
+	syscall
 	
-# %v12 = load i32, i32* @g_1
-	la $k0, g_1
-	lw $k0 0($k0)
-	sw $k0 -36($sp)
-	
-# store i32 %v12, i32* %v11
-	lw $k0 -36($sp)
-	lw $k1 -32($sp)
-	sw $k0 0($k1)
-	
-# %v13 = load i32, i32* @g_1
-	la $k0, g_1
-	lw $k0 0($k0)
-	sw $k0 -40($sp)
-	
-# %v14 = add i32 %v13, 1
-	lw $k0 -40($sp)
-	li $k1 1
-	addu $k0 $k0 $k1
-	sw $k0 -44($sp)
-	
-# store i32 %v14, i32* @g_1
-	lw $k0 -44($sp)
-	la $k1, g_1
-	sw $k0 0($k1)
-	
-# call void @putstr(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @s_0, i64 0, i64 0))
+# call void @putstr(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @s_0, i64 0, i64 0))
 	la $a0, s_0
 	li $v0 4
 	syscall
 	
-# %v16 = load i32, i32* @g_1
-	la $k0, g_1
+# %v7 = load i32, i32* %v3
+	lw $k0 -24($sp)
 	lw $k0 0($k0)
-	sw $k0 -48($sp)
+	sw $k0 -32($sp)
 	
-# %v17 = getelementptr inbounds [10 x i32], [10 x i32]* @g_0, i32 0, i32 %v16
-	la $k0, g_0
-	lw $k1 -48($sp)
-	sll $k1 $k1 2
-	addu $k0 $k1 $k0
-	sw $k0 -52($sp)
-	
-# %v18 = load i32, i32* %v17
-	lw $k0 -52($sp)
-	lw $k0 0($k0)
-	sw $k0 -56($sp)
-	
-# call void @putint(i32 %v18)
-	lw $a0 -56($sp)
+# call void @putint(i32 %v7)
+	lw $a0 -32($sp)
 	li $v0 1
 	syscall
 	
@@ -170,60 +62,301 @@ _6:
 	li $v0 4
 	syscall
 	
-# %v21 = load i32, i32* @g_1
-	la $k0, g_1
+# ret void
+	jr $ra
+	
+f_hanoi:
+	
+_1:
+	
+# %v4 = alloca i32
+	addi $k0 $sp -20
+	sw $k0 -24($sp)
+	
+# store i32 %v0, i32* %v4
+	move $k0 $a1
+	lw $k1 -24($sp)
+	sw $k0 0($k1)
+	
+# %v5 = alloca i32
+	addi $k0 $sp -28
+	sw $k0 -32($sp)
+	
+# store i32 %v1, i32* %v5
+	move $k0 $a2
+	lw $k1 -32($sp)
+	sw $k0 0($k1)
+	
+# %v6 = alloca i32
+	addi $k0 $sp -36
+	sw $k0 -40($sp)
+	
+# store i32 %v2, i32* %v6
+	move $k0 $a3
+	lw $k1 -40($sp)
+	sw $k0 0($k1)
+	
+# %v7 = alloca i32
+	addi $k0 $sp -44
+	sw $k0 -48($sp)
+	
+# store i32 %v3, i32* %v7
+	lw $k0 -16($sp)
+	lw $k1 -48($sp)
+	sw $k0 0($k1)
+	
+# %v8 = load i32, i32* %v4
+	lw $k0 -24($sp)
 	lw $k0 0($k0)
+	sw $k0 -52($sp)
+	
+# %v9 = icmp eq i32 %v8, 1
+	lw $k0 -52($sp)
+	li $k1 1
+	seq $k0 $k0 $k1
+	sw $k0 -56($sp)
+	
+# %v10 = zext i1 %v9 to i32
+	
+# %v11 = icmp ne i32 %v10, 0
+	lw $k0 -56($sp)
+	li $k1 0
+	sne $k0 $k0 $k1
 	sw $k0 -60($sp)
 	
-# call void @putint(i32 %v21)
-	lw $a0 -60($sp)
-	li $v0 1
-	syscall
+# br i1 %v11, label %b_2, label %b_3
+	lw $k0 -60($sp)
+	bne $k0 $zero _2
+	j _3
 	
-# call void @putstr(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @s_2, i64 0, i64 0))
-	la $a0, s_2
-	li $v0 4
-	syscall
+# br label %b_2
+	j _2
 	
-# %v24 = load i32, i32* @g_1
-	la $k0, g_1
+_2:
+	
+# %v13 = load i32, i32* %v5
+	lw $k0 -32($sp)
 	lw $k0 0($k0)
 	sw $k0 -64($sp)
 	
-# %v25 = icmp eq i32 %v24, 5
-	lw $k0 -64($sp)
-	li $k1 5
-	seq $k0 $k0 $k1
+# %v14 = load i32, i32* %v7
+	lw $k0 -48($sp)
+	lw $k0 0($k0)
 	sw $k0 -68($sp)
 	
-# %v26 = zext i1 %v25 to i32
-	
-# %v27 = icmp ne i32 %v26, 0
-	lw $k0 -68($sp)
-	li $k1 0
-	sne $k0 $k0 $k1
-	sw $k0 -72($sp)
-	
-# br i1 %v27, label %b_7, label %b_8
-	lw $k0 -72($sp)
-	bne $k0 $zero _7
-	j _8
-	
-# br label %b_7
-	j _7
-	
-_7:
+# call void @f_move(i32 %v13, i32 %v14)
+	sw $a2 -72($sp)
+	sw $a3 -76($sp)
+	sw $a1 -80($sp)
+	sw $sp -84($sp)
+	sw $ra -88($sp)
+	lw $a1 -64($sp)
+	lw $a2 -68($sp)
+	addi $sp $sp -88
+	jal f_move
+	lw $ra 0($sp)
+	lw $sp 4($sp)
+	lw $a2 -68($sp)
+	lw $a3 -72($sp)
+	lw $a1 -76($sp)
+	sw $v0 -72($sp)
 	
 # br label %b_4
 	j _4
 	
-# br label %b_8
-	j _8
+_3:
 	
-_8:
+# %v15 = load i32, i32* %v4
+	lw $k0 -24($sp)
+	lw $k0 0($k0)
+	sw $k0 -76($sp)
 	
-# br label %b_3
-	j _3
+# %v16 = sub i32 %v15, 1
+	lw $k0 -76($sp)
+	li $k1 1
+	subu $k0 $k0 $k1
+	sw $k0 -80($sp)
+	
+# %v17 = load i32, i32* %v5
+	lw $k0 -32($sp)
+	lw $k0 0($k0)
+	sw $k0 -84($sp)
+	
+# %v18 = load i32, i32* %v7
+	lw $k0 -48($sp)
+	lw $k0 0($k0)
+	sw $k0 -88($sp)
+	
+# %v19 = load i32, i32* %v6
+	lw $k0 -40($sp)
+	lw $k0 0($k0)
+	sw $k0 -92($sp)
+	
+# call void @f_hanoi(i32 %v16, i32 %v17, i32 %v18, i32 %v19)
+	sw $a2 -96($sp)
+	sw $a3 -100($sp)
+	sw $a1 -104($sp)
+	sw $sp -108($sp)
+	sw $ra -112($sp)
+	lw $a1 -80($sp)
+	lw $a2 -84($sp)
+	lw $a3 -88($sp)
+	lw $k0 -92($sp)
+	sw $k0 -128($sp)
+	addi $sp $sp -112
+	jal f_hanoi
+	lw $ra 0($sp)
+	lw $sp 4($sp)
+	lw $a2 -92($sp)
+	lw $a3 -96($sp)
+	lw $a1 -100($sp)
+	sw $v0 -96($sp)
+	
+# %v20 = load i32, i32* %v5
+	lw $k0 -32($sp)
+	lw $k0 0($k0)
+	sw $k0 -100($sp)
+	
+# %v21 = load i32, i32* %v7
+	lw $k0 -48($sp)
+	lw $k0 0($k0)
+	sw $k0 -104($sp)
+	
+# call void @f_move(i32 %v20, i32 %v21)
+	sw $a2 -108($sp)
+	sw $a3 -112($sp)
+	sw $a1 -116($sp)
+	sw $sp -120($sp)
+	sw $ra -124($sp)
+	lw $a1 -100($sp)
+	lw $a2 -104($sp)
+	addi $sp $sp -124
+	jal f_move
+	lw $ra 0($sp)
+	lw $sp 4($sp)
+	lw $a2 -104($sp)
+	lw $a3 -108($sp)
+	lw $a1 -112($sp)
+	sw $v0 -108($sp)
+	
+# %v22 = load i32, i32* %v4
+	lw $k0 -24($sp)
+	lw $k0 0($k0)
+	sw $k0 -112($sp)
+	
+# %v23 = sub i32 %v22, 1
+	lw $k0 -112($sp)
+	li $k1 1
+	subu $k0 $k0 $k1
+	sw $k0 -116($sp)
+	
+# %v24 = load i32, i32* %v6
+	lw $k0 -40($sp)
+	lw $k0 0($k0)
+	sw $k0 -120($sp)
+	
+# %v25 = load i32, i32* %v5
+	lw $k0 -32($sp)
+	lw $k0 0($k0)
+	sw $k0 -124($sp)
+	
+# %v26 = load i32, i32* %v7
+	lw $k0 -48($sp)
+	lw $k0 0($k0)
+	sw $k0 -128($sp)
+	
+# call void @f_hanoi(i32 %v23, i32 %v24, i32 %v25, i32 %v26)
+	sw $a2 -132($sp)
+	sw $a3 -136($sp)
+	sw $a1 -140($sp)
+	sw $sp -144($sp)
+	sw $ra -148($sp)
+	lw $a1 -116($sp)
+	lw $a2 -120($sp)
+	lw $a3 -124($sp)
+	lw $k0 -128($sp)
+	sw $k0 -164($sp)
+	addi $sp $sp -148
+	jal f_hanoi
+	lw $ra 0($sp)
+	lw $sp 4($sp)
+	lw $a2 -128($sp)
+	lw $a3 -132($sp)
+	lw $a1 -136($sp)
+	sw $v0 -132($sp)
+	
+# br label %b_4
+	j _4
+	
+_4:
+	
+# ret void
+	jr $ra
+	
+main:
+	
+_5:
+	
+# %v0 = alloca i32
+	addi $k0 $sp -4
+	sw $k0 -8($sp)
+	
+# store i32 0, i32* %v0
+	li $k0 0
+	lw $k1 -8($sp)
+	sw $k0 0($k1)
+	
+# store i32 3, i32* %v0
+	li $k0 3
+	lw $k1 -8($sp)
+	sw $k0 0($k1)
+	
+# %v1 = load i32, i32* %v0
+	lw $k0 -8($sp)
+	lw $k0 0($k0)
+	sw $k0 -12($sp)
+	
+# call void @f_hanoi(i32 %v1, i32 1, i32 2, i32 3)
+	sw $sp -16($sp)
+	sw $ra -20($sp)
+	lw $a1 -12($sp)
+	li $a2 1
+	li $a3 2
+	li $k0 3
+	sw $k0 -36($sp)
+	addi $sp $sp -20
+	jal f_hanoi
+	lw $ra 0($sp)
+	lw $sp 4($sp)
+	sw $v0 -16($sp)
+	
+# %v2 = alloca i32
+	addi $k0 $sp -20
+	sw $k0 -24($sp)
+	
+# store i32 0, i32* %v2
+	li $k0 0
+	lw $k1 -24($sp)
+	sw $k0 0($k1)
+	
+# call void @putstr(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @s_2, i64 0, i64 0))
+	la $a0, s_2
+	li $v0 4
+	syscall
+	
+# %v4 = load i32, i32* %v2
+	lw $k0 -24($sp)
+	lw $k0 0($k0)
+	sw $k0 -28($sp)
+	
+# call void @putint(i32 %v4)
+	lw $a0 -28($sp)
+	li $v0 1
+	syscall
+	
+# ret i32 0
+	li $v0 0
+	jr $ra
 	
 end:
 	li $v0 10

@@ -87,15 +87,15 @@ public class AluInstr extends Instr {
             case OR -> new MipsAlu(MipsAlu.AluType.OR, registerResult, registerL, registerR);
             case MUL -> {
                 new MipsMdu(MipsMdu.MduType.MULT, registerL, registerR);
-                new MipsMdu(MipsMdu.MduType.MFLO, registerR);
+                new MipsMdu(MipsMdu.MduType.MFLO, registerResult);
             }
             case SDIV -> {
                 new MipsMdu(MipsMdu.MduType.DIV, registerL, registerR);
-                new MipsMdu(MipsMdu.MduType.MFLO, registerR);
+                new MipsMdu(MipsMdu.MduType.MFLO, registerResult);
             }
             case SREM -> {
                 new MipsMdu(MipsMdu.MduType.DIV, registerL, registerR);
-                new MipsMdu(MipsMdu.MduType.MFHI, registerR);
+                new MipsMdu(MipsMdu.MduType.MFHI, registerResult);
             }
             default -> throw new RuntimeException("illegal alu type");
         }
