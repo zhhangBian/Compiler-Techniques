@@ -14,7 +14,5 @@ public abstract class IrConstant extends IrValue {
     @Override
     public abstract void toMips();
 
-    public String GetMipsLabel() {
-        return this.irName.substring(1);
-    }
+    public abstract void MipsDeclare(String label);
 }

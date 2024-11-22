@@ -10,42 +10,44 @@ import midend.llvm.value.IrValue;
     store i32 %2, i32* %1
  */
 public class StoreInstr extends Instr {
-    public StoreInstr(IrValue fromValue, IrValue toValue) {
+    public StoreInstr(IrValue valueValue, IrValue addressValue) {
         super(IrBaseType.VOID, InstrType.STORE, "store");
-        this.AddUseValue(fromValue);
-        this.AddUseValue(toValue);
+        this.AddUseValue(valueValue);
+        this.AddUseValue(addressValue);
     }
 
-    public IrValue GetFromValue() {
+    public IrValue GetValueValue() {
         return this.useValueList.get(0);
     }
 
-    public IrValue GetToValue() {
+    public IrValue GetAddressValue() {
         return this.useValueList.get(1);
     }
 
     @Override
     public String toString() {
-        IrValue fromValue = this.GetFromValue();
-        IrValue toValue = this.GetToValue();
+        IrValue valueValue = this.GetValueValue();
+        IrValue addressValue = this.GetAddressValue();
         return "store " +
-            fromValue.GetIrType() + " " + fromValue.GetIrName() + ", " +
-            toValue.GetIrType() + " " + toValue.GetIrName();
+            valueValue.GetIrType() + " " + valueValue.GetIrName() + ", " +
+            addressValue.GetIrType() + " " + addressValue.GetIrName();
     }
 
     @Override
     public void toMips() {
-        IrValue fromValue = this.GetFromValue();
-        IrValue toValue = this.GetToValue();
+        super.toMips();
 
-        Register fromRegister = Register.K0;
-        Register toRegister = Register.K1;
+        IrValue valueValue = this.GetValueValue();
+        IrValue addressValue = this.GetAddressValue();
 
-        // 获取store的值
-        this.LoadValueToRegister(fromValue, fromRegister);
-        // 获取store的地址
-        this.LoadValueToRegister(toValue, toRegister);
+        Register valueRegister = Register.K0;
+        Register addressRegister = Register.K1;
 
-        new MipsLsu(MipsLsu.LsuType.SW, fromRegister, toRegister, 0);
+        // 获取value的值
+        this.LoadValueToRegister(valueValue, valueRegister);
+        // 获取address的值
+        this.LoadValueToRegister(addressValue, addressRegister);
+
+        new MipsLsu(MipsLsu.LsuType.SW, valueRegister, addressRegister, 0);
     }
 }

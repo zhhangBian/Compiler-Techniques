@@ -5,6 +5,7 @@ import backend.mips.Register;
 import backend.mips.assembly.MipsAlu;
 import backend.mips.assembly.MipsJump;
 import backend.mips.assembly.MipsLsu;
+import backend.mips.assembly.fake.MarsMove;
 import midend.llvm.IrBuilder;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
@@ -59,6 +60,8 @@ public class CallInstr extends Instr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         // 现场信息
         int currentOffset = MipsBuilder.GetCurrentStackOffset();
         ArrayList<Register> allocatedRegisterList = MipsBuilder.GetAllocatedRegList();
@@ -83,16 +86,16 @@ public class CallInstr extends Instr {
         this.RecoverCurrent(currentOffset, allocatedRegisterList);
 
         // 处理返回值
-
+        this.HandleReturnValue();
     }
 
     private void SaveCurrent(int currentOffset, ArrayList<Register> allocatedRegisterList) {
         // 获取已分配的寄存器列表
         int registerNum = 0;
         for (Register register : allocatedRegisterList) {
+            registerNum++;
             new MipsLsu(MipsLsu.LsuType.SW, register, Register.SP,
                 currentOffset - registerNum * 4);
-            registerNum++;
         }
         // 保存SP寄存器和RA寄存器
         new MipsLsu(MipsLsu.LsuType.SW, Register.SP, Register.SP,
@@ -135,8 +138,13 @@ public class CallInstr extends Instr {
     }
 
     private void HandleReturnValue() {
-        MipsBuilder.AllocateStackForValue(this);
-        new MipsLsu(MipsLsu.LsuType.SW, Register.V0, Register.SP,
-            MipsBuilder.GetCurrentStackOffset());
+        Register returnRegister = MipsBuilder.GetValueToRegister(this);
+        if (returnRegister != null) {
+            new MarsMove(returnRegister, Register.V0);
+        } else {
+            MipsBuilder.AllocateStackForValue(this);
+            new MipsLsu(MipsLsu.LsuType.SW, Register.V0, Register.SP,
+                MipsBuilder.GetCurrentStackOffset());
+        }
     }
 }

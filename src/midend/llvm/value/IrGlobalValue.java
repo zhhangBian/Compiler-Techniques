@@ -19,6 +19,6 @@ public class IrGlobalValue extends IrUser {
 
     @Override
     public void toMips() {
-        globalValue.toMips();
+        globalValue.MipsDeclare(this.GetMipsLabel());
     }
 }

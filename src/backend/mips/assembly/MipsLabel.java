@@ -9,6 +9,6 @@ public class MipsLabel extends MipsAssembly {
 
     @Override
     public String toString() {
-        return this.label + ":";
+        return "\n" + this.label + ":";
     }
 }

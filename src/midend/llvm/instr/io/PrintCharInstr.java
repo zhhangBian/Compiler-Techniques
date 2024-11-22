@@ -28,6 +28,8 @@ public class PrintCharInstr extends IoInstr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         IrValue printValue = this.GetPrintValue();
         this.LoadValueToRegister(printValue, Register.A0);
 

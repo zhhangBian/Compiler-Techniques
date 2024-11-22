@@ -21,10 +21,12 @@ public class LoadInstr extends Instr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         IrValue pointer = this.GetPointer();
-        // 加载指针的值到的寄存器
+        // 加载address的寄存器
         Register pointerRegister = this.GetRegisterOrK0ForValue(pointer);
-        // 加载指针指向数据到的寄存器
+        // 加载指value的寄存器
         Register targetRegister = this.GetRegisterOrK0ForValue(this);
 
         // 加载指针的地址

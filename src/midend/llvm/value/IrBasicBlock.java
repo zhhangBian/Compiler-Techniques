@@ -54,8 +54,4 @@ public class IrBasicBlock extends IrValue {
             instr.toMips();
         }
     }
-
-    public String GetMipsLabel() {
-        return this.irName.substring(1);
-    }
 }

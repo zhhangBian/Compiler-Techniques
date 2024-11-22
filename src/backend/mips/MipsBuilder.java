@@ -66,20 +66,9 @@ public class MipsBuilder {
     public static Integer AllocateStackForValue(IrValue irValue) {
         Integer address = stackOffsetValueMap.get(irValue);
         if (address == null) {
-            address = stackOffset;
-            stackOffsetValueMap.put(irValue, stackOffset);
             stackOffset -= 4;
-        }
-
-        return address;
-    }
-
-    public static Integer AllocateStackForValue(IrValue irValue, int offset) {
-        Integer address = stackOffsetValueMap.get(irValue);
-        if (address == null) {
-            address = stackOffset;
             stackOffsetValueMap.put(irValue, stackOffset);
-            stackOffset -= offset;
+            address = stackOffset;
         }
 
         return address;

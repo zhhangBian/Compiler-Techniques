@@ -20,6 +20,10 @@ public class IrConstantArray extends IrConstant {
         this.arraySize = arraySize;
     }
 
+    public int GetArraySize() {
+        return this.arraySize;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -46,9 +50,14 @@ public class IrConstantArray extends IrConstant {
 
     @Override
     public void toMips() {
+        this.MipsDeclare(this.GetMipsLabel());
+    }
+
+    @Override
+    public void MipsDeclare(String label) {
         // 先申请空间
         // TODO：按照char类型细化大小
-        new MipsSpace(this.GetMipsLabel(), this.arraySize * 4);
+        new MipsSpace(label, this.arraySize * 4);
         // 进行值初始化
         int offset = 0;
         for (IrConstant irConstant : this.valueList) {

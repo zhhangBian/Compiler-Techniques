@@ -103,12 +103,12 @@ public class IrModule extends IrNode {
     }
 
     public void toMips() {
-        for (Map.Entry<String, IrConstantString> entry : this.stringConstantMap.entrySet()) {
-            entry.getValue().toMips();
-        }
-
         for (IrGlobalValue globalValue : this.globalValues) {
             globalValue.toMips();
+        }
+        // 字符串放到之后，避免对齐问题
+        for (Map.Entry<String, IrConstantString> entry : this.stringConstantMap.entrySet()) {
+            entry.getValue().toMips();
         }
 
         // 插入跳转到main函数

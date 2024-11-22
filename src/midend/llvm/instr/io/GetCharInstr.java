@@ -21,6 +21,8 @@ public class GetCharInstr extends IoInstr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         new MarsLi(Register.V0, 12);
         new MipsSyscall();
         this.SaveResult(this, Register.V0);

@@ -25,6 +25,8 @@ public class ExtendInstr extends Instr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         // mips不需要位宽扩展，只需要将值进行映射，使得使用this的指令能使用到origin
         IrValue originValue = this.GetOriginValue();
         Register register = MipsBuilder.GetValueToRegister(originValue);

@@ -50,6 +50,8 @@ public class GepInstr extends Instr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         IrValue pointerValue = this.GetPointer();
         IrValue offsetValue = this.GetOffset();
 
@@ -65,6 +67,8 @@ public class GepInstr extends Instr {
         // 相加得到地址
         Register targetRegister = this.GetRegisterOrK0ForValue(this);
         new MipsAlu(MipsAlu.AluType.ADDU, targetRegister, Register.K1, pointerRegister);
+        // 保存结果
+        this.SaveResult(this, targetRegister);
     }
 
     public static IrType GetTargetType(IrValue pointer) {

@@ -42,6 +42,8 @@ public class BranchInstr extends Instr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         IrValue cond = this.GetCond();
         Register condRegister = MipsBuilder.GetValueToRegister(cond);
 

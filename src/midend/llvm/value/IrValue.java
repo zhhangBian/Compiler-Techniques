@@ -31,4 +31,8 @@ public class IrValue {
 
     public void toMips() {
     }
+
+    public String GetMipsLabel() {
+        return this.irName.substring(1);
+    }
 }

@@ -22,6 +22,11 @@ public class IrConstantInt extends IrConstant {
 
     @Override
     public void toMips() {
-        new MipsWord(this.GetMipsLabel(), this.value);
+        this.MipsDeclare(this.GetMipsLabel());
+    }
+
+    @Override
+    public void MipsDeclare(String label) {
+        new MipsWord(label, this.value);
     }
 }

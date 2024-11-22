@@ -31,6 +31,8 @@ public class PrintStrInstr extends IoInstr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         new MarsLa(Register.A0, this.irConstantString.GetMipsLabel());
         new MarsLi(Register.V0, 4);
         new MipsSyscall();

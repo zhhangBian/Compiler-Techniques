@@ -37,6 +37,8 @@ public class AluInstr extends Instr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         IrValue valueL = this.GetValueL();
         IrValue valueR = this.GetValueR();
 

@@ -105,8 +105,4 @@ public class IrFunction extends IrValue {
             irBasicBlock.toMips();
         }
     }
-
-    public String GetMipsLabel() {
-        return this.irName.substring(1);
-    }
 }

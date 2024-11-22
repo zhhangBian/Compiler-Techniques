@@ -27,6 +27,8 @@ public class JumpInstr extends Instr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         new MipsJump(MipsJump.JumpType.J, this.GetTargetBlock().GetMipsLabel());
     }
 }

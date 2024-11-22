@@ -29,6 +29,8 @@ public class ReturnInstr extends Instr {
 
     @Override
     public void toMips() {
+        super.toMips();
+
         IrValue returnValue = this.GetReturnValue();
         // 不为void
         if (returnValue != null) {
