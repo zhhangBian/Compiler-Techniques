@@ -63,10 +63,10 @@ public class IrConstantArray extends IrConstant {
         for (IrConstant irConstant : this.valueList) {
             if (irConstant instanceof IrConstantInt irConstantInt) {
                 new MarsLi(Register.T0, irConstantInt.GetValue());
-                new MipsLsu(MipsLsu.LsuType.SW, Register.T0, this.GetMipsLabel(), offset);
+                new MipsLsu(MipsLsu.LsuType.SW, Register.T0, label, offset);
             } else if (irConstant instanceof IrConstantChar irConstantChar) {
                 new MarsLi(Register.T0, irConstantChar.GetValue());
-                new MipsLsu(MipsLsu.LsuType.SW, Register.T0, this.GetMipsLabel(), offset);
+                new MipsLsu(MipsLsu.LsuType.SW, Register.T0, label, offset);
             }
             offset += 4;
         }
