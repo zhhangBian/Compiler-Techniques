@@ -14,6 +14,7 @@ public class MipsMdu extends MipsAssembly {
     private final Register rt;
 
     public MipsMdu(MduType mduType, Register rd) {
+        super(MipsType.MDU);
         this.mduType = mduType;
         this.rd = rd;
         this.rs = null;
@@ -21,10 +22,15 @@ public class MipsMdu extends MipsAssembly {
     }
 
     public MipsMdu(MduType mduType, Register rs, Register rt) {
+        super(MipsType.MDU);
         this.mduType = mduType;
         this.rd = null;
         this.rs = rs;
         this.rt = rt;
+    }
+
+    public MduType GetMduType() {
+        return this.mduType;
     }
 
     @Override

@@ -1,6 +1,7 @@
 import backend.BackEnd;
 import frontend.FrontEnd;
 import midend.MidEnd;
+import utils.HandleComplexity;
 import utils.IOhandler;
 
 import java.io.IOException;
@@ -24,5 +25,7 @@ public class Compiler {
         IOhandler.PrintErrorMessage();
         IOhandler.PrintLlvm();
         IOhandler.PrintMips();
+
+        HandleComplexity.PrintReport();
     }
 }

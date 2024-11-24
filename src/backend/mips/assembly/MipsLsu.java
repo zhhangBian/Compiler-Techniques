@@ -17,6 +17,7 @@ public class MipsLsu extends MipsAssembly {
     private final String label;
 
     public MipsLsu(LsuType lsuType, Register rd, Register base, Integer offset) {
+        super(MipsType.LSU);
         this.lsuType = lsuType;
         this.rd = rd;
         this.base = base;
@@ -25,6 +26,7 @@ public class MipsLsu extends MipsAssembly {
     }
 
     public MipsLsu(LsuType lsuType, Register rd, String label, Integer offset) {
+        super(MipsType.LSU);
         this.lsuType = lsuType;
         this.rd = rd;
         this.base = null;

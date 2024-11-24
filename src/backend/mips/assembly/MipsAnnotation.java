@@ -4,6 +4,7 @@ public class MipsAnnotation extends MipsAssembly {
     private final String annotation;
 
     public MipsAnnotation(String annotation) {
+        super(MipsType.ANNOTATION);
         this.annotation = annotation;
     }
 

@@ -22,6 +22,7 @@ public class MipsAlu extends MipsAssembly {
 
     // calc_R、shift
     public MipsAlu(AluType aluType, Register rd, Register rs, Register rt) {
+        super(MipsType.ALU);
         this.aluType = aluType;
         this.rd = rd;
         this.rs = rs;
@@ -31,6 +32,7 @@ public class MipsAlu extends MipsAssembly {
 
     // calc_I、shiftv
     public MipsAlu(AluType aluType, Register rd, Register rs, int number) {
+        super(MipsType.ALU);
         this.aluType = aluType;
         this.rd = rd;
         this.rs = rs;

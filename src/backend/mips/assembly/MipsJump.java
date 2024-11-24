@@ -12,12 +12,14 @@ public class MipsJump extends MipsAssembly {
     private final Register rd;
 
     public MipsJump(JumpType jumpType, String targetLabel) {
+        super(MipsType.JUMP);
         this.jumpType = jumpType;
         this.targetLabel = targetLabel;
         this.rd = null;
     }
 
     public MipsJump(JumpType jumpType, Register rd) {
+        super(MipsType.JUMP);
         this.jumpType = jumpType;
         this.targetLabel = null;
         this.rd = rd;

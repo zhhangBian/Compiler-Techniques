@@ -13,6 +13,7 @@ public class MipsCompare extends MipsAssembly {
     private final Register rt;
 
     public MipsCompare(CompareType compareType, Register rd, Register rs, Register rt) {
+        super(MipsType.COMPARE);
         this.compareType = compareType;
         this.rd = rd;
         this.rs = rs;

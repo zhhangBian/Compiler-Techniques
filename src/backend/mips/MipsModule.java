@@ -21,6 +21,10 @@ public class MipsModule {
         this.textSegment.add(mipsAssembly);
     }
 
+    public ArrayList<MipsAssembly> GetTextSegment() {
+        return this.textSegment;
+    }
+
     public String toString() {
         StringBuilder builder = new StringBuilder();
 

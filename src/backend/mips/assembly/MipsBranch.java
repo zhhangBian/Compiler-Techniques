@@ -14,6 +14,7 @@ public class MipsBranch extends MipsAssembly {
 
     // beq, bne
     public MipsBranch(BranchType branchType, Register rs, Register rt, String label) {
+        super(MipsType.BRANCH);
         this.branchType = branchType;
         this.rs = rs;
         this.rt = rt;
@@ -22,6 +23,7 @@ public class MipsBranch extends MipsAssembly {
 
     // bgtz, bgez, bltz, blez
     public MipsBranch(BranchType branchType, Register rs, String label) {
+        super(MipsType.BRANCH);
         this.branchType = branchType;
         this.rs = rs;
         this.rt = null;
