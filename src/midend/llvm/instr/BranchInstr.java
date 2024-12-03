@@ -21,11 +21,11 @@ public class BranchInstr extends Instr {
         return this.useValueList.get(0);
     }
 
-    private IrBasicBlock GetTrueBlock() {
+    public IrBasicBlock GetTrueBlock() {
         return (IrBasicBlock) this.useValueList.get(1);
     }
 
-    private IrBasicBlock GetFalseBlock() {
+    public IrBasicBlock GetFalseBlock() {
         return (IrBasicBlock) this.useValueList.get(2);
     }
 

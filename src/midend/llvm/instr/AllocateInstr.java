@@ -16,6 +16,10 @@ public class AllocateInstr extends Instr {
         this.targetType = targetType;
     }
 
+    public IrType GetTargetType() {
+        return this.targetType;
+    }
+
     @Override
     public String toString() {
         return this.irName + " = alloca " + this.targetType;

@@ -6,7 +6,7 @@ import midend.llvm.value.IrValue;
 import java.util.ArrayList;
 
 public class IrUser extends IrValue {
-    // 使用的value list
+    // 使用的value的list
     protected final ArrayList<IrValue> useValueList;
 
     public IrUser(IrType valueType, String name) {

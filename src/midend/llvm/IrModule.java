@@ -68,6 +68,10 @@ public class IrModule extends IrNode {
         this.functions.add(function);
     }
 
+    public ArrayList<IrFunction> GetFunctions() {
+        return this.functions;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

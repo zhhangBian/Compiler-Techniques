@@ -8,13 +8,13 @@ import java.util.ArrayList;
 public class IrValue {
     protected final IrType irType;
     protected final String irName;
-    // 使用当前value的use关系，即被使用列表
-    protected final ArrayList<IrUse> usedList;
+    // 使用当前value的use关系，即使用该value的user列表
+    protected final ArrayList<IrUse> useList;
 
     public IrValue(IrType irType, String irName) {
         this.irType = irType;
         this.irName = irName;
-        this.usedList = new ArrayList<>();
+        this.useList = new ArrayList<>();
     }
 
     public IrType GetIrType() {
@@ -26,7 +26,11 @@ public class IrValue {
     }
 
     public void AddUse(IrUse use) {
-        this.usedList.add(use);
+        this.useList.add(use);
+    }
+
+    public ArrayList<IrUse> GetUseList() {
+        return this.useList;
     }
 
     public void toMips() {

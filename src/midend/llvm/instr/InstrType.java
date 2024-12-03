@@ -16,5 +16,7 @@ public enum InstrType {
     RETURN,
 
     GEP,
-    IO
+    IO,
+
+    PHI
 }

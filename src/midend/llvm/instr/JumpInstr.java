@@ -15,7 +15,7 @@ public class JumpInstr extends Instr {
         this.AddUseValue(targetBlock);
     }
 
-    private IrBasicBlock GetTargetBlock() {
+    public IrBasicBlock GetTargetBlock() {
         return (IrBasicBlock) this.useValueList.get(0);
     }
 

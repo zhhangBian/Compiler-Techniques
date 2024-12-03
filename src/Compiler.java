@@ -1,8 +1,10 @@
 import backend.BackEnd;
 import frontend.FrontEnd;
 import midend.MidEnd;
+import optimize.OptimizeManager;
 import utils.HandleComplexity;
 import utils.IOhandler;
+import utils.Setting;
 
 import java.io.IOException;
 
@@ -16,6 +18,11 @@ public class Compiler {
 
         MidEnd.GenerateSymbolTable();
         MidEnd.GenerateIr();
+
+        if (Setting.FINE_TUNING) {
+            OptimizeManager.Init();
+            OptimizeManager.Optimize();
+        }
 
         BackEnd.GenerateMips();
 

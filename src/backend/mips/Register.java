@@ -1,5 +1,7 @@
 package backend.mips;
 
+import java.util.ArrayList;
+
 public enum Register {
     ZERO("$zero"),
 
@@ -48,6 +50,32 @@ public enum Register {
 
     public static Register get(int index) {
         return values()[index];
+    }
+
+    public ArrayList<Register> GetUsAbleRegisters() {
+        ArrayList<Register> usableRegisters = new ArrayList<>();
+
+        usableRegisters.add(T0);
+        usableRegisters.add(T1);
+        usableRegisters.add(T2);
+        usableRegisters.add(T3);
+        usableRegisters.add(T4);
+        usableRegisters.add(T5);
+        usableRegisters.add(T6);
+        usableRegisters.add(T7);
+        usableRegisters.add(T8);
+        usableRegisters.add(T9);
+
+        usableRegisters.add(S0);
+        usableRegisters.add(S1);
+        usableRegisters.add(S2);
+        usableRegisters.add(S3);
+        usableRegisters.add(S4);
+        usableRegisters.add(S5);
+        usableRegisters.add(S6);
+        usableRegisters.add(S7);
+
+        return usableRegisters;
     }
 
     @Override

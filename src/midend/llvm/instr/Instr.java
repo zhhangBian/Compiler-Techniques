@@ -11,12 +11,14 @@ import midend.llvm.IrBuilder;
 import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrType;
 import midend.llvm.use.IrUser;
+import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrGlobalValue;
 import midend.llvm.value.IrValue;
 
 // instr是一种User：使用其他的Value作为参数
 public abstract class Instr extends IrUser {
     private final InstrType instrType;
+    private IrBasicBlock inBasicBlock;
 
     public Instr(IrType irType, InstrType instrType) {
         super(irType, IrBuilder.GetLocalVarName());
@@ -41,8 +43,16 @@ public abstract class Instr extends IrUser {
         }
     }
 
+    public void SetInBasicBlock(IrBasicBlock irBasicBlock) {
+        this.inBasicBlock = irBasicBlock;
+    }
+
     public InstrType GetInstrType() {
         return this.instrType;
+    }
+
+    public IrBasicBlock GetInBasicBlock() {
+        return this.inBasicBlock;
     }
 
     @Override

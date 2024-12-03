@@ -1,16 +1,24 @@
 package optimize;
 
+import midend.MidEnd;
+
 import java.util.ArrayList;
 
 public class OptimizeManager {
-    private final ArrayList<Optimizer> optimizerList;
+    private static ArrayList<Optimizer> optimizerList;
 
-    public OptimizeManager() {
-        this.optimizerList = new ArrayList<>();
+    public static void Init() {
+        Optimizer.SetIrModule(MidEnd.GetIrModule());
+
+        optimizerList = new ArrayList<>();
+        // 这里的顺序是关键的
+        optimizerList.add(new CfgBuilder());
+        optimizerList.add(new MemToReg());
+        optimizerList.add(new AllocateRegister());
     }
 
-    public void Optimize() {
-        for (Optimizer optimizer : this.optimizerList) {
+    public static void Optimize() {
+        for (Optimizer optimizer : optimizerList) {
             optimizer.Optimize();
         }
     }

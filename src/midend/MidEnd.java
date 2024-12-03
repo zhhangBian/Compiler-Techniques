@@ -14,7 +14,7 @@ public class MidEnd {
     private static CompUnit rootNode;
     private static IrModule irModule;
 
-    public static void GenerateSymbolTable() throws IOException {
+    public static void GenerateSymbolTable() {
         SymbolManger.Init();
         rootNode = FrontEnd.GetAstTree();
         rootNode.Visit();
