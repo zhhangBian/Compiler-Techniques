@@ -6,7 +6,6 @@ import midend.llvm.instr.LoadInstr;
 import midend.llvm.instr.StoreInstr;
 import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;
-import midend.llvm.value.IrValue;
 
 import java.util.HashSet;
 

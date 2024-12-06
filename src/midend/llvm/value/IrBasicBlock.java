@@ -16,16 +16,14 @@ public class IrBasicBlock extends IrValue {
     private final ArrayList<IrBasicBlock> nextBlockList;
     private final ArrayList<IrBasicBlock> beforeBlockList;
     // 描述支配关系的数据结构
-
-    // 直接支配该block的block
-    private IrBasicBlock immediateDominator;
     // 支配该block的block
     private final HashSet<IrBasicBlock> dominators;
-    // 该block直接支配的block
-    private final HashSet<IrBasicBlock> immediateDominaters;
-    // 该block的支配边界
+    // 该结点的直接支配者
+    private IrBasicBlock directDominator;
+    // 该结点直接支配的结点
+    private final HashSet<IrBasicBlock> directDominateBlocks;
+    // 该节点的支配边界
     private final HashSet<IrBasicBlock> dominateFrontiers;
-
 
     public IrBasicBlock(String irName, IrFunction irFunction) {
         super(IrBasicBlockType.BASIC_BLOCK, irName);
@@ -35,9 +33,9 @@ public class IrBasicBlock extends IrValue {
         this.nextBlockList = new ArrayList<>();
         this.beforeBlockList = new ArrayList<>();
         // 描述支配关系的数据结构
-        this.immediateDominator = null;
         this.dominators = new HashSet<>();
-        this.immediateDominaters = new HashSet<>();
+        this.directDominator = null;
+        this.directDominateBlocks = new HashSet<>();
         this.dominateFrontiers = new HashSet<>();
     }
 
@@ -73,10 +71,30 @@ public class IrBasicBlock extends IrValue {
         this.nextBlockList.clear();
         this.beforeBlockList.clear();
         // 支配关系
-        this.immediateDominator = null;
         this.dominators.clear();
-        this.immediateDominaters.clear();
+        this.directDominator = null;
+        this.directDominateBlocks.clear();
         this.dominateFrontiers.clear();
+    }
+
+    public ArrayList<IrBasicBlock> GetNextBlocks() {
+        return this.nextBlockList;
+    }
+
+    public ArrayList<IrBasicBlock> GetBeforeBlock() {
+        return this.beforeBlockList;
+    }
+
+    public HashSet<IrBasicBlock> GetDominatorBlocks() {
+        return this.dominators;
+    }
+
+    public IrBasicBlock GetDirectDominator() {
+        return this.directDominator;
+    }
+
+    public HashSet<IrBasicBlock> GetDominateFrontiers() {
+        return this.dominateFrontiers;
     }
 
     public void AddNextBlock(IrBasicBlock nextBlock) {
@@ -90,6 +108,17 @@ public class IrBasicBlock extends IrValue {
     // 添加支配该block的block
     public void AddDominator(IrBasicBlock dominatorBlock) {
         this.dominators.add(dominatorBlock);
+    }
+
+    // 添加直接支配关系
+    public void AddDirectDominatorRelationship(IrBasicBlock directDominator) {
+        this.directDominator = directDominator;
+        directDominator.directDominateBlocks.add(this);
+    }
+
+    // 添加支配边界信息
+    public void AddDominateFrontier(IrBasicBlock frontierBlock) {
+        this.dominateFrontiers.add(frontierBlock);
     }
 
     @Override

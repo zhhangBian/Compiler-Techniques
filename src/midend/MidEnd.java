@@ -8,8 +8,6 @@ import midend.symbol.SymbolManger;
 import midend.symbol.SymbolTable;
 import midend.visit.Visitor;
 
-import java.io.IOException;
-
 public class MidEnd {
     private static CompUnit rootNode;
     private static IrModule irModule;
