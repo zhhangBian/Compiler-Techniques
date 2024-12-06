@@ -13,7 +13,8 @@ public class MemToReg extends Optimizer {
             for (IrBasicBlock irBasicBlock : irFunction.GetBasicBlocks()) {
                 for (Instr instr : irBasicBlock.GetInstrList()) {
                     if (this.IsValueAllocate(instr)) {
-                        InstrAddPhi addPhi = new InstrAddPhi((AllocateInstr) instr);
+                        InstrAddPhi addPhi =
+                            new InstrAddPhi((AllocateInstr) instr, instr.GetInBasicBlock());
                         addPhi.AddPhi();
                     }
                 }
@@ -24,6 +25,6 @@ public class MemToReg extends Optimizer {
     private boolean IsValueAllocate(Instr instr) {
         // 只对非数组类型添加phi
         return instr instanceof AllocateInstr allocateInstr &&
-            allocateInstr.GetTargetType() instanceof IrArrayType;
+            !(allocateInstr.GetTargetType() instanceof IrArrayType);
     }
 }

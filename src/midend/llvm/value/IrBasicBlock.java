@@ -47,8 +47,16 @@ public class IrBasicBlock extends IrValue {
         this.instrList.add(instr);
     }
 
+    public void AddInstr(Instr instr, int index) {
+        this.instrList.add(index, instr);
+    }
+
     public ArrayList<Instr> GetInstrList() {
         return this.instrList;
+    }
+
+    public Instr GetFirstInstr() {
+        return this.instrList.get(0);
     }
 
     public Instr GetLastInstr() {
@@ -87,6 +95,10 @@ public class IrBasicBlock extends IrValue {
 
     public HashSet<IrBasicBlock> GetDominatorBlocks() {
         return this.dominators;
+    }
+
+    public HashSet<IrBasicBlock> GetDirectDominateBlocks() {
+        return this.directDominateBlocks;
     }
 
     public IrBasicBlock GetDirectDominator() {

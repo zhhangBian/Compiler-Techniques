@@ -2,8 +2,11 @@ package midend.llvm.value;
 
 import midend.llvm.type.IrType;
 import midend.llvm.use.IrUse;
+import midend.llvm.use.IrUser;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.stream.Collectors;
 
 public class IrValue {
     protected final IrType irType;
@@ -31,6 +34,26 @@ public class IrValue {
 
     public ArrayList<IrUse> GetUseList() {
         return this.useList;
+    }
+
+    public void ModifyUsersToNewValue(IrValue newValue) {
+        // 对于user替换为新的value
+        ArrayList<IrUser> userList = this.useList.stream().map(IrUse::GetUser).
+            collect(Collectors.toCollection(ArrayList::new));
+        for (IrUser user : userList) {
+            user.ModifyValue(this, newValue);
+        }
+    }
+
+    public void DeleteUser(IrUser user) {
+        Iterator<IrUse> iterator = this.useList.iterator();
+        while (iterator.hasNext()) {
+            IrUse use = iterator.next();
+            if (use.GetUser() == user) {
+                iterator.remove();
+                break;
+            }
+        }
     }
 
     public void toMips() {

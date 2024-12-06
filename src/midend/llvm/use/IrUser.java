@@ -14,13 +14,26 @@ public class IrUser extends IrValue {
         this.useValueList = new ArrayList<>();
     }
 
-    public void AddUseValue(IrValue value) {
-        this.useValueList.add(value);
+    public void AddUseValue(IrValue irValue) {
+        this.useValueList.add(irValue);
         // 在添加的同时登记Use关系
-        value.AddUse(new IrUse(this, value));
+        if (irValue != null) {
+            irValue.AddUse(new IrUse(this, irValue));
+        }
     }
 
     public ArrayList<IrValue> GetUseValueList() {
         return this.useValueList;
+    }
+
+    public void ModifyValue(IrValue oldValue, IrValue newValue) {
+        // 将newValue加入到oldValue中，位置不变
+        int index = this.useValueList.indexOf(oldValue);
+        this.useValueList.set(index, newValue);
+
+        // 将this从oldValue的useList中删除
+        oldValue.DeleteUser(this);
+        // 将this加入到newValue的useList中
+        newValue.AddUse(new IrUse(this, newValue));
     }
 }

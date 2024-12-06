@@ -99,6 +99,12 @@ public class IrBuilder {
         return LOCAL_VAR_NAME_PREFIX + count;
     }
 
+    public static String GetLocalVarName(IrFunction irFunction) {
+        int count = localVarNameCountMap.get(irFunction);
+        localVarNameCountMap.put(irFunction, count + 1);
+        return LOCAL_VAR_NAME_PREFIX + count;
+    }
+
     public static String GetStringConstName() {
         return STRING_LITERAL_NAME_PREFIX + stringConstNameCount++;
     }
