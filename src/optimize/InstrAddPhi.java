@@ -1,5 +1,6 @@
 package optimize;
 
+import midend.llvm.constant.IrConstantInt;
 import midend.llvm.instr.AllocateInstr;
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.LoadInstr;
@@ -68,24 +69,25 @@ public class InstrAddPhi {
 
     private void InsertPhi() {
         // 需要添加phi的基本块的集合
-        HashSet<IrBasicBlock> F = new HashSet<>();
-        // 定义变量的基本块的集合
-        Stack<IrBasicBlock> W = new Stack<>();
+        HashSet<IrBasicBlock> addedPhiBlocks = new HashSet<>();
 
+        // 定义变量的基本块的集合
+        Stack<IrBasicBlock> defineBlockStack = new Stack<>();
         for (IrBasicBlock defineBlock : this.defineBlocks) {
-            W.push(defineBlock);
+            defineBlockStack.push(defineBlock);
         }
 
-        while (!W.isEmpty()) {
-            IrBasicBlock currentBlock = W.pop();
+        while (!defineBlockStack.isEmpty()) {
+            IrBasicBlock defineBlock = defineBlockStack.pop();
             // 遍历当前基本块的所有后继基本块
-            for (IrBasicBlock Y : currentBlock.GetDominateFrontiers()) {
+            for (IrBasicBlock frontierBlock : defineBlock.GetDominateFrontiers()) {
                 // 如果后继基本块不在F中，则将后继基本块加入F中
-                if (!F.contains(Y)) {
-                    this.InsertPhiInstr(Y);
-                    F.add(Y);
-                    if (!this.defineBlocks.contains(Y)) {
-                        W.push(Y);
+                if (!addedPhiBlocks.contains(frontierBlock)) {
+                    this.InsertPhiInstr(frontierBlock);
+                    addedPhiBlocks.add(frontierBlock);
+                    // phi也进行定义变量
+                    if (!this.defineBlocks.contains(frontierBlock)) {
+                        defineBlockStack.push(frontierBlock);
                     }
                 }
             }
@@ -105,10 +107,10 @@ public class InstrAddPhi {
 
         // 移除与当前allocate相关的全部的load、store指令
         this.RemoveLoadStore(renameBlock);
-        // 遍历entry的后续集合，将最新的define（stack.peek）填充进每个后继块的第一个phi指令中
+        // 遍历entry的后续集合，将最新的define填充进每个后继块的第一个phi指令中
         this.ConvertPhiValue(renameBlock);
 
-        // 对支配快进行dfs
+        // 对支配块进行dfs
         for (IrBasicBlock dominateBlock : renameBlock.GetDirectDominateBlocks()) {
             this.ConvertLoadStore(dominateBlock);
         }
@@ -119,8 +121,8 @@ public class InstrAddPhi {
         }
     }
 
-    private void RemoveLoadStore(IrBasicBlock renameBlock) {
-        Iterator<Instr> iterator = renameBlock.GetInstrList().iterator();
+    private void RemoveLoadStore(IrBasicBlock visitBlock) {
+        Iterator<Instr> iterator = visitBlock.GetInstrList().iterator();
         while (iterator.hasNext()) {
             Instr instr = iterator.next();
             // store
@@ -131,7 +133,7 @@ public class InstrAddPhi {
             // load
             else if (instr instanceof LoadInstr && this.useInstrs.contains(instr)) {
                 // 将所有使用该load指令的指令，改为使用stack.peek()
-                instr.ModifyUsersToNewValue(this.valueStack.peek());
+                instr.ModifyUsersToNewValue(this.PeekValueStack());
                 iterator.remove();
             }
             // phi
@@ -145,13 +147,17 @@ public class InstrAddPhi {
         }
     }
 
-    private void ConvertPhiValue(IrBasicBlock dfsBlock) {
-        // entry的后继块
-        for (IrBasicBlock nextBlock : dfsBlock.GetNextBlocks()) {
+    private void ConvertPhiValue(IrBasicBlock visitBlock) {
+        // entry支配的基本块
+        for (IrBasicBlock nextBlock : visitBlock.GetNextBlocks()) {
             Instr firstInstr = nextBlock.GetFirstInstr();
             if (firstInstr instanceof PhiInstr phiInstr && this.useInstrs.contains(firstInstr)) {
-                phiInstr.ConvertBlockToValue(this.valueStack.peek(), dfsBlock);
+                phiInstr.ConvertBlockToValue(this.PeekValueStack(), visitBlock);
             }
         }
+    }
+
+    private IrValue PeekValueStack() {
+        return this.valueStack.isEmpty() ? new IrConstantInt(0) : this.valueStack.peek();
     }
 }

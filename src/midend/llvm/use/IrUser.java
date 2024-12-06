@@ -30,10 +30,15 @@ public class IrUser extends IrValue {
         // 将newValue加入到oldValue中，位置不变
         int index = this.useValueList.indexOf(oldValue);
         this.useValueList.set(index, newValue);
+    }
 
-        // 将this从oldValue的useList中删除
-        oldValue.DeleteUser(this);
-        // 将this加入到newValue的useList中
-        newValue.AddUse(new IrUse(this, newValue));
+    public void RemoveAllValueUse() {
+        // value不再登记user
+        ArrayList<IrUse> uses = new ArrayList<>(this.useList);
+        for (IrUse irUse : uses) {
+            irUse.GetValue().DeleteUser(irUse.GetUser());
+        }
+        // 去除使用的value
+        this.useValueList.clear();
     }
 }

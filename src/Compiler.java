@@ -20,6 +20,7 @@ public class Compiler {
         MidEnd.GenerateIr();
 
         if (Setting.FINE_TUNING) {
+            IOhandler.PrintLlvmInit();
             OptimizeManager.Init();
             OptimizeManager.Optimize();
         }

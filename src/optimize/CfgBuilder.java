@@ -37,21 +37,22 @@ public class CfgBuilder extends Optimizer {
         // 构建CFG图
         for (IrFunction irFunction : irModule.GetFunctions()) {
             for (IrBasicBlock visitBlock : irFunction.GetBasicBlocks()) {
-                Instr lastInstr = visitBlock.GetLastInstr();
-                // 如果是jump
-                if (lastInstr instanceof JumpInstr jumpInstr) {
-                    IrBasicBlock targetBlock = jumpInstr.GetTargetBlock();
-                    visitBlock.AddNextBlock(targetBlock);
-                    targetBlock.AddBeforeBlock(visitBlock);
-                }
-                // 如果是branch
-                else if (lastInstr instanceof BranchInstr branchInstr) {
-                    IrBasicBlock trueBlock = branchInstr.GetTrueBlock();
-                    IrBasicBlock falseBlock = branchInstr.GetFalseBlock();
-                    visitBlock.AddNextBlock(trueBlock);
-                    visitBlock.AddNextBlock(falseBlock);
-                    trueBlock.AddBeforeBlock(visitBlock);
-                    falseBlock.AddBeforeBlock(visitBlock);
+                for (Instr instr : visitBlock.GetInstrList()) {
+                    // 如果是jump
+                    if (instr instanceof JumpInstr jumpInstr) {
+                        IrBasicBlock targetBlock = jumpInstr.GetTargetBlock();
+                        visitBlock.AddNextBlock(targetBlock);
+                        targetBlock.AddBeforeBlock(visitBlock);
+                    }
+                    // 如果是branch
+                    else if (instr instanceof BranchInstr branchInstr) {
+                        IrBasicBlock trueBlock = branchInstr.GetTrueBlock();
+                        IrBasicBlock falseBlock = branchInstr.GetFalseBlock();
+                        visitBlock.AddNextBlock(trueBlock);
+                        visitBlock.AddNextBlock(falseBlock);
+                        trueBlock.AddBeforeBlock(visitBlock);
+                        falseBlock.AddBeforeBlock(visitBlock);
+                    }
                 }
             }
         }
@@ -117,19 +118,14 @@ public class CfgBuilder extends Optimizer {
     private void BuildDominateFrontier() {
         for (IrFunction irFunction : irModule.GetFunctions()) {
             for (IrBasicBlock visitBlock : irFunction.GetBasicBlocks()) {
-                // 如果子节点只有1个，那么肯定是支配边界，无需讨论
-                ArrayList<IrBasicBlock> nextBlocks = visitBlock.GetNextBlocks();
-                if (nextBlocks.size() <= 1) {
-                    continue;
-                }
-                // 对所有的子节点讨论
-                for (IrBasicBlock nextBlock : nextBlocks) {
+                ArrayList<IrBasicBlock> nextBlocksBlocks = visitBlock.GetNextBlocks();
+                for (IrBasicBlock nextBlock : nextBlocksBlocks) {
                     // 指针，沿着直接支配关系进行上溯
                     IrBasicBlock currentBlock = visitBlock;
-                    // 根节点支配所有结点
-                    while (currentBlock == visitBlock.GetDirectDominator() ||
-                        !nextBlock.GetDominatorBlocks().contains(currentBlock)) {
-                        currentBlock.AddDominateFrontier(visitBlock);
+                    // 后继块就是 cur 或者是 nextBlock 的支配者不包括 cur
+                    while (!nextBlock.GetDominatorBlocks().contains(currentBlock) ||
+                        currentBlock == nextBlock) {
+                        currentBlock.AddDominateFrontier(nextBlock);
                         // 进行上溯
                         currentBlock = currentBlock.GetDirectDominator();
                     }

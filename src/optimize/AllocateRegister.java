@@ -10,10 +10,6 @@ public class AllocateRegister extends Optimizer {
     private HashMap<IrValue, Register> valueRegisterMap;
 
     public AllocateRegister() {
-        this.EmptyMap();
-    }
-
-    private void EmptyMap() {
         this.registerValueMap = new HashMap<>();
         this.valueRegisterMap = new HashMap<>();
     }

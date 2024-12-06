@@ -39,6 +39,12 @@ public class IrBasicBlock extends IrValue {
         this.dominateFrontiers = new HashSet<>();
     }
 
+    public void RemoveAllValueUse() {
+        for (Instr instr : this.instrList) {
+            instr.RemoveAllValueUse();
+        }
+    }
+
     public boolean IsEmptyBlock() {
         return this.instrList.isEmpty();
     }
@@ -110,11 +116,15 @@ public class IrBasicBlock extends IrValue {
     }
 
     public void AddNextBlock(IrBasicBlock nextBlock) {
-        this.nextBlockList.add(nextBlock);
+        if (!this.nextBlockList.contains(nextBlock)) {
+            this.nextBlockList.add(nextBlock);
+        }
     }
 
     public void AddBeforeBlock(IrBasicBlock beforeBlock) {
-        this.beforeBlockList.add(beforeBlock);
+        if (!this.beforeBlockList.contains(beforeBlock)) {
+            this.beforeBlockList.add(beforeBlock);
+        }
     }
 
     // 添加支配该block的block

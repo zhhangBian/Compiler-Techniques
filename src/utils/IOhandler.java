@@ -23,6 +23,7 @@ public class IOhandler {
     private static FileOutputStream lexerOutputFile = null;
     private static FileOutputStream parserOutputFile = null;
     private static FileOutputStream symbolOutputFile = null;
+    private static FileOutputStream llvmInitOutputFile = null;
     private static FileOutputStream llvmOutputFile = null;
     private static FileOutputStream mipsOutputFile = null;
     private static FileOutputStream errorFile = null;
@@ -32,6 +33,7 @@ public class IOhandler {
         IOhandler.lexerOutputFile = new FileOutputStream("lexer.txt");
         IOhandler.parserOutputFile = new FileOutputStream("parser.txt");
         IOhandler.symbolOutputFile = new FileOutputStream("symbol.txt");
+        IOhandler.llvmInitOutputFile = new FileOutputStream("llvm_ir_init.txt");
         IOhandler.llvmOutputFile = new FileOutputStream("llvm_ir.txt");
         IOhandler.mipsOutputFile = new FileOutputStream("mips.txt");
         IOhandler.errorFile = new FileOutputStream("error.txt");
@@ -57,6 +59,11 @@ public class IOhandler {
     public static void PrintSymbolTable() throws IOException {
         SymbolTable rootSymbolTable = MidEnd.GetSymbolTable();
         symbolOutputFile.write(rootSymbolTable.toString().getBytes());
+    }
+
+    public static void PrintLlvmInit() throws IOException {
+        IrModule irModule = MidEnd.GetIrModule();
+        llvmInitOutputFile.write(irModule.toString().getBytes());
     }
 
     public static void PrintLlvm() throws IOException {

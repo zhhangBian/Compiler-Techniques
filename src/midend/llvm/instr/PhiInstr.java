@@ -7,6 +7,7 @@ import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrValue;
 
 import java.util.ArrayList;
+import java.util.StringJoiner;
 
 public class PhiInstr extends Instr {
     private final ArrayList<IrBasicBlock> beforeBlockList;
@@ -14,8 +15,9 @@ public class PhiInstr extends Instr {
     public PhiInstr(IrBasicBlock irBasicBlock) {
         super(IrBaseType.INT32, InstrType.PHI,
             IrBuilder.GetLocalVarName(irBasicBlock.GetIrFunction()), false);
-        this.beforeBlockList = irBasicBlock.GetBeforeBlock();
         this.SetInBasicBlock(irBasicBlock);
+
+        this.beforeBlockList = irBasicBlock.GetBeforeBlock();
         // 填充相应的value，等待后续替换
         for (int i = 0; i < this.beforeBlockList.size(); i++) {
             this.AddUseValue(null);
@@ -32,6 +34,24 @@ public class PhiInstr extends Instr {
 
     @Override
     public String toString() {
-        throw new RuntimeException("phi not finished yet");
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(this.irName);
+        builder.append(" = phi ");
+        builder.append(this.irType);
+
+        StringJoiner joiner = new StringJoiner(", ");
+        for (int i = 0; i < this.beforeBlockList.size(); i++) {
+            final StringBuilder blockBuilder = new StringBuilder();
+            blockBuilder.append("[ ");
+            blockBuilder.append(this.useValueList.get(i).GetIrName());
+            blockBuilder.append(", %");
+            blockBuilder.append(this.beforeBlockList.get(i).GetIrName());
+            blockBuilder.append(" ]");
+            joiner.add(blockBuilder);
+        }
+        builder.append(joiner);
+
+        return builder.toString();
     }
 }

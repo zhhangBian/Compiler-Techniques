@@ -36,12 +36,15 @@ public class IrValue {
         return this.useList;
     }
 
+    // 将所有使用此value的user替换为使用新value
     public void ModifyUsersToNewValue(IrValue newValue) {
-        // 对于user替换为新的value
         ArrayList<IrUser> userList = this.useList.stream().map(IrUse::GetUser).
             collect(Collectors.toCollection(ArrayList::new));
         for (IrUser user : userList) {
             user.ModifyValue(this, newValue);
+            this.DeleteUser(user);
+            // 将this加入到newValue的useList中
+            newValue.AddUse(new IrUse(user, newValue));
         }
     }
 
@@ -51,7 +54,7 @@ public class IrValue {
             IrUse use = iterator.next();
             if (use.GetUser() == user) {
                 iterator.remove();
-                break;
+                return;
             }
         }
     }

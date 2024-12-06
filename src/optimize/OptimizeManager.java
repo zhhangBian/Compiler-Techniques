@@ -12,9 +12,11 @@ public class OptimizeManager {
 
         optimizerList = new ArrayList<>();
         // 这里的顺序是关键的
+        optimizerList.add(new RemoveUselessCode());
         optimizerList.add(new CfgBuilder());
         optimizerList.add(new MemToReg());
         optimizerList.add(new AllocateRegister());
+        optimizerList.add(new RemovePhi());
     }
 
     public static void Optimize() {
