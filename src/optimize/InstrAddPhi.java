@@ -9,7 +9,9 @@ import midend.llvm.instr.StoreInstr;
 import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrValue;
+import utils.Debug;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Stack;
@@ -19,8 +21,8 @@ public class InstrAddPhi {
     private final IrBasicBlock entryBlock;
     private final HashSet<Instr> defineInstrs;
     private final HashSet<Instr> useInstrs;
-    private final HashSet<IrBasicBlock> defineBlocks;
-    private final HashSet<IrBasicBlock> useBlocks;
+    private final ArrayList<IrBasicBlock> defineBlocks;
+    private final ArrayList<IrBasicBlock> useBlocks;
     private final Stack<IrValue> valueStack;
 
     public InstrAddPhi(AllocateInstr allocateInstr, IrBasicBlock entryBlock) {
@@ -28,8 +30,8 @@ public class InstrAddPhi {
         this.entryBlock = entryBlock;
         this.defineInstrs = new HashSet<>();
         this.useInstrs = new HashSet<>();
-        this.defineBlocks = new HashSet<>();
-        this.useBlocks = new HashSet<>();
+        this.defineBlocks = new ArrayList<>();
+        this.useBlocks = new ArrayList<>();
         this.valueStack = new Stack<>();
     }
 
@@ -59,12 +61,16 @@ public class InstrAddPhi {
 
     private void AddDefineInstr(Instr instr) {
         this.defineInstrs.add(instr);
-        this.defineBlocks.add(instr.GetInBasicBlock());
+        if (!this.defineBlocks.contains(instr.GetInBasicBlock())) {
+            this.defineBlocks.add(instr.GetInBasicBlock());
+        }
     }
 
     private void AddUseInstr(Instr instr) {
         this.useInstrs.add(instr);
-        this.useBlocks.add(instr.GetInBasicBlock());
+        if (!this.useBlocks.contains(instr.GetInBasicBlock())) {
+            this.useBlocks.add(instr.GetInBasicBlock());
+        }
     }
 
     private void InsertPhi() {
@@ -103,31 +109,33 @@ public class InstrAddPhi {
     }
 
     private void ConvertLoadStore(IrBasicBlock renameBlock) {
-        final int stackPointer = this.valueStack.size();
-
+        Debug.DebugPrint("enter dfs: " + renameBlock.GetIrName());
         // 移除与当前allocate相关的全部的load、store指令
-        this.RemoveLoadStore(renameBlock);
+        int count = this.RemoveBlockLoadStore(renameBlock);
         // 遍历entry的后续集合，将最新的define填充进每个后继块的第一个phi指令中
         this.ConvertPhiValue(renameBlock);
 
         // 对支配块进行dfs
-        for (IrBasicBlock dominateBlock : renameBlock.GetDirectDominateBlocks()) {
+        for (IrBasicBlock dominateBlock : renameBlock.GetNextBlocks()) {
             this.ConvertLoadStore(dominateBlock);
         }
 
         // 对dfs过程中压入的元素出栈
-        for (int i = 0; i < this.valueStack.size() - stackPointer; i++) {
+        for (int i = 0; i < count; i++) {
             this.valueStack.pop();
         }
+        Debug.DebugPrint("leave dfs: " + renameBlock.GetIrName());
     }
 
-    private void RemoveLoadStore(IrBasicBlock visitBlock) {
+    private int RemoveBlockLoadStore(IrBasicBlock visitBlock) {
+        int count = 0;
         Iterator<Instr> iterator = visitBlock.GetInstrList().iterator();
         while (iterator.hasNext()) {
             Instr instr = iterator.next();
             // store
             if (instr instanceof StoreInstr storeInstr && this.defineInstrs.contains(instr)) {
                 this.valueStack.push(storeInstr.GetValueValue());
+                count++;
                 iterator.remove();
             }
             // load
@@ -139,16 +147,17 @@ public class InstrAddPhi {
             // phi
             else if (instr instanceof PhiInstr && this.defineInstrs.contains(instr)) {
                 this.valueStack.push(instr);
+                count++;
             }
             // 当前分析的allocate：使用mem2reg后不需要allocate
             else if (instr == this.allocateInstr) {
                 iterator.remove();
             }
         }
+        return count;
     }
 
     private void ConvertPhiValue(IrBasicBlock visitBlock) {
-        // entry支配的基本块
         for (IrBasicBlock nextBlock : visitBlock.GetNextBlocks()) {
             Instr firstInstr = nextBlock.GetFirstInstr();
             if (firstInstr instanceof PhiInstr phiInstr && this.useInstrs.contains(firstInstr)) {

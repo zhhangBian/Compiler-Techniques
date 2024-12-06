@@ -11,7 +11,6 @@ public class ExtendInstr extends Instr {
         super(targetType, InstrType.EXTEND);
         this.targetType = targetType;
         this.AddUseValue(originValue);
-        //throw new RuntimeException("debug");
     }
 
     @Override

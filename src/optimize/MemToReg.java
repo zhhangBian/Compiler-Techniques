@@ -3,6 +3,8 @@ package optimize;
 import midend.llvm.instr.AllocateInstr;
 import midend.llvm.instr.Instr;
 import midend.llvm.type.IrArrayType;
+import midend.llvm.type.IrPointerType;
+import midend.llvm.type.IrType;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 
@@ -27,7 +29,10 @@ public class MemToReg extends Optimizer {
 
     private boolean IsValueAllocate(Instr instr) {
         // 只对非数组类型添加phi
-        return instr instanceof AllocateInstr allocateInstr &&
-            !(allocateInstr.GetTargetType() instanceof IrArrayType);
+        if (instr instanceof AllocateInstr allocateInstr) {
+            IrType targetType = ((IrPointerType) allocateInstr.GetIrType()).GetTargetType();
+            return !(targetType instanceof IrArrayType);
+        }
+        return false;
     }
 }

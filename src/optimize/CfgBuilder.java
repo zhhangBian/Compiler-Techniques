@@ -5,6 +5,7 @@ import midend.llvm.instr.Instr;
 import midend.llvm.instr.JumpInstr;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
+import utils.Debug;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -108,6 +109,8 @@ public class CfgBuilder extends Optimizer {
                     // 支配者的支配着集合中仅有自身，说明直接支配
                     if (diffDominators.size() == 1 && diffDominators.contains(visitBlock)) {
                         visitBlock.AddDirectDominatorRelationship(dominator);
+                        Debug.DebugPrint(dominator.GetIrName() + " dominate " +
+                            visitBlock.GetIrName());
                         break;
                     }
                 }

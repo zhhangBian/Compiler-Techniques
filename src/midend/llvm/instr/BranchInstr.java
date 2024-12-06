@@ -12,9 +12,9 @@ import midend.llvm.value.IrValue;
 public class BranchInstr extends Instr {
     public BranchInstr(IrValue cond, IrBasicBlock trueBlock, IrBasicBlock falseBlock) {
         super(IrBaseType.VOID, InstrType.BRANCH);
-        this.useValueList.add(cond);
-        this.useValueList.add(trueBlock);
-        this.useValueList.add(falseBlock);
+        this.AddUseValue(cond);
+        this.AddUseValue(trueBlock);
+        this.AddUseValue(falseBlock);
     }
 
     private IrValue GetCond() {
