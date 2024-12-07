@@ -1,7 +1,9 @@
-package midend.llvm.instr;
+package midend.llvm.instr.phi;
 
 import midend.llvm.IrBuilder;
 import midend.llvm.constant.IrConstantInt;
+import midend.llvm.instr.Instr;
+import midend.llvm.instr.InstrType;
 import midend.llvm.type.IrType;
 import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;

@@ -10,8 +10,16 @@ public class JumpInstr extends Instr {
         this.AddUseValue(targetBlock);
     }
 
-    public JumpInstr(IrBasicBlock targetBlock, boolean autoAdd) {
+    public JumpInstr(IrBasicBlock targetBlock, IrBasicBlock createBlock) {
         super(IrBaseType.VOID, InstrType.JUMP, "jump", false);
+        this.AddUseValue(targetBlock);
+        this.SetInBasicBlock(createBlock);
+    }
+
+    public void SetJumpTarget(IrBasicBlock targetBlock) {
+        // 删除原先的使用关系
+        this.GetTargetBlock().DeleteUser(this);
+        this.useValueList.clear();
         this.AddUseValue(targetBlock);
     }
 

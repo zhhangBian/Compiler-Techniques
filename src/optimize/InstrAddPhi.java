@@ -4,7 +4,7 @@ import midend.llvm.constant.IrConstantInt;
 import midend.llvm.instr.AllocateInstr;
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.LoadInstr;
-import midend.llvm.instr.PhiInstr;
+import midend.llvm.instr.phi.PhiInstr;
 import midend.llvm.instr.StoreInstr;
 import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;

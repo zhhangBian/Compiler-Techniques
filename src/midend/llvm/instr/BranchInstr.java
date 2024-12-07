@@ -6,6 +6,7 @@ import backend.mips.assembly.MipsBranch;
 import backend.mips.assembly.MipsJump;
 import backend.mips.assembly.MipsLsu;
 import midend.llvm.type.IrBaseType;
+import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrValue;
 
@@ -19,6 +20,18 @@ public class BranchInstr extends Instr {
 
     private IrValue GetCond() {
         return this.useValueList.get(0);
+    }
+
+    public void SetTrueBlock(IrBasicBlock trueBlock) {
+        this.GetTrueBlock().DeleteUser(this);
+        this.useValueList.set(1, trueBlock);
+        trueBlock.AddUse(new IrUse(this, trueBlock));
+    }
+
+    public void SetFalseBlock(IrBasicBlock falseBlock) {
+        this.GetTrueBlock().DeleteUser(this);
+        this.useValueList.add(2, falseBlock);
+        falseBlock.AddUse(new IrUse(this, falseBlock));
     }
 
     public IrBasicBlock GetTrueBlock() {

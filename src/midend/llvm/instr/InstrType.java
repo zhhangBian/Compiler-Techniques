@@ -18,5 +18,7 @@ public enum InstrType {
     GEP,
     IO,
 
-    PHI
+    PHI,
+    PCOPY,
+    MOVE
 }

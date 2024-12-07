@@ -1,8 +1,12 @@
 package midend.llvm.value;
 
 import backend.mips.assembly.MipsLabel;
+import midend.llvm.IrBuilder;
+import midend.llvm.instr.BranchInstr;
 import midend.llvm.instr.Instr;
+import midend.llvm.instr.JumpInstr;
 import midend.llvm.instr.ReturnInstr;
+import midend.llvm.instr.phi.ParallelCopyInstr;
 import midend.llvm.type.IrBasicBlockType;
 
 import java.util.ArrayList;
@@ -57,6 +61,15 @@ public class IrBasicBlock extends IrValue {
         this.instrList.add(index, instr);
     }
 
+    public void AddInstrBeforeJump(Instr instr) {
+        Instr lastInstr = this.GetLastInstr();
+        if (lastInstr instanceof JumpInstr || lastInstr instanceof BranchInstr) {
+            this.instrList.add(this.instrList.size() - 1, instr);
+        } else {
+            this.instrList.add(instr);
+        }
+    }
+
     public ArrayList<Instr> GetInstrList() {
         return this.instrList;
     }
@@ -69,6 +82,13 @@ public class IrBasicBlock extends IrValue {
         return this.instrList.get(this.instrList.size() - 1);
     }
 
+    public ParallelCopyInstr GetAndRemoveParallelCopyInstr() {
+        ParallelCopyInstr copyInstr =
+            (ParallelCopyInstr) this.instrList.get(this.instrList.size() - 2);
+        this.instrList.remove(this.instrList.size() - 2);
+        return copyInstr;
+    }
+
     public IrFunction GetIrFunction() {
         return this.irFunction;
     }
@@ -78,6 +98,11 @@ public class IrBasicBlock extends IrValue {
             return false;
         }
         return this.instrList.get(this.instrList.size() - 1) instanceof ReturnInstr;
+    }
+
+    public boolean HaveParallelCopyInstr() {
+        return this.instrList.size() > 1 &&
+            this.instrList.get(this.instrList.size() - 2) instanceof ParallelCopyInstr;
     }
 
     public void ClearCfg() {
@@ -141,6 +166,31 @@ public class IrBasicBlock extends IrValue {
     // 添加支配边界信息
     public void AddDominateFrontier(IrBasicBlock frontierBlock) {
         this.dominateFrontiers.add(frontierBlock);
+    }
+
+    public static IrBasicBlock AddMiddleBlock(IrBasicBlock beforeBlock, IrBasicBlock nextBlock) {
+        // 获取中间基本块
+        IrBasicBlock middleBlock = IrBuilder.GetNewBasicBlockIr(beforeBlock.GetIrFunction());
+        // 修改跳转关系
+        if (beforeBlock.GetLastInstr() instanceof JumpInstr jumpInstr) {
+            jumpInstr.SetJumpTarget(middleBlock);
+        } else if (beforeBlock.GetLastInstr() instanceof BranchInstr branchInstr) {
+            if (branchInstr.GetTrueBlock() == nextBlock) {
+                branchInstr.SetTrueBlock(middleBlock);
+            } else if (branchInstr.GetFalseBlock() == nextBlock) {
+                branchInstr.SetFalseBlock(middleBlock);
+            }
+        }
+        // 给中间块创建跳转关系
+        middleBlock.AddInstr(new JumpInstr(nextBlock, middleBlock));
+
+        // 修改原先的流图信息，但是没有重建控制流！
+        beforeBlock.nextBlockList.set(beforeBlock.nextBlockList.indexOf(nextBlock), middleBlock);
+        nextBlock.beforeBlockList.set(nextBlock.beforeBlockList.indexOf(beforeBlock), middleBlock);
+        middleBlock.beforeBlockList.add(beforeBlock);
+        middleBlock.nextBlockList.add(nextBlock);
+
+        return middleBlock;
     }
 
     @Override

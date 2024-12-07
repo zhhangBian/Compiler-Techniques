@@ -11,7 +11,6 @@ import java.util.HashMap;
 
 public class MipsBuilder {
     private static MipsModule currentModule = null;
-    private static IrFunction currentFunction = null;
     // value-register分配表
     private static HashMap<IrFunction, HashMap<IrValue, Register>> functionRegisterMap = null;
     private static HashMap<IrValue, Register> valueRegisterMap = null;
@@ -33,7 +32,6 @@ public class MipsBuilder {
     }
 
     public static void SetCurrentFunction(IrFunction irFunction) {
-        currentFunction = irFunction;
         // 设置相应的寄存器分配表
         HashMap<IrValue, Register> valueMap = new HashMap<>();
         functionRegisterMap.put(irFunction, valueMap);
@@ -41,6 +39,10 @@ public class MipsBuilder {
         // 初始化栈分配表
         stackOffset = 0;
         stackOffsetValueMap = new HashMap<>();
+    }
+
+    public static HashMap<IrValue, Register> GetFunctionRegisterMap(IrFunction irFunction) {
+        return functionRegisterMap.get(irFunction);
     }
 
     public static Register GetValueToRegister(IrValue irValue) {
