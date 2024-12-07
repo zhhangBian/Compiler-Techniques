@@ -9,7 +9,6 @@ import midend.llvm.instr.StoreInstr;
 import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrValue;
-import utils.Debug;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -92,7 +91,7 @@ public class InstrAddPhi {
                     this.InsertPhiInstr(frontierBlock);
                     addedPhiBlocks.add(frontierBlock);
                     // phi也进行定义变量
-                    if (!this.defineBlocks.contains(frontierBlock)) {
+                    if (!defineBlockStack.contains(frontierBlock)) {
                         defineBlockStack.push(frontierBlock);
                     }
                 }
@@ -101,7 +100,7 @@ public class InstrAddPhi {
     }
 
     private void InsertPhiInstr(IrBasicBlock irBasicBlock) {
-        PhiInstr phiInstr = new PhiInstr(irBasicBlock);
+        PhiInstr phiInstr = new PhiInstr(this.allocateInstr.GetTargetType(), irBasicBlock);
         irBasicBlock.AddInstr(phiInstr, 0);
         // phi既是define，又是use
         this.AddDefineInstr(phiInstr);
@@ -109,14 +108,13 @@ public class InstrAddPhi {
     }
 
     private void ConvertLoadStore(IrBasicBlock renameBlock) {
-        Debug.DebugPrint("enter dfs: " + renameBlock.GetIrName());
         // 移除与当前allocate相关的全部的load、store指令
         int count = this.RemoveBlockLoadStore(renameBlock);
         // 遍历entry的后续集合，将最新的define填充进每个后继块的第一个phi指令中
         this.ConvertPhiValue(renameBlock);
 
         // 对支配块进行dfs
-        for (IrBasicBlock dominateBlock : renameBlock.GetNextBlocks()) {
+        for (IrBasicBlock dominateBlock : renameBlock.GetDirectDominateBlocks()) {
             this.ConvertLoadStore(dominateBlock);
         }
 
@@ -124,7 +122,6 @@ public class InstrAddPhi {
         for (int i = 0; i < count; i++) {
             this.valueStack.pop();
         }
-        Debug.DebugPrint("leave dfs: " + renameBlock.GetIrName());
     }
 
     private int RemoveBlockLoadStore(IrBasicBlock visitBlock) {

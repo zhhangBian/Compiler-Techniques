@@ -34,6 +34,6 @@ public class Compiler {
         IOhandler.PrintLlvm();
         IOhandler.PrintMips();
 
-        //HandleComplexity.PrintReport();
+        HandleComplexity.PrintReport();
     }
 }

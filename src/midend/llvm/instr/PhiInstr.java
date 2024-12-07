@@ -1,7 +1,8 @@
 package midend.llvm.instr;
 
 import midend.llvm.IrBuilder;
-import midend.llvm.type.IrBaseType;
+import midend.llvm.constant.IrConstantInt;
+import midend.llvm.type.IrType;
 import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrValue;
@@ -12,8 +13,8 @@ import java.util.StringJoiner;
 public class PhiInstr extends Instr {
     private final ArrayList<IrBasicBlock> beforeBlockList;
 
-    public PhiInstr(IrBasicBlock irBasicBlock) {
-        super(IrBaseType.INT32, InstrType.PHI,
+    public PhiInstr(IrType irType, IrBasicBlock irBasicBlock) {
+        super(irType, InstrType.PHI,
             IrBuilder.GetLocalVarName(irBasicBlock.GetIrFunction()), false);
         this.SetInBasicBlock(irBasicBlock);
 
@@ -34,6 +35,12 @@ public class PhiInstr extends Instr {
 
     @Override
     public String toString() {
+        for (int i = 0; i < this.useValueList.size(); i++) {
+            if (this.useValueList.get(i) == null) {
+                this.useValueList.set(i, new IrConstantInt(0));
+            }
+        }
+
         StringBuilder builder = new StringBuilder();
 
         builder.append(this.irName);
