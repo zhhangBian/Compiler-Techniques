@@ -42,7 +42,7 @@ public class MipsBuilder {
     }
 
     public static HashMap<IrValue, Register> GetFunctionRegisterMap(IrFunction irFunction) {
-        return functionRegisterMap.get(irFunction);
+        return functionRegisterMap == null ? new HashMap<>() : functionRegisterMap.get(irFunction);
     }
 
     public static Register GetValueToRegister(IrValue irValue) {

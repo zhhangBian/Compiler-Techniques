@@ -17,17 +17,6 @@ public class OptimizeManager {
         optimizerList.add(new RemoveUselessCode());
         optimizerList.add(new CfgBuilder());
         optimizerList.add(new MemToReg());
-
-        for (Optimizer optimizer : optimizerList) {
-            optimizer.Optimize();
-        }
-        try {
-            IOhandler.PrintLlvmPhi();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        optimizerList.clear();
-
         optimizerList.add(new AllocateRegister());
         optimizerList.add(new RemovePhi());
 
@@ -38,7 +27,7 @@ public class OptimizeManager {
 
     public static void Optimize() {
         for (Optimizer optimizer : optimizerList) {
-            //optimizer.Optimize();
+            optimizer.Optimize();
         }
     }
 }
