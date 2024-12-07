@@ -13,7 +13,9 @@ import midend.llvm.type.IrType;
 import midend.llvm.use.IrUser;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrGlobalValue;
+import midend.llvm.value.IrParameter;
 import midend.llvm.value.IrValue;
+import utils.Debug;
 
 // instr是一种User：使用其他的Value作为参数
 public abstract class Instr extends IrUser {
@@ -73,7 +75,6 @@ public abstract class Instr extends IrUser {
         // 如果是指针形变量
         if (irValue instanceof IrGlobalValue irGlobalValue) {
             new MarsLa(targetRegister, irGlobalValue.GetMipsLabel());
-            //new MipsLsu(MipsLsu.LsuType.LW, targetRegister, targetRegister, 0);
             return;
         }
         // 如果有已经分配的寄存器

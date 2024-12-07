@@ -35,14 +35,17 @@ public class PhiInstr extends Instr {
         irValue.AddUse(new IrUse(this, irValue));
     }
 
-    @Override
-    public String toString() {
+    public void FixPhiNull() {
         for (int i = 0; i < this.useValueList.size(); i++) {
             if (this.useValueList.get(i) == null) {
                 this.useValueList.set(i, new IrConstantInt(0));
             }
         }
+    }
 
+    @Override
+    public String toString() {
+        this.FixPhiNull();
         StringBuilder builder = new StringBuilder();
 
         builder.append(this.irName);

@@ -1,5 +1,7 @@
 package optimize;
 
+import backend.mips.MipsBuilder;
+import backend.mips.Register;
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.MoveInstr;
 import midend.llvm.instr.phi.ParallelCopyInstr;
@@ -7,8 +9,10 @@ import midend.llvm.instr.phi.PhiInstr;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
+import utils.Debug;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class RemovePhi extends Optimizer {
@@ -34,9 +38,7 @@ public class RemovePhi extends Optimizer {
                 ArrayList<IrBasicBlock> beforeBlocks = irBasicBlock.GetBeforeBlock();
                 for (IrBasicBlock beforeBlock : beforeBlocks) {
                     ParallelCopyInstr copyInstr = beforeBlock.GetNextBlocks().size() == 1 ?
-                        // 只有唯一后继
                         this.InsertCopyDirect(beforeBlock) :
-                        // 有多个后继
                         this.InsertCopyToMiddle(beforeBlock, irBasicBlock);
                     copyList.add(copyInstr);
                 }
@@ -46,11 +48,15 @@ public class RemovePhi extends Optimizer {
                 while (iterator.hasNext()) {
                     Instr instr = iterator.next();
                     if (instr instanceof PhiInstr phiInstr) {
+                        phiInstr.FixPhiNull();
                         ArrayList<IrValue> useValueList = phiInstr.GetUseValueList();
                         // 把phi相应的值拷贝到phi指令
                         for (int i = 0; i < useValueList.size(); i++) {
                             IrValue useValue = useValueList.get(i);
                             copyList.get(i).AddCopy(useValue, phiInstr);
+                            Debug.DebugPrint("[copy] " + irBasicBlock.GetIrName() +
+                                "\n\tsrc: " + useValue +
+                                "\n\tdst: " + phiInstr);
                         }
                         iterator.remove();
                     }
@@ -89,17 +95,26 @@ public class RemovePhi extends Optimizer {
     }
 
     private void ConvertCopyToMove(ParallelCopyInstr copyInstr, IrBasicBlock irBasicBlock) {
+        ArrayList<MoveInstr> moveList;
+        // 遍历同时检查冲突现象：后面的move的src为前序的dst
+        moveList = this.ConvertCopyAndCheckCircleMove(copyInstr, irBasicBlock);
+        // 检查寄存器冲突
+        this.CheckRegisterConflict(moveList, irBasicBlock);
+        // 在跳转前加入move
+        moveList.forEach(irBasicBlock::AddInstrBeforeJump);
+    }
+
+    private ArrayList<MoveInstr> ConvertCopyAndCheckCircleMove(ParallelCopyInstr copyInstr,
+                                                               IrBasicBlock irBasicBlock) {
         ArrayList<IrValue> srcList = copyInstr.GetSrcList();
         ArrayList<IrValue> dstList = copyInstr.GetDstList();
 
-        ArrayList<Instr> moveList = new ArrayList<>();
-        // 在遍历的同时检查冲突现象：后面的move的src为前序的dst
+        ArrayList<MoveInstr> moveList = new ArrayList<>();
         for (int i = 0; i < dstList.size(); i++) {
             IrValue srcValue = srcList.get(i);
             IrValue dstValue = dstList.get(i);
 
-            moveList.add(new MoveInstr(srcValue, dstValue, irBasicBlock));
-            if (this.CheckConflict(copyInstr, i)) {
+            if (this.HaveCircleConflict(copyInstr, i)) {
                 IrValue middleValue = new IrValue(srcValue.GetIrType(),
                     dstValue.GetIrName() + "_tmp");
                 moveList.add(new MoveInstr(srcValue, middleValue, irBasicBlock));
@@ -108,21 +123,57 @@ public class RemovePhi extends Optimizer {
                     srcList.set(j, middleValue);
                 }
             }
+            moveList.add(new MoveInstr(srcValue, dstValue, irBasicBlock));
         }
 
-        // 在块首加入move
-        for (int i = moveList.size() - 1; i >= 0; i--) {
-            irBasicBlock.AddInstr(moveList.get(i), 0);
-        }
+        return moveList;
     }
 
-    private boolean CheckConflict(ParallelCopyInstr copyInstr, int index) {
+    private boolean HaveCircleConflict(ParallelCopyInstr copyInstr, int index) {
         ArrayList<IrValue> srcList = copyInstr.GetSrcList();
         ArrayList<IrValue> dstList = copyInstr.GetDstList();
         IrValue dstValue = dstList.get(index);
         for (int i = index + 1; i < srcList.size(); i++) {
             if (srcList.get(i) == dstValue) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private void CheckRegisterConflict(ArrayList<MoveInstr> moveList, IrBasicBlock irBasicBlock) {
+        for (int i = moveList.size() - 1; i >= 0; i--) {
+            if (this.HaveRegisterConflict(moveList, i, irBasicBlock)) {
+                IrValue srcValue = moveList.get(i).GetSrcValue();
+                IrValue middleValue = new IrValue(srcValue.GetIrType(),
+                    srcValue.GetIrName() + "_tmp");
+                // 将所有相同指令的src替换为临时
+                for (MoveInstr moveInstr : moveList) {
+                    if (moveInstr.GetSrcValue() == srcValue) {
+                        moveInstr.SetSrcValue(middleValue);
+                    }
+                }
+                // 在moveList开头加入新move
+                MoveInstr moveInstr = new MoveInstr(srcValue, middleValue, irBasicBlock);
+                moveList.add(0, moveInstr);
+            }
+        }
+
+    }
+
+    private boolean HaveRegisterConflict(ArrayList<MoveInstr> moveList, int index,
+                                         IrBasicBlock irBasicBlock) {
+        HashMap<IrValue, Register> registerMap =
+            MipsBuilder.GetFunctionRegisterMap(irBasicBlock.GetIrFunction());
+        IrValue srcValue = moveList.get(index).GetSrcValue();
+        Register srcRegister = registerMap.get(srcValue);
+
+        if (srcRegister != null) {
+            for (int i = 0; i < index; i++) {
+                IrValue dstValue = moveList.get(i).GetDstValue();
+                if (registerMap.get(dstValue) == srcRegister) {
+                    return true;
+                }
             }
         }
         return false;

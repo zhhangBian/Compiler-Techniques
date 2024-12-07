@@ -8,7 +8,9 @@ import backend.mips.assembly.MipsLsu;
 import backend.mips.assembly.fake.MarsMove;
 import midend.llvm.IrBuilder;
 import midend.llvm.value.IrFunction;
+import midend.llvm.value.IrParameter;
 import midend.llvm.value.IrValue;
+import utils.Debug;
 
 import java.util.ArrayList;
 
@@ -68,17 +70,16 @@ public class CallInstr extends Instr {
 
         // 保护现场
         this.SaveCurrent(currentOffset, allocatedRegisterList);
-        currentOffset = currentOffset - 4 * allocatedRegisterList.size() - 8;
 
-        IrFunction targetFunction = this.GetTargetFunction();
         ArrayList<IrValue> paramList = this.GetParamList();
-
         // 将参数填入对应位置
-        this.FillParams(paramList, currentOffset);
+        this.FillParams(paramList, currentOffset, allocatedRegisterList);
+        currentOffset = currentOffset - 4 * allocatedRegisterList.size() - 8;
 
         // 设置新的栈地址
         new MipsAlu(MipsAlu.AluType.ADDI, Register.SP, Register.SP, currentOffset);
         // 跳转到函数
+        IrFunction targetFunction = this.GetTargetFunction();
         new MipsJump(MipsJump.JumpType.JAL, targetFunction.GetMipsLabel());
 
         // 恢复现场
@@ -104,6 +105,49 @@ public class CallInstr extends Instr {
             currentOffset - registerNum * 4 - 8);
     }
 
+    private void FillParams(ArrayList<IrValue> paramList, int currentOffset,
+                            ArrayList<Register> allocatedRegisterList) {
+        for (int i = 0; i < paramList.size(); i++) {
+            IrValue param = paramList.get(i);
+            // 需要填入相应的寄存器中
+            if (i < 3) {
+                Register paramRegister = Register.get(Register.A0.ordinal() + i + 1);
+                // 如果是参数：由于赋值冲突，从栈中取值，之前保护现场时已存入内存
+                if (param instanceof IrParameter) {
+                    Register paraRegister = MipsBuilder.GetValueToRegister(param);
+                    if (allocatedRegisterList.contains(paraRegister)) {
+                        Debug.DebugPrint(param.GetIrName() + " in reg " + paraRegister);
+                        new MipsLsu(MipsLsu.LsuType.LW, paramRegister, Register.SP,
+                            currentOffset - 4 * allocatedRegisterList.indexOf(paraRegister) - 4);
+                    } else {
+                        this.LoadValueToRegister(param, paramRegister);
+                    }
+                } else {
+                    this.LoadValueToRegister(param, paramRegister);
+                }
+            }
+            // 直接压入栈中
+            else {
+                Register tempRegister = Register.K0;
+                // 如果是参数：由于赋值冲突，从栈中取值
+                if (param instanceof IrParameter) {
+                    Register paraRegister = MipsBuilder.GetValueToRegister(param);
+                    if (allocatedRegisterList.contains(paraRegister)) {
+                        Debug.DebugPrint(param.GetIrName() + " in reg " + paraRegister);
+                        new MipsLsu(MipsLsu.LsuType.LW, tempRegister, Register.SP,
+                            currentOffset - 4 * allocatedRegisterList.indexOf(paraRegister) - 4);
+                    } else {
+                        this.LoadValueToRegister(param, tempRegister);
+                    }
+                } else {
+                    this.LoadValueToRegister(param, tempRegister);
+                }
+                new MipsLsu(MipsLsu.LsuType.SW, tempRegister, Register.SP,
+                    currentOffset - 4 * allocatedRegisterList.size() - 8 - 4 * i - 4);
+            }
+        }
+    }
+
     private void RecoverCurrent(int formerOffset, ArrayList<Register> allocatedRegisterList) {
         // 恢复RA寄存器和SP寄存器
         new MipsLsu(MipsLsu.LsuType.LW, Register.RA, Register.SP, 0);
@@ -116,24 +160,6 @@ public class CallInstr extends Instr {
             new MipsLsu(MipsLsu.LsuType.LW, register, Register.SP,
                 formerOffset - registerNum * 4);
             registerNum++;
-        }
-    }
-
-    private void FillParams(ArrayList<IrValue> paramList, int currentOffset) {
-        for (int i = 0; i < paramList.size(); i++) {
-            IrValue param = paramList.get(i);
-            // 需要填入相应的寄存器中
-            if (i < 3) {
-                Register paramRegister = Register.get(Register.A0.ordinal() + i + 1);
-                this.LoadValueToRegister(param, paramRegister);
-            }
-            // 直接压入栈中
-            else {
-                Register tempRegister = Register.K0;
-                this.LoadValueToRegister(param, tempRegister);
-                new MipsLsu(MipsLsu.LsuType.SW, tempRegister, Register.SP,
-                    currentOffset - 4 * i - 4);
-            }
         }
     }
 
