@@ -18,9 +18,9 @@ public class MemToReg extends Optimizer {
                 ArrayList<Instr> instrList = new ArrayList<>(irBasicBlock.GetInstrList());
                 for (Instr instr : instrList) {
                     if (this.IsValueAllocate(instr)) {
-                        InstrAddPhi addPhi =
-                            new InstrAddPhi((AllocateInstr) instr, instr.GetInBasicBlock());
-                        addPhi.AddPhi();
+                        InsertPhi insertPhi =
+                            new InsertPhi((AllocateInstr) instr, instr.GetInBasicBlock());
+                        insertPhi.AddPhi();
                     }
                 }
             }

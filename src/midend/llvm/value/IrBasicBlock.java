@@ -67,6 +67,7 @@ public class IrBasicBlock extends IrValue {
 
     public void AddInstr(Instr instr) {
         this.instrList.add(instr);
+        instr.SetInBasicBlock(this);
     }
 
     public void AddInstr(Instr instr, int index) {
@@ -80,6 +81,7 @@ public class IrBasicBlock extends IrValue {
         } else {
             this.instrList.add(instr);
         }
+        instr.SetInBasicBlock(this);
     }
 
     public ArrayList<Instr> GetInstrList() {

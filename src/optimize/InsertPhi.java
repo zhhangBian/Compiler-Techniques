@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Stack;
 
-public class InstrAddPhi {
+public class InsertPhi {
     private final AllocateInstr allocateInstr;
     private final IrBasicBlock entryBlock;
     private final HashSet<Instr> defineInstrs;
@@ -24,7 +24,7 @@ public class InstrAddPhi {
     private final ArrayList<IrBasicBlock> useBlocks;
     private final Stack<IrValue> valueStack;
 
-    public InstrAddPhi(AllocateInstr allocateInstr, IrBasicBlock entryBlock) {
+    public InsertPhi(AllocateInstr allocateInstr, IrBasicBlock entryBlock) {
         this.allocateInstr = allocateInstr;
         this.entryBlock = entryBlock;
         this.defineInstrs = new HashSet<>();
@@ -137,7 +137,6 @@ public class InstrAddPhi {
             }
             // load
             else if (instr instanceof LoadInstr && this.useInstrs.contains(instr)) {
-                // 将所有使用该load指令的指令，改为使用stack.peek()
                 instr.ModifyUsersToNewValue(this.PeekValueStack());
                 iterator.remove();
             }
