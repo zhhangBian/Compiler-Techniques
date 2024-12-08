@@ -44,14 +44,6 @@ public class IrConstantString extends IrConstant {
         new MipsAsciiz(label, this.stringValue);
     }
 
-    public static String ConvertArrayToString(ArrayList<Integer> rawList) {
-        StringBuilder builder = new StringBuilder();
-        for (Integer num : rawList) {
-            builder.append((char) num.intValue());
-        }
-        return builder.toString();
-    }
-
     private static int GetStringLength(String string) {
         int length = 0;
         for (int i = 0; i < string.length(); i++) {

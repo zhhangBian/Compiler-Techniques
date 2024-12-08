@@ -3,9 +3,12 @@ package midend.llvm.constant;
 import backend.mips.Register;
 import backend.mips.assembly.MipsLsu;
 import backend.mips.assembly.data.MipsSpace;
+import backend.mips.assembly.data.MipsSpaceOptimize;
 import backend.mips.assembly.fake.MarsLi;
 import midend.llvm.type.IrArrayType;
 import midend.llvm.type.IrType;
+import midend.llvm.value.IrValue;
+import utils.Setting;
 
 import java.util.ArrayList;
 
@@ -55,20 +58,24 @@ public class IrConstantArray extends IrConstant {
 
     @Override
     public void MipsDeclare(String label) {
-        // 先申请空间
-        // TODO：按照char类型细化大小
-        new MipsSpace(label, this.arraySize * 4);
-        // 进行值初始化
-        int offset = 0;
-        for (IrConstant irConstant : this.valueList) {
-            if (irConstant instanceof IrConstantInt irConstantInt) {
-                new MarsLi(Register.T0, irConstantInt.GetValue());
-                new MipsLsu(MipsLsu.LsuType.SW, Register.T0, label, offset);
-            } else if (irConstant instanceof IrConstantChar irConstantChar) {
-                new MarsLi(Register.T0, irConstantChar.GetValue());
-                new MipsLsu(MipsLsu.LsuType.SW, Register.T0, label, offset);
+        if (Setting.FINE_TUNING) {
+            new MipsSpaceOptimize(label, this.arraySize, this.valueList);
+        } else {
+            // 先申请空间
+            // TODO：按照char类型细化大小
+            new MipsSpace(label, this.arraySize * 4);
+            // 进行值初始化
+            int offset = 0;
+            for (IrConstant irConstant : this.valueList) {
+                if (irConstant instanceof IrConstantInt irConstantInt) {
+                    new MarsLi(Register.T0, irConstantInt.GetValue());
+                    new MipsLsu(MipsLsu.LsuType.SW, Register.T0, label, offset);
+                } else if (irConstant instanceof IrConstantChar irConstantChar) {
+                    new MarsLi(Register.T0, irConstantChar.GetValue());
+                    new MipsLsu(MipsLsu.LsuType.SW, Register.T0, label, offset);
+                }
+                offset += 4;
             }
-            offset += 4;
         }
     }
 }
