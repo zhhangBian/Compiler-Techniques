@@ -32,7 +32,6 @@ public class MipsBuilder {
     }
 
     public static void SetCurrentFunction(IrFunction irFunction) {
-
         // 设置相应的寄存器分配表
         HashMap<IrValue, Register> valueMap = functionRegisterMap.containsKey(irFunction) ?
             functionRegisterMap.get(irFunction) : new HashMap<>();

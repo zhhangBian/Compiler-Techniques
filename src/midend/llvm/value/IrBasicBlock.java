@@ -134,7 +134,7 @@ public class IrBasicBlock extends IrValue {
         return this.nextBlockList;
     }
 
-    public ArrayList<IrBasicBlock> GetBeforeBlock() {
+    public ArrayList<IrBasicBlock> GetBeforeBlocks() {
         return this.beforeBlockList;
     }
 
@@ -184,7 +184,8 @@ public class IrBasicBlock extends IrValue {
 
     public static IrBasicBlock AddMiddleBlock(IrBasicBlock beforeBlock, IrBasicBlock nextBlock) {
         // 获取中间基本块
-        IrBasicBlock middleBlock = IrBuilder.GetNewBasicBlockIr(beforeBlock.GetIrFunction());
+        IrBasicBlock middleBlock =
+            IrBuilder.GetNewBasicBlockIr(beforeBlock.GetIrFunction(), nextBlock);
         // 修改跳转关系
         if (beforeBlock.GetLastInstr() instanceof JumpInstr jumpInstr) {
             jumpInstr.SetJumpTarget(middleBlock);

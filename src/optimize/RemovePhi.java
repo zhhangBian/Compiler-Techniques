@@ -34,7 +34,7 @@ public class RemovePhi extends Optimizer {
                 // 遍历前驱基本快，将copy指令插入适当的位置
                 // 1. 如果before只有一个后继，直接插入前驱块
                 // 2. 如果before有多个后继，需要新建一个中间块
-                for (IrBasicBlock beforeBlock : irBasicBlock.GetBeforeBlock()) {
+                for (IrBasicBlock beforeBlock : irBasicBlock.GetBeforeBlocks()) {
                     ParallelCopyInstr copyInstr = beforeBlock.GetNextBlocks().size() == 1 ?
                         this.InsertCopyDirect(beforeBlock) :
                         this.InsertCopyToMiddle(beforeBlock, irBasicBlock);

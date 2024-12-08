@@ -20,7 +20,7 @@ public class PhiInstr extends Instr {
             IrBuilder.GetLocalVarName(irBasicBlock.GetIrFunction()), false);
         this.SetInBasicBlock(irBasicBlock);
 
-        this.beforeBlockList = irBasicBlock.GetBeforeBlock();
+        this.beforeBlockList = irBasicBlock.GetBeforeBlocks();
         // 填充相应的value，等待后续替换
         for (int i = 0; i < this.beforeBlockList.size(); i++) {
             this.AddUseValue(null);
