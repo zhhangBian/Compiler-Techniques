@@ -9,7 +9,6 @@ import midend.llvm.instr.phi.PhiInstr;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
-import utils.Debug;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,9 +53,6 @@ public class RemovePhi extends Optimizer {
                         for (int i = 0; i < useValueList.size(); i++) {
                             IrValue useValue = useValueList.get(i);
                             copyList.get(i).AddCopy(useValue, phiInstr);
-                            Debug.DebugPrint("[copy] " + irBasicBlock.GetIrName() +
-                                "\n\tsrc: " + useValue +
-                                "\n\tdst: " + phiInstr);
                         }
                         iterator.remove();
                     }

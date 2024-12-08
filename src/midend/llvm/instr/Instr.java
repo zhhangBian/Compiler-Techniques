@@ -13,9 +13,7 @@ import midend.llvm.type.IrType;
 import midend.llvm.use.IrUser;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrGlobalValue;
-import midend.llvm.value.IrParameter;
 import midend.llvm.value.IrValue;
-import utils.Debug;
 
 // instr是一种User：使用其他的Value作为参数
 public abstract class Instr extends IrUser {

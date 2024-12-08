@@ -10,7 +10,6 @@ import midend.llvm.IrBuilder;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrParameter;
 import midend.llvm.value.IrValue;
-import utils.Debug;
 
 import java.util.ArrayList;
 
@@ -116,7 +115,6 @@ public class CallInstr extends Instr {
                 if (param instanceof IrParameter) {
                     Register paraRegister = MipsBuilder.GetValueToRegister(param);
                     if (allocatedRegisterList.contains(paraRegister)) {
-                        Debug.DebugPrint(param.GetIrName() + " in reg " + paraRegister);
                         new MipsLsu(MipsLsu.LsuType.LW, paramRegister, Register.SP,
                             currentOffset - 4 * allocatedRegisterList.indexOf(paraRegister) - 4);
                     } else {
@@ -133,7 +131,6 @@ public class CallInstr extends Instr {
                 if (param instanceof IrParameter) {
                     Register paraRegister = MipsBuilder.GetValueToRegister(param);
                     if (allocatedRegisterList.contains(paraRegister)) {
-                        Debug.DebugPrint(param.GetIrName() + " in reg " + paraRegister);
                         new MipsLsu(MipsLsu.LsuType.LW, tempRegister, Register.SP,
                             currentOffset - 4 * allocatedRegisterList.indexOf(paraRegister) - 4);
                     } else {
@@ -157,9 +154,9 @@ public class CallInstr extends Instr {
         // 此时sp已经恢复了
         int registerNum = 0;
         for (Register register : allocatedRegisterList) {
+            registerNum++;
             new MipsLsu(MipsLsu.LsuType.LW, register, Register.SP,
                 formerOffset - registerNum * 4);
-            registerNum++;
         }
     }
 

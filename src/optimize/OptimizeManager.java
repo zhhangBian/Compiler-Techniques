@@ -1,9 +1,7 @@
 package optimize;
 
 import midend.MidEnd;
-import utils.IOhandler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class OptimizeManager {
