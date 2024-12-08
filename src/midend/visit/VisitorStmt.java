@@ -89,6 +89,12 @@ public class VisitorStmt {
         ArrayList<Exp> expList = stmt.GetPrintStmtExpList();
         int expCnt = 0;
 
+        // 先解析参数
+        ArrayList<IrValue> printValueList = new ArrayList<>();
+        for (Exp exp : expList) {
+            printValueList.add(VisitorExp.VisitExp(exp));
+        }
+
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < formatString.length(); i++) {
             // 格式输出
@@ -103,13 +109,13 @@ public class VisitorStmt {
                 }
 
                 if (formatString.charAt(i + 1) == 'd') {
-                    IrValue irValue = VisitorExp.VisitExp(expList.get(expCnt++));
+                    IrValue irValue = printValueList.get(expCnt++);
                     irValue = IrType.ConvertType(irValue, IrBaseType.INT32);
                     PrintIntInstr printIntInstr = new PrintIntInstr(irValue);
 
                     i++;
                 } else if (formatString.charAt(i + 1) == 'c') {
-                    IrValue irValue = VisitorExp.VisitExp(expList.get(expCnt++));
+                    IrValue irValue = printValueList.get(expCnt++);
                     // 输出时进行类型转换
                     IrValue printValue = IrType.ConvertType(irValue, IrBaseType.INT8);
                     PrintCharInstr printCharInstr = new PrintCharInstr(printValue);

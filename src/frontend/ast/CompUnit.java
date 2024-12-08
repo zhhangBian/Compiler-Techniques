@@ -62,6 +62,6 @@ public class CompUnit extends Node {
                 return mainFuncDef;
             }
         }
-        throw new RuntimeException("now MainFuncDef in the CompUnit!");
+        throw new RuntimeException("no MainFuncDef in the CompUnit!");
     }
 }
