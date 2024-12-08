@@ -41,4 +41,9 @@ public class ParallelCopyInstr extends Instr {
     public String toString() {
         return "parallel-copy-instr";
     }
+
+    @Override
+    public void toMips() {
+        throw new RuntimeException("pcopy not delete!");
+    }
 }

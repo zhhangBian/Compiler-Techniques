@@ -38,8 +38,8 @@ public class InsertPhi {
         // 分析该allocateInstr的define和use关系
         this.BuildDefineUseRelationship();
         // 找出需要添加phi指令的基本块，并添加phi
-        this.InsertPhi();
-        // 通过DFS进行重命名，同时将相关的alloca, store,load指令删除
+        this.InsertPhiToBlock();
+        // 通过DFS进行重命名，同时将相关的allocate, store,load指令删除
         this.ConvertLoadStore(this.entryBlock);
     }
 
@@ -72,7 +72,7 @@ public class InsertPhi {
         }
     }
 
-    private void InsertPhi() {
+    private void InsertPhiToBlock() {
         // 需要添加phi的基本块的集合
         HashSet<IrBasicBlock> addedPhiBlocks = new HashSet<>();
 

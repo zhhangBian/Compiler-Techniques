@@ -99,8 +99,8 @@ public class RemovePhi extends Optimizer {
         moveList.forEach(irBasicBlock::AddInstrBeforeJump);
     }
 
-    private ArrayList<MoveInstr> ConvertCopyAndCheckCircleMove(ParallelCopyInstr copyInstr,
-                                                               IrBasicBlock irBasicBlock) {
+    private ArrayList<MoveInstr> ConvertCopyAndCheckCircleMove(
+        ParallelCopyInstr copyInstr, IrBasicBlock irBasicBlock) {
         ArrayList<IrValue> srcList = copyInstr.GetSrcList();
         ArrayList<IrValue> dstList = copyInstr.GetDstList();
 

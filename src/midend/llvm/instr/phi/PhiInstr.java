@@ -71,4 +71,9 @@ public class PhiInstr extends Instr {
 
         return builder.toString();
     }
+
+    @Override
+    public void toMips() {
+        throw new RuntimeException("phi not delete!");
+    }
 }

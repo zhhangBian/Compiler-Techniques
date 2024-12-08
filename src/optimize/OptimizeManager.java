@@ -19,11 +19,11 @@ public class OptimizeManager {
         optimizerList.add(new CfgBuilder());
         optimizerList.add(new MemToReg());
 
-//        for(Optimizer optimizer:optimizerList) {
-//            optimizer.Optimize();
-//        }
-//        optimizerList.clear();
-//        IOhandler.PrintLlvmPhi();
+        for (Optimizer optimizer : optimizerList) {
+            optimizer.Optimize();
+        }
+        optimizerList.clear();
+        IOhandler.PrintLlvmPhi();
 
         optimizerList.add(new RemovePhi());
         optimizerList.add(new CfgBuilder());

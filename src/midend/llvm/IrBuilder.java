@@ -66,19 +66,10 @@ public class IrBuilder {
         return basicBlock;
     }
 
-    public static IrBasicBlock GetNewBasicBlockIr(IrFunction irFunction) {
-        IrBasicBlock basicBlock = new IrBasicBlock(GetBasicBlockName(), irFunction);
-        // 添加到当前的处理中
-        irFunction.AddBasicBlock(basicBlock);
-
-        return basicBlock;
-    }
-
     public static IrBasicBlock GetNewBasicBlockIr(IrFunction irFunction, IrBasicBlock afterBlock) {
         IrBasicBlock basicBlock = new IrBasicBlock(GetBasicBlockName(), irFunction);
-        int index = irFunction.GetBasicBlocks().indexOf(afterBlock);
         // 添加到当前的处理中
-        irFunction.AddBasicBlock(basicBlock, index);
+        irFunction.AddBasicBlock(basicBlock, afterBlock);
 
         return basicBlock;
     }

@@ -40,7 +40,8 @@ public class IrFunction extends IrValue {
         this.basicBlockList.add(basicBlock);
     }
 
-    public void AddBasicBlock(IrBasicBlock basicBlock, int index) {
+    public void AddBasicBlock(IrBasicBlock basicBlock, IrBasicBlock afterBlock) {
+        int index = this.basicBlockList.indexOf(afterBlock);
         this.basicBlockList.add(index, basicBlock);
     }
 

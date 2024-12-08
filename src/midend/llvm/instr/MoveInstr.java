@@ -2,9 +2,6 @@ package midend.llvm.instr;
 
 import backend.mips.MipsBuilder;
 import backend.mips.Register;
-import backend.mips.assembly.fake.MarsLi;
-import backend.mips.assembly.fake.MarsMove;
-import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrValue;
@@ -52,20 +49,8 @@ public class MoveInstr extends Instr {
         if (srcRegister != null && srcRegister.equals(dstRegister)) {
             return;
         }
-
         dstRegister = this.GetRegisterOrK0ForValue(dstValue);
-        // 常值
-        if (srcValue instanceof IrConstant) {
-            new MarsLi(dstRegister, Integer.parseInt(srcValue.GetIrName()));
-        }
-        // 有寄存器
-        else if (srcRegister != null) {
-            new MarsMove(dstRegister, srcRegister);
-        }
-        // 无寄存器
-        else {
-            this.LoadValueToRegister(srcValue, dstRegister);
-        }
+        this.LoadValueToRegister(srcValue, dstRegister);
         this.SaveResult(dstValue, dstRegister);
     }
 }
