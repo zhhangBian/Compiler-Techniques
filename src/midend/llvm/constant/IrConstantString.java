@@ -5,8 +5,6 @@ import midend.llvm.type.IrArrayType;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.type.IrPointerType;
 
-import java.util.ArrayList;
-
 public class IrConstantString extends IrConstant {
     private final String stringValue;
 

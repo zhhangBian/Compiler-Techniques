@@ -2,7 +2,11 @@ package optimize;
 
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.phi.PhiInstr;
-import midend.llvm.value.*;
+import midend.llvm.value.IrBasicBlock;
+import midend.llvm.value.IrFunction;
+import midend.llvm.value.IrGlobalValue;
+import midend.llvm.value.IrParameter;
+import midend.llvm.value.IrValue;
 import utils.Debug;
 
 import java.util.ArrayList;
@@ -13,13 +17,10 @@ public class ActiveAnalysis extends Optimizer {
     public void Optimize() {
         // 清除原先的活跃分析
         this.ClearActiveInfo();
-        Debug.DebugPrint("clean finish");
         // 分析def和use
         this.AnalysisDefAndUse();
-        Debug.DebugPrint("def-use finish");
         // 分析in和out
         this.AnalysisInAndOut();
-        Debug.DebugPrint("in-out finish");
     }
 
     private void ClearActiveInfo() {
@@ -84,8 +85,6 @@ public class ActiveAnalysis extends Optimizer {
 
                 for (int i = blockList.size() - 1; i >= 0; i--) {
                     IrBasicBlock analysisBlock = blockList.get(i);
-                    HashSet<IrValue> oldInValueSet = analysisBlock.GetOutValueSet();
-                    HashSet<IrValue> oldOutValueSet = analysisBlock.GetOutValueSet();
 
                     // out：对于后继块
                     HashSet<IrValue> newOutValueSet = new HashSet<>();
@@ -98,6 +97,8 @@ public class ActiveAnalysis extends Optimizer {
                     newInValueSet.removeAll(analysisBlock.GetDefValueSet());
                     newInValueSet.addAll(analysisBlock.GetUseValueSet());
 
+                    HashSet<IrValue> oldInValueSet = analysisBlock.GetInValueSet();
+                    HashSet<IrValue> oldOutValueSet = analysisBlock.GetOutValueSet();
                     if (!newOutValueSet.equals(oldOutValueSet) ||
                         !newInValueSet.equals(oldInValueSet)) {
                         haveChange = true;

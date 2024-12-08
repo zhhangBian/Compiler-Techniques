@@ -7,7 +7,6 @@ import backend.mips.assembly.data.MipsSpaceOptimize;
 import backend.mips.assembly.fake.MarsLi;
 import midend.llvm.type.IrArrayType;
 import midend.llvm.type.IrType;
-import midend.llvm.value.IrValue;
 import utils.Setting;
 
 import java.util.ArrayList;
