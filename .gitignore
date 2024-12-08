@@ -15,6 +15,7 @@ testfile.txt
 *.jar
 *.ll
 *.sh
+*.asm
 
 src/META-INF
 META-INF/*
