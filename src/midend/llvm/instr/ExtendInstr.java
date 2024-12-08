@@ -14,6 +14,11 @@ public class ExtendInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         IrValue originValue = this.GetOriginValue();
         return this.irName + " = zext " + originValue.GetIrType() + " " +

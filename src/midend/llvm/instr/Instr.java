@@ -55,6 +55,8 @@ public abstract class Instr extends IrUser {
         return this.inBasicBlock;
     }
 
+    public abstract boolean DefValue();
+
     @Override
     public abstract String toString();
 

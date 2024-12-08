@@ -20,6 +20,11 @@ public class ReturnInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         IrValue returnValue = this.GetReturnValue();
 

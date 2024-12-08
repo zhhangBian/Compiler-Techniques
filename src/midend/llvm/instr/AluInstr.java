@@ -27,6 +27,11 @@ public class AluInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         IrValue irValueL = this.GetValueL();
         IrValue irValueR = this.GetValueR();

@@ -43,6 +43,11 @@ public class BranchInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         IrValue cond = this.GetCond();
         IrBasicBlock trueBlock = this.GetTrueBlock();

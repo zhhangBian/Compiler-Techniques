@@ -15,6 +15,11 @@ public class GetIntInstr extends IoInstr {
     }
 
     @Override
+    public boolean DefValue() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         return this.irName + " = call i32 @getint()";
     }

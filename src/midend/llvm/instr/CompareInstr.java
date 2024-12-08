@@ -25,6 +25,11 @@ public class CompareInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         return this.irName + " = icmp " +
             compareOp.toString().toLowerCase() + " i32 " +

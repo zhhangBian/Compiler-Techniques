@@ -30,6 +30,11 @@ public class MoveInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "move " + this.GetDstValue().GetIrName() + ", " + this.GetSrcValue().GetIrName();
     }

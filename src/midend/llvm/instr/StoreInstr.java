@@ -25,6 +25,11 @@ public class StoreInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         IrValue valueValue = this.GetValueValue();
         IrValue addressValue = this.GetAddressValue();

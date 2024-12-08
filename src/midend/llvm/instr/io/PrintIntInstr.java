@@ -21,6 +21,11 @@ public class PrintIntInstr extends IoInstr {
     }
 
     @Override
+    public boolean DefValue() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         IrValue printValue = this.GetPrintValue();
         return "call void @putint(i32 " + printValue.GetIrName() + ")";

@@ -15,6 +15,11 @@ public class TruncInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         IrValue originValue = this.GetOriginValue();
         return this.irName + " = trunc " + originValue.GetIrType() + " " +
@@ -29,7 +34,11 @@ public class TruncInstr extends Instr {
         IrValue originValue = this.GetOriginValue();
         Register valueRegister = this.GetRegisterOrK0ForValue(originValue);
         this.LoadValueToRegister(originValue, valueRegister);
-        new MipsAlu(MipsAlu.AluType.ANDI, valueRegister, valueRegister, 0xff);
+        if (this.targetType.IsInt1Type()) {
+            new MipsAlu(MipsAlu.AluType.ANDI, valueRegister, valueRegister, 0x1);
+        } else if (this.targetType.IsInt8Type()) {
+            new MipsAlu(MipsAlu.AluType.ANDI, valueRegister, valueRegister, 0xff);
+        }
         this.SaveResult(this, valueRegister);
     }
 

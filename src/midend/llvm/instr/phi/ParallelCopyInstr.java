@@ -33,6 +33,11 @@ public class ParallelCopyInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "parallel-copy-instr";
     }

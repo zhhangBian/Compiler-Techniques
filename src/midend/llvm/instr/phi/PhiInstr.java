@@ -44,6 +44,11 @@ public class PhiInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         this.FixPhiNull();
         StringBuilder builder = new StringBuilder();

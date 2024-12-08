@@ -13,6 +13,11 @@ public class LoadInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         IrValue pointer = this.GetPointer();
         return this.irName + " = load " + this.irType + ", " +

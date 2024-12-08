@@ -23,6 +23,11 @@ public class GepInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         IrValue pointer = this.GetPointer();
         IrValue offset = this.GetOffset();

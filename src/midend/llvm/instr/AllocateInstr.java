@@ -21,6 +21,11 @@ public class AllocateInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         return this.irName + " = alloca " + this.targetType;
     }

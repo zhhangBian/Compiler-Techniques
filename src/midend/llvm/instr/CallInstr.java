@@ -34,6 +34,11 @@ public class CallInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return !this.IsVoidReturnType();
+    }
+
+    @Override
     public String toString() {
         final IrFunction targetFunction = this.GetTargetFunction();
         ArrayList<String> paramInfo = new ArrayList<>();

@@ -1,7 +1,6 @@
 package backend.mips.assembly.data;
 
 import midend.llvm.constant.IrConstant;
-import midend.llvm.value.IrValue;
 
 import java.util.ArrayList;
 import java.util.StringJoiner;

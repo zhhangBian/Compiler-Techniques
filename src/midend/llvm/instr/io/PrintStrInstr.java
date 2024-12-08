@@ -21,6 +21,11 @@ public class PrintStrInstr extends IoInstr {
     }
 
     @Override
+    public boolean DefValue() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         IrPointerType irPointerType = (IrPointerType) this.irConstantString.GetIrType();
         return "call void @putstr(i8* getelementptr inbounds (" +

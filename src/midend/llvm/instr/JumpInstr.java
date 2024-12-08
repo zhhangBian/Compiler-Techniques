@@ -28,6 +28,11 @@ public class JumpInstr extends Instr {
     }
 
     @Override
+    public boolean DefValue() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         IrBasicBlock targetBlock = this.GetTargetBlock();
         return "br label %" + targetBlock.GetIrName();

@@ -10,6 +10,7 @@ import midend.llvm.instr.phi.ParallelCopyInstr;
 import midend.llvm.type.IrBasicBlockType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,7 @@ public class IrBasicBlock extends IrValue {
     // 描述前驱后继的数据结构
     private final ArrayList<IrBasicBlock> nextBlockList;
     private final ArrayList<IrBasicBlock> beforeBlockList;
+
     // 描述支配关系的数据结构
     // 支配该block的block
     private final HashSet<IrBasicBlock> dominators;
@@ -28,6 +30,12 @@ public class IrBasicBlock extends IrValue {
     private final HashSet<IrBasicBlock> directDominateBlocks;
     // 该节点的支配边界
     private final HashSet<IrBasicBlock> dominateFrontiers;
+
+    // 描述活跃变量分析的数据结构
+    private HashSet<IrValue> inValueSet;
+    private HashSet<IrValue> outValueSet;
+    private HashSet<IrValue> defValueSet;
+    private HashSet<IrValue> useValueSet;
 
     public IrBasicBlock(String irName, IrFunction irFunction) {
         super(IrBasicBlockType.BASIC_BLOCK, irName);
@@ -41,6 +49,11 @@ public class IrBasicBlock extends IrValue {
         this.directDominator = null;
         this.directDominateBlocks = new HashSet<>();
         this.dominateFrontiers = new HashSet<>();
+        // 描述活跃变量分析的数据结构
+        this.inValueSet = new HashSet<>();
+        this.outValueSet = new HashSet<>();
+        this.defValueSet = new HashSet<>();
+        this.useValueSet = new HashSet<>();
     }
 
     public void RemoveAllValueUse() {
@@ -191,6 +204,38 @@ public class IrBasicBlock extends IrValue {
         middleBlock.nextBlockList.add(nextBlock);
 
         return middleBlock;
+    }
+
+    // 清除活跃信息
+    public void ClearActiveInfo() {
+        this.defValueSet.clear();
+        this.useValueSet.clear();
+        this.inValueSet.clear();
+        this.outValueSet.clear();
+    }
+
+    public HashSet<IrValue> GetDefValueSet() {
+        return this.defValueSet;
+    }
+
+    public HashSet<IrValue> GetUseValueSet() {
+        return this.useValueSet;
+    }
+
+    public HashSet<IrValue> GetInValueSet() {
+        return this.inValueSet;
+    }
+
+    public HashSet<IrValue> GetOutValueSet() {
+        return this.outValueSet;
+    }
+
+    public void SetInValueSet(HashSet<IrValue> inValueSet) {
+        this.inValueSet = inValueSet;
+    }
+
+    public void SetOutValueSet(HashSet<IrValue> outValueSet) {
+        this.outValueSet = outValueSet;
     }
 
     @Override

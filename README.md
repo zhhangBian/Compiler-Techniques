@@ -10,6 +10,7 @@ my compiler for course Compiler-Techniques
 - 1119-23：00：完成中间代码生成
 - 1122-10：00：完成MIPS代码生成
 - 1208-13：10：完成Mem2Reg，但是有bug
+- 1208-15：16：完成全局变量初始化优化
 
 优化规划：
 

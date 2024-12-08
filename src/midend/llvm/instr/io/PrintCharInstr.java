@@ -21,6 +21,11 @@ public class PrintCharInstr extends IoInstr {
     }
 
     @Override
+    public boolean DefValue() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         IrValue printValue = this.GetPrintValue();
         return "call void @putch(i8 " + printValue.GetIrName() + ")";
