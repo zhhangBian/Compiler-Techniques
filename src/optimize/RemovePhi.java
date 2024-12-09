@@ -1,6 +1,5 @@
 package optimize;
 
-import backend.mips.MipsBuilder;
 import backend.mips.Register;
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.MoveInstr;
@@ -112,9 +111,9 @@ public class RemovePhi extends Optimizer {
             if (this.HaveCircleConflict(copyInstr, i)) {
                 IrValue middleValue = new IrValue(dstValue.GetIrType(),
                     dstValue.GetIrName() + "_tmp");
-                moveList.add(new MoveInstr(dstValue, middleValue, irBasicBlock));
+                moveList.add(0, new MoveInstr(dstValue, middleValue, irBasicBlock));
                 // 替换后续指令的src
-                for (int j = i + 1; j < dstList.size(); j++) {
+                for (int j = 0; j < dstList.size(); j++) {
                     if (srcList.get(j) == dstValue) {
                         srcList.set(j, middleValue);
                     }
@@ -131,7 +130,7 @@ public class RemovePhi extends Optimizer {
         ArrayList<IrValue> dstList = copyInstr.GetDstList();
         IrValue dstValue = dstList.get(index);
         for (int i = index + 1; i < srcList.size(); i++) {
-            if (srcList.get(i) == dstValue) {
+            if (srcList.get(i).equals(dstValue)) {
                 return true;
             }
         }
@@ -139,6 +138,7 @@ public class RemovePhi extends Optimizer {
     }
 
     private void CheckRegisterConflict(ArrayList<MoveInstr> moveList, IrBasicBlock irBasicBlock) {
+        ArrayList<MoveInstr> addList = new ArrayList<>();
         for (int i = moveList.size() - 1; i >= 0; i--) {
             if (this.HaveRegisterConflict(moveList, i, irBasicBlock)) {
                 IrValue srcValue = moveList.get(i).GetSrcValue();
@@ -152,22 +152,23 @@ public class RemovePhi extends Optimizer {
                 }
                 // 在moveList开头加入新move
                 MoveInstr moveInstr = new MoveInstr(srcValue, middleValue, irBasicBlock);
-                moveList.add(0, moveInstr);
+                addList.add(moveInstr);
             }
         }
+        moveList.addAll(0, addList);
     }
 
     private boolean HaveRegisterConflict(ArrayList<MoveInstr> moveList, int index,
                                          IrBasicBlock irBasicBlock) {
         HashMap<IrValue, Register> registerMap =
-            MipsBuilder.GetFunctionRegisterMap(irBasicBlock.GetIrFunction());
+            irBasicBlock.GetIrFunction().GetValueRegisterMap();
         IrValue srcValue = moveList.get(index).GetSrcValue();
         Register srcRegister = registerMap.get(srcValue);
 
         if (srcRegister != null) {
             for (int i = 0; i < index; i++) {
                 IrValue dstValue = moveList.get(i).GetDstValue();
-                if (registerMap.get(dstValue) == srcRegister) {
+                if (registerMap.get(dstValue).equals(srcRegister)) {
                     return true;
                 }
             }

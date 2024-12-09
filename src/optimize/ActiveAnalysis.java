@@ -8,6 +8,7 @@ import midend.llvm.value.IrGlobalValue;
 import midend.llvm.value.IrParameter;
 import midend.llvm.value.IrValue;
 import utils.Debug;
+import utils.Setting;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,6 +22,10 @@ public class ActiveAnalysis extends Optimizer {
         this.AnalysisDefAndUse();
         // 分析in和out
         this.AnalysisInAndOut();
+
+        if (Setting.DEBUG) {
+            this.DebugPrint();
+        }
     }
 
     private void ClearActiveInfo() {
@@ -106,6 +111,19 @@ public class ActiveAnalysis extends Optimizer {
                         analysisBlock.SetOutValueSet(newOutValueSet);
                     }
                 }
+            }
+        }
+    }
+
+    private void DebugPrint() {
+        for (IrFunction irFunction : irModule.GetFunctions()) {
+            Debug.DebugPrint(irFunction.GetIrName() + ":");
+            for (IrBasicBlock irBasicBlock : irFunction.GetBasicBlocks()) {
+                Debug.DebugPrint(irBasicBlock.GetIrName() + ":");
+                Debug.DebugPrint("\tdef:" + irBasicBlock.GetDefValueSet());
+                Debug.DebugPrint("\tuse:" + irBasicBlock.GetUseValueSet());
+                Debug.DebugPrint("\tin :" + irBasicBlock.GetInValueSet());
+                Debug.DebugPrint("\tout:" + irBasicBlock.GetOutValueSet());
             }
         }
     }

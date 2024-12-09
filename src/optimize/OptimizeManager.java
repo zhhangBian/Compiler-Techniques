@@ -18,7 +18,10 @@ public class OptimizeManager {
 
         optimizerList.add(new CfgBuilder());
         optimizerList.add(new MemToReg());
+        optimizerList.add(new CfgBuilder());
 
+        optimizerList.add(new ActiveAnalysis());
+        optimizerList.add(new AllocateRegister());
         for (Optimizer optimizer : optimizerList) {
             optimizer.Optimize();
         }
@@ -26,10 +29,6 @@ public class OptimizeManager {
         IOhandler.PrintLlvmPhi();
 
         optimizerList.add(new RemovePhi());
-        optimizerList.add(new CfgBuilder());
-
-        optimizerList.add(new ActiveAnalysis());
-        optimizerList.add(new AllocateRegister());
 
         for (Optimizer optimizer : optimizerList) {
             optimizer.Optimize();

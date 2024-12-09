@@ -1,21 +1,14 @@
 package optimize;
 
-import backend.mips.Register;
-import midend.llvm.value.IrValue;
-
-import java.util.HashMap;
+import midend.llvm.value.IrFunction;
 
 public class AllocateRegister extends Optimizer {
-    private HashMap<Register, IrValue> registerValueMap;
-    private HashMap<IrValue, Register> valueRegisterMap;
-
-    public AllocateRegister() {
-        this.registerValueMap = new HashMap<>();
-        this.valueRegisterMap = new HashMap<>();
-    }
-
     @Override
     public void Optimize() {
-
+        for (IrFunction irFunction : irModule.GetFunctions()) {
+            RegisterAllocator allocator = new RegisterAllocator(irFunction);
+            // 从起始开始分配
+            allocator.Allocate(irFunction.GetBasicBlocks().get(0));
+        }
     }
 }

@@ -12,16 +12,19 @@ import midend.llvm.type.IrFunctionType;
 import midend.llvm.type.IrType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class IrFunction extends IrValue {
     private final ArrayList<IrParameter> parameterList;
     private final ArrayList<IrBasicBlock> basicBlockList;
+    private final HashMap<IrValue, Register> valueRegisterMap;
 
     public IrFunction(String name, IrType returnType) {
         super(new IrFunctionType(returnType), name);
         this.parameterList = new ArrayList<>();
         this.basicBlockList = new ArrayList<>();
+        this.valueRegisterMap = new HashMap<>();
     }
 
     public IrType GetReturnType() {
@@ -72,6 +75,10 @@ public class IrFunction extends IrValue {
                 block.AddInstr(new JumpInstr(this.basicBlockList.get(i + 1), block));
             }
         }
+    }
+
+    public HashMap<IrValue, Register> GetValueRegisterMap() {
+        return this.valueRegisterMap;
     }
 
     @Override

@@ -52,7 +52,7 @@ public enum Register {
         return values()[index];
     }
 
-    public ArrayList<Register> GetUsAbleRegisters() {
+    public static ArrayList<Register> GetUsAbleRegisters() {
         ArrayList<Register> usableRegisters = new ArrayList<>();
 
         usableRegisters.add(T0);

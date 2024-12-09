@@ -13,6 +13,7 @@ public class MarsMove extends MipsMars {
 
     @Override
     public String toString() {
-        return "move " + this.dst + " " + this.src;
+        return (this.dst == this.src ? "# " : "") +
+            "move " + this.dst + " " + this.src;
     }
 }

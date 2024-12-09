@@ -57,6 +57,10 @@ public abstract class Instr extends IrUser {
 
     public abstract boolean DefValue();
 
+    public boolean IsBlockOutValue(IrValue useValue) {
+        return this.inBasicBlock.GetOutValueSet().contains(useValue);
+    }
+
     @Override
     public abstract String toString();
 
@@ -98,14 +102,14 @@ public abstract class Instr extends IrUser {
         return register == null ? Register.K0 : register;
     }
 
-    // 保存计算结果，若没分配寄存器则保留到栈上
-    protected void SaveResult(IrValue irValue, Register targetRegister) {
+    // 保存寄存器中的计算结果，若没分配寄存器则保留到栈上
+    protected void SaveResult(IrValue irValue, Register valueRegister) {
         Register register = MipsBuilder.GetValueToRegister(irValue);
         if (register == null) {
             int offset = MipsBuilder.AllocateStackForValue(irValue);
-            new MipsLsu(MipsLsu.LsuType.SW, targetRegister, Register.SP, offset);
+            new MipsLsu(MipsLsu.LsuType.SW, valueRegister, Register.SP, offset);
         } else {
-            new MarsMove(targetRegister, register);
+            new MarsMove(register, valueRegister);
         }
     }
 }

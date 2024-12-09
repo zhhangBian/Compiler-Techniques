@@ -12,7 +12,6 @@ import java.util.HashMap;
 public class MipsBuilder {
     private static MipsModule currentModule = null;
     // value-register分配表
-    private static HashMap<IrFunction, HashMap<IrValue, Register>> functionRegisterMap = null;
     private static HashMap<IrValue, Register> valueRegisterMap = null;
     // 函数栈偏移量分配表
     private static int stackOffset = 0;
@@ -20,7 +19,6 @@ public class MipsBuilder {
 
     public static void SetBackEndModule(MipsModule mipsModule) {
         currentModule = mipsModule;
-        functionRegisterMap = new HashMap<>();
     }
 
     public static void AddAssembly(MipsAssembly mipsAssembly) {
@@ -33,17 +31,10 @@ public class MipsBuilder {
 
     public static void SetCurrentFunction(IrFunction irFunction) {
         // 设置相应的寄存器分配表
-        HashMap<IrValue, Register> valueMap = functionRegisterMap.containsKey(irFunction) ?
-            functionRegisterMap.get(irFunction) : new HashMap<>();
-        functionRegisterMap.put(irFunction, valueMap);
-        valueRegisterMap = valueMap;
+        valueRegisterMap = irFunction.GetValueRegisterMap();
         // 初始化栈分配表
         stackOffset = 0;
         stackOffsetValueMap = new HashMap<>();
-    }
-
-    public static HashMap<IrValue, Register> GetFunctionRegisterMap(IrFunction irFunction) {
-        return functionRegisterMap == null ? new HashMap<>() : functionRegisterMap.get(irFunction);
     }
 
     public static Register GetValueToRegister(IrValue irValue) {
@@ -75,10 +66,6 @@ public class MipsBuilder {
         }
 
         return address;
-    }
-
-    public static void AddValueStackMapping(IrValue newValue, IrValue oldValue) {
-        stackOffsetValueMap.put(newValue, stackOffsetValueMap.get(oldValue));
     }
 
     public static void AllocateStackSpace(int offset) {
