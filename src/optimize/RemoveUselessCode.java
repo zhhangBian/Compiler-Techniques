@@ -15,6 +15,7 @@ public class RemoveUselessCode extends Optimizer {
     public void Optimize() {
         this.RemoveUselessJump();
         this.RemoveUselessBlock();
+        // 对于只有一个跳转的block进行优化
     }
 
     private void RemoveUselessJump() {

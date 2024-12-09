@@ -74,6 +74,10 @@ public class IrBasicBlock extends IrValue {
         this.instrList.add(index, instr);
     }
 
+    public void ReplaceLastInstr(Instr instr) {
+        this.instrList.set(this.instrList.size() - 1, instr);
+    }
+
     public void AddInstrBeforeJump(Instr instr) {
         Instr lastInstr = this.GetLastInstr();
         if (lastInstr instanceof JumpInstr || lastInstr instanceof BranchInstr) {
@@ -164,6 +168,16 @@ public class IrBasicBlock extends IrValue {
         if (!this.beforeBlockList.contains(beforeBlock)) {
             this.beforeBlockList.add(beforeBlock);
         }
+    }
+
+    public void ReplaceNextBlock(IrBasicBlock irBasicBlock) {
+        this.nextBlockList.remove(irBasicBlock);
+        this.nextBlockList.addAll(irBasicBlock.nextBlockList);
+    }
+
+    public void ReplaceBeforeBlock(IrBasicBlock irBasicBlock) {
+        this.beforeBlockList.remove(irBasicBlock);
+        this.beforeBlockList.addAll(irBasicBlock.beforeBlockList);
     }
 
     // 添加支配该block的block

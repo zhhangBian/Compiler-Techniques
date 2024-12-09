@@ -5,7 +5,6 @@ import backend.mips.assembly.MipsCompare;
 import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
-import utils.Debug;
 import utils.Setting;
 
 public class CompareInstr extends Instr {
