@@ -82,7 +82,7 @@ public class RegisterAllocator {
             if (this.valueRegisterMap.containsKey(useValue) &&
                 lastUseMap.get(useValue) == instr &&
                 !instr.IsBlockOutValue(useValue)) {
-                Debug.DebugPrint(this.valueRegisterMap.get(useValue) + " reg free " + useValue);
+                //Debug.DebugPrint(this.valueRegisterMap.get(useValue) + " reg free " + useValue);
                 // 之后不参与分配
                 this.registerValueMap.remove(this.valueRegisterMap.get(useValue));
                 // 后续不会使用
@@ -100,7 +100,7 @@ public class RegisterAllocator {
         Set<Register> allocatedRegister = this.registerValueMap.keySet();
         for (Register register : this.registerSet) {
             if (!allocatedRegister.contains(register)) {
-                Debug.DebugPrint(register + " reg to " + instr);
+                //Debug.DebugPrint(register + " reg to " + instr);
                 this.registerValueMap.put(register, instr);
                 this.valueRegisterMap.put(instr, register);
                 break;

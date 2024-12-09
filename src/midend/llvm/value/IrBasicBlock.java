@@ -75,7 +75,10 @@ public class IrBasicBlock extends IrValue {
     }
 
     public void ReplaceLastInstr(Instr instr) {
+        Instr jumpInstr = this.GetLastInstr();
+        jumpInstr.RemoveAllValueUse();
         this.instrList.set(this.instrList.size() - 1, instr);
+        instr.SetInBasicBlock(this);
     }
 
     public void AddInstrBeforeJump(Instr instr) {
@@ -178,6 +181,17 @@ public class IrBasicBlock extends IrValue {
     public void ReplaceBeforeBlock(IrBasicBlock irBasicBlock) {
         this.beforeBlockList.remove(irBasicBlock);
         this.beforeBlockList.addAll(irBasicBlock.beforeBlockList);
+    }
+
+    public void AppendBlock(IrBasicBlock nextBlock) {
+        // 对于原块的尾跳转
+        Instr jumpInstr = this.GetLastInstr();
+        jumpInstr.RemoveAllValueUse();
+        this.instrList.remove(this.instrList.size() - 1);
+
+        nextBlock.instrList.forEach(this::AddInstr);
+        this.nextBlockList.clear();
+        this.nextBlockList.addAll(nextBlock.nextBlockList);
     }
 
     // 添加支配该block的block

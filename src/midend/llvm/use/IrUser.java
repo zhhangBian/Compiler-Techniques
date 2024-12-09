@@ -28,17 +28,20 @@ public class IrUser extends IrValue {
 
     public void ModifyValue(IrValue oldValue, IrValue newValue) {
         // 将newValue加入到oldValue中，位置不变
+        oldValue.DeleteUser(this);
         int index = this.useValueList.indexOf(oldValue);
         this.useValueList.set(index, newValue);
     }
 
     public void RemoveAllValueUse() {
-        // value不再登记user
-        ArrayList<IrUse> uses = new ArrayList<>(this.useList);
-        for (IrUse irUse : uses) {
-            irUse.GetValue().DeleteUser(irUse.GetUser());
-        }
         // 去除使用的value
+        for (IrValue useValue : this.useValueList) {
+            useValue.DeleteUser(this);
+        }
         this.useValueList.clear();
+        // 对使用该value的使用者清空
+        for (IrUse irUse : this.useList) {
+            irUse.GetUser().useValueList.remove(this);
+        }
     }
 }

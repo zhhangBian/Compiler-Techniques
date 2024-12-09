@@ -23,6 +23,7 @@ public class MoveInstr extends Instr {
     }
 
     public void SetSrcValue(IrValue srcValue) {
+        this.GetSrcValue().DeleteUser(this);
         this.useValueList.set(0, srcValue);
     }
 

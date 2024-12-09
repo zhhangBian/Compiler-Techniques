@@ -4,9 +4,9 @@ import midend.llvm.instr.BranchInstr;
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.JumpInstr;
 import midend.llvm.instr.ReturnInstr;
-import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
+import utils.Debug;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,6 +14,13 @@ import java.util.Iterator;
 public class RemoveDeadBlock extends Optimizer {
     @Override
     public void Optimize() {
+        // 删除无用Jump
+        this.RemoveJump();
+        // 合并基本快
+        this.MergeBlock();
+    }
+
+    private void RemoveJump() {
         for (IrFunction irFunction : irModule.GetFunctions()) {
             ArrayList<IrBasicBlock> removerBlocks = new ArrayList<>();
             boolean changed = true;
@@ -37,16 +44,6 @@ public class RemoveDeadBlock extends Optimizer {
                         changed = true;
                     }
                 }
-            }
-            // 去除use
-            for (IrBasicBlock block : removerBlocks) {
-                // value不再登记user
-                ArrayList<IrUse> uses = new ArrayList<>(block.GetUseList());
-                for (IrUse irUse : uses) {
-                    irUse.GetValue().DeleteUser(irUse.GetUser());
-                }
-                // 去除使用的value
-                block.GetUseValueSet().clear();
             }
         }
     }
@@ -78,6 +75,34 @@ public class RemoveDeadBlock extends Optimizer {
             beforeBlock.ReplaceNextBlock(visitBlock);
             for (IrBasicBlock nextBlock : nextBlocks) {
                 nextBlock.ReplaceBeforeBlock(visitBlock);
+            }
+        }
+    }
+
+    // 合并基本快
+    private void MergeBlock() {
+        for (IrFunction irFunction : irModule.GetFunctions()) {
+            boolean changed = true;
+            while (changed) {
+                changed = false;
+                ArrayList<IrBasicBlock> blockList = irFunction.GetBasicBlocks();
+                Iterator<IrBasicBlock> iterator = blockList.iterator();
+                while (iterator.hasNext()) {
+                    IrBasicBlock visitBlock = iterator.next();
+                    ArrayList<IrBasicBlock> beforeBlockList = visitBlock.GetBeforeBlocks();
+                    if (beforeBlockList.size() == 1) {
+                        IrBasicBlock beforeBlock = beforeBlockList.get(0);
+                        // 前后对接上，则可以合并
+                        if (beforeBlock.GetNextBlocks().size() == 1) {
+                            beforeBlock.AppendBlock(visitBlock);
+                            iterator.remove();
+                            changed = true;
+                            Debug.DebugPrint("merge block: " + beforeBlock.GetIrName() +
+                                " and delete " + visitBlock.GetIrName() + " " +
+                                beforeBlock.GetIrFunction().GetIrName());
+                        }
+                    }
+                }
             }
         }
     }
