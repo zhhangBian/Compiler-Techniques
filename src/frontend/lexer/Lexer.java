@@ -28,9 +28,6 @@ public class Lexer {
             this.tokenList.add(token);
             token = this.GetToken();
         }
-        if (this.lineNumber > 200 && this.lineNumber < 210) {
-            //Setting.SPECIAL = true;
-        }
     }
 
     public ArrayList<Token> GetTokenList() {

@@ -1,7 +1,6 @@
 package midend.llvm.instr.phi;
 
 import midend.llvm.IrBuilder;
-import midend.llvm.constant.IrConstantInt;
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.InstrType;
 import midend.llvm.type.IrType;
@@ -56,7 +55,7 @@ public class PhiInstr extends Instr {
         for (int i = 0; i < this.beforeBlockList.size(); i++) {
             final StringBuilder blockBuilder = new StringBuilder();
             blockBuilder.append("[ ");
-            blockBuilder.append(this.useValueList.get(i) == null ?"null" :this.useValueList.get(i).GetIrName());
+            blockBuilder.append(this.useValueList.get(i).GetIrName());
             blockBuilder.append(", %");
             blockBuilder.append(this.beforeBlockList.get(i).GetIrName());
             blockBuilder.append(" ]");

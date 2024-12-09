@@ -156,7 +156,8 @@ public class RemovePhi extends Optimizer {
         return false;
     }
 
-    private ArrayList<MoveInstr> CheckRegisterConflict(ArrayList<MoveInstr> moveList, IrBasicBlock irBasicBlock) {
+    private ArrayList<MoveInstr> CheckRegisterConflict(ArrayList<MoveInstr> moveList,
+                                                       IrBasicBlock irBasicBlock) {
         ArrayList<MoveInstr> fixList = new ArrayList<>();
         HashSet<IrValue> valueRecord = new HashSet<>();
         for (int i = moveList.size() - 1; i >= 0; i--) {

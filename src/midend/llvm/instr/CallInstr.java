@@ -166,13 +166,6 @@ public class CallInstr extends Instr {
     }
 
     private void HandleReturnValue() {
-        Register returnRegister = MipsBuilder.GetValueToRegister(this);
-        if (returnRegister != null) {
-            new MarsMove(returnRegister, Register.V0);
-        } else {
-            MipsBuilder.AllocateStackForValue(this);
-            new MipsLsu(MipsLsu.LsuType.SW, Register.V0, Register.SP,
-                MipsBuilder.GetCurrentStackOffset());
-        }
+        this.SaveRegisterResult(this, Register.V0);
     }
 }
