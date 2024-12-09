@@ -27,20 +27,16 @@ public class PhiInstr extends Instr {
         }
     }
 
+    public ArrayList<IrBasicBlock> GetBeforeBlockList() {
+        return this.beforeBlockList;
+    }
+
     public void ConvertBlockToValue(IrValue irValue, IrBasicBlock beforeBlock) {
         int index = this.beforeBlockList.indexOf(beforeBlock);
         // 进行相应的值替换
         this.useValueList.set(index, irValue);
         // 添加use关系
         irValue.AddUse(new IrUse(this, irValue));
-    }
-
-    public void FixPhiNull() {
-        for (int i = 0; i < this.useValueList.size(); i++) {
-            if (this.useValueList.get(i) == null) {
-                this.useValueList.set(i, new IrConstantInt(0));
-            }
-        }
     }
 
     @Override
@@ -50,7 +46,6 @@ public class PhiInstr extends Instr {
 
     @Override
     public String toString() {
-        this.FixPhiNull();
         StringBuilder builder = new StringBuilder();
 
         builder.append(this.irName);
@@ -61,7 +56,7 @@ public class PhiInstr extends Instr {
         for (int i = 0; i < this.beforeBlockList.size(); i++) {
             final StringBuilder blockBuilder = new StringBuilder();
             blockBuilder.append("[ ");
-            blockBuilder.append(this.useValueList.get(i).GetIrName());
+            blockBuilder.append(this.useValueList.get(i) == null ?"null" :this.useValueList.get(i).GetIrName());
             blockBuilder.append(", %");
             blockBuilder.append(this.beforeBlockList.get(i).GetIrName());
             blockBuilder.append(" ]");

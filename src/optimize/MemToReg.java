@@ -14,12 +14,13 @@ public class MemToReg extends Optimizer {
     @Override
     public void Optimize() {
         for (IrFunction irFunction : irModule.GetFunctions()) {
+            IrBasicBlock entryBlock = irFunction.GetBasicBlocks().get(0);
             for (IrBasicBlock irBasicBlock : irFunction.GetBasicBlocks()) {
                 ArrayList<Instr> instrList = new ArrayList<>(irBasicBlock.GetInstrList());
                 for (Instr instr : instrList) {
                     if (this.IsValueAllocate(instr)) {
                         InsertPhi insertPhi =
-                            new InsertPhi((AllocateInstr) instr, instr.GetInBasicBlock());
+                            new InsertPhi((AllocateInstr) instr, entryBlock);
                         insertPhi.AddPhi();
                     }
                 }

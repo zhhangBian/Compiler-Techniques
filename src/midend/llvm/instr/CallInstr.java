@@ -42,9 +42,9 @@ public class CallInstr extends Instr {
     public String toString() {
         final IrFunction targetFunction = this.GetTargetFunction();
         ArrayList<String> paramInfo = new ArrayList<>();
-        this.GetParamList().stream()
-            .map(param -> param.GetIrType() + " " + param.GetIrName())
-            .forEach(paramInfo::add);
+        for (IrValue param : this.GetParamList()) {
+            paramInfo.add(param.GetIrType() + " " + param.GetIrName());
+        }
 
         StringBuilder builder = new StringBuilder();
         // 如果不是void

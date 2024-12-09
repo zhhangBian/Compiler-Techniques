@@ -22,7 +22,7 @@ public class InsertPhi {
     private final HashSet<Instr> useInstrs;
     private final ArrayList<IrBasicBlock> defineBlocks;
     private final ArrayList<IrBasicBlock> useBlocks;
-    private final Stack<IrValue> valueStack;
+    private Stack<IrValue> valueStack;
 
     public InsertPhi(AllocateInstr allocateInstr, IrBasicBlock entryBlock) {
         this.allocateInstr = allocateInstr;
@@ -91,7 +91,7 @@ public class InsertPhi {
                     this.InsertPhiInstr(frontierBlock);
                     addedPhiBlocks.add(frontierBlock);
                     // phi也进行定义变量
-                    if (!defineBlockStack.contains(frontierBlock)) {
+                    if (!this.defineBlocks.contains(frontierBlock)) {
                         defineBlockStack.push(frontierBlock);
                     }
                 }
@@ -103,54 +103,47 @@ public class InsertPhi {
         PhiInstr phiInstr = new PhiInstr(this.allocateInstr.GetTargetType(), irBasicBlock);
         irBasicBlock.AddInstr(phiInstr, 0);
         // phi既是define，又是use
-        this.AddDefineInstr(phiInstr);
-        this.AddUseInstr(phiInstr);
+        this.useInstrs.add(phiInstr);
+        this.defineInstrs.add(phiInstr);
     }
 
     private void ConvertLoadStore(IrBasicBlock renameBlock) {
+        final Stack<IrValue> stackCopy = (Stack<IrValue>) this.valueStack.clone();
         // 移除与当前allocate相关的全部的load、store指令
-        int count = this.RemoveBlockLoadStore(renameBlock);
+        this.RemoveBlockLoadStore(renameBlock);
         // 遍历entry的后续集合，将最新的define填充进每个后继块的第一个phi指令中
         this.ConvertPhiValue(renameBlock);
-
         // 对支配块进行dfs
         for (IrBasicBlock dominateBlock : renameBlock.GetDirectDominateBlocks()) {
             this.ConvertLoadStore(dominateBlock);
         }
-
-        // 对dfs过程中压入的元素出栈
-        for (int i = 0; i < count; i++) {
-            this.valueStack.pop();
-        }
+        // 恢复栈
+        this.valueStack = stackCopy;
     }
 
-    private int RemoveBlockLoadStore(IrBasicBlock visitBlock) {
-        int count = 0;
+    private void RemoveBlockLoadStore(IrBasicBlock visitBlock) {
         Iterator<Instr> iterator = visitBlock.GetInstrList().iterator();
         while (iterator.hasNext()) {
             Instr instr = iterator.next();
             // store
             if (instr instanceof StoreInstr storeInstr && this.defineInstrs.contains(instr)) {
                 this.valueStack.push(storeInstr.GetValueValue());
-                count++;
                 iterator.remove();
             }
             // load
-            else if (instr instanceof LoadInstr && this.useInstrs.contains(instr)) {
+            else if (!(instr instanceof PhiInstr) && this.useInstrs.contains(instr)) {
                 instr.ModifyUsersToNewValue(this.PeekValueStack());
                 iterator.remove();
             }
             // phi
             else if (instr instanceof PhiInstr && this.defineInstrs.contains(instr)) {
                 this.valueStack.push(instr);
-                count++;
             }
             // 当前分析的allocate：使用mem2reg后不需要allocate
             else if (instr == this.allocateInstr) {
                 iterator.remove();
             }
         }
-        return count;
     }
 
     private void ConvertPhiValue(IrBasicBlock visitBlock) {

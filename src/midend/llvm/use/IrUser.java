@@ -28,7 +28,6 @@ public class IrUser extends IrValue {
 
     public void ModifyValue(IrValue oldValue, IrValue newValue) {
         // 将newValue加入到oldValue中，位置不变
-        oldValue.DeleteUser(this);
         int index = this.useValueList.indexOf(oldValue);
         this.useValueList.set(index, newValue);
     }

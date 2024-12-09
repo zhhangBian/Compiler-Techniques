@@ -1,6 +1,7 @@
 package optimize;
 
 import backend.mips.Register;
+import midend.llvm.constant.IrConstant;
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.MoveInstr;
 import midend.llvm.instr.phi.ParallelCopyInstr;
@@ -11,6 +12,7 @@ import midend.llvm.value.IrValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 public class RemovePhi extends Optimizer {
@@ -45,7 +47,6 @@ public class RemovePhi extends Optimizer {
                 while (iterator.hasNext()) {
                     Instr instr = iterator.next();
                     if (instr instanceof PhiInstr phiInstr) {
-                        phiInstr.FixPhiNull();
                         ArrayList<IrValue> useValueList = phiInstr.GetUseValueList();
                         // 把phi相应的值拷贝到phi指令
                         for (int i = 0; i < useValueList.size(); i++) {
@@ -89,40 +90,58 @@ public class RemovePhi extends Optimizer {
     }
 
     private void ConvertCopyToMove(ParallelCopyInstr copyInstr, IrBasicBlock irBasicBlock) {
-        ArrayList<MoveInstr> moveList;
         // 遍历同时检查冲突现象：后面的move的src为前序的dst
-        moveList = this.ConvertCopyAndCheckCircleMove(copyInstr, irBasicBlock);
+        ArrayList<MoveInstr> moveList = this.ConvertCopy(copyInstr, irBasicBlock);
+        // 检查循环赋值冲突
+        ArrayList<MoveInstr> circleList =
+            this.CheckCircleConflict(copyInstr, irBasicBlock, moveList);
         // 检查寄存器冲突
-        this.CheckRegisterConflict(moveList, irBasicBlock);
+        ArrayList<MoveInstr> registerList = this.CheckRegisterConflict(moveList, irBasicBlock);
         // 在跳转前加入move
+        circleList.addAll(registerList);
+        moveList.addAll(0, circleList);
         moveList.forEach(irBasicBlock::AddInstrBeforeJump);
     }
 
-    private ArrayList<MoveInstr> ConvertCopyAndCheckCircleMove(
-        ParallelCopyInstr copyInstr, IrBasicBlock irBasicBlock) {
+    private ArrayList<MoveInstr> ConvertCopy(ParallelCopyInstr copyInstr,
+                                             IrBasicBlock irBasicBlock) {
         ArrayList<IrValue> srcList = copyInstr.GetSrcList();
         ArrayList<IrValue> dstList = copyInstr.GetDstList();
 
         ArrayList<MoveInstr> moveList = new ArrayList<>();
         for (int i = 0; i < dstList.size(); i++) {
-            IrValue srcValue = srcList.get(i);
-            IrValue dstValue = dstList.get(i);
-
-            if (this.HaveCircleConflict(copyInstr, i)) {
-                IrValue middleValue = new IrValue(dstValue.GetIrType(),
-                    dstValue.GetIrName() + "_tmp");
-                moveList.add(0, new MoveInstr(dstValue, middleValue, irBasicBlock));
-                // 替换后续指令的src
-                for (int j = 0; j < dstList.size(); j++) {
-                    if (srcList.get(j) == dstValue) {
-                        srcList.set(j, middleValue);
-                    }
-                }
-            }
-            moveList.add(new MoveInstr(srcValue, dstValue, irBasicBlock));
+            moveList.add(new MoveInstr(srcList.get(i), dstList.get(i), irBasicBlock));
         }
 
         return moveList;
+    }
+
+    private ArrayList<MoveInstr> CheckCircleConflict(
+        ParallelCopyInstr copyInstr, IrBasicBlock irBasicBlock, ArrayList<MoveInstr> moveList) {
+        ArrayList<IrValue> dstList = copyInstr.GetDstList();
+
+        ArrayList<MoveInstr> fixList = new ArrayList<>();
+        HashSet<IrValue> valueRecord = new HashSet<>();
+        for (int i = 0; i < moveList.size(); i++) {
+            IrValue dstValue = dstList.get(i);
+
+            if (!(dstValue instanceof IrConstant) && !valueRecord.contains(dstValue)) {
+                if (this.HaveCircleConflict(copyInstr, i)) {
+                    IrValue middleValue = new IrValue(dstValue.GetIrType(),
+                        dstValue.GetIrName() + "_tmp");
+                    moveList.add(0, new MoveInstr(dstValue, middleValue, irBasicBlock));
+                    // 替换后续指令的src
+                    for (MoveInstr moveInstr : moveList) {
+                        if (moveInstr.GetSrcValue().equals(dstValue)) {
+                            moveInstr.SetSrcValue(middleValue);
+                        }
+                    }
+                    fixList.add(new MoveInstr(middleValue, dstValue, irBasicBlock));
+                }
+                valueRecord.add(dstValue);
+            }
+        }
+        return fixList;
     }
 
     private boolean HaveCircleConflict(ParallelCopyInstr copyInstr, int index) {
@@ -137,31 +156,34 @@ public class RemovePhi extends Optimizer {
         return false;
     }
 
-    private void CheckRegisterConflict(ArrayList<MoveInstr> moveList, IrBasicBlock irBasicBlock) {
-        ArrayList<MoveInstr> addList = new ArrayList<>();
+    private ArrayList<MoveInstr> CheckRegisterConflict(ArrayList<MoveInstr> moveList, IrBasicBlock irBasicBlock) {
+        ArrayList<MoveInstr> fixList = new ArrayList<>();
+        HashSet<IrValue> valueRecord = new HashSet<>();
         for (int i = moveList.size() - 1; i >= 0; i--) {
-            if (this.HaveRegisterConflict(moveList, i, irBasicBlock)) {
-                IrValue srcValue = moveList.get(i).GetSrcValue();
-                IrValue middleValue = new IrValue(srcValue.GetIrType(),
-                    srcValue.GetIrName() + "_tmp");
-                // 将所有相同指令的src替换为临时
-                for (MoveInstr moveInstr : moveList) {
-                    if (moveInstr.GetSrcValue() == srcValue) {
-                        moveInstr.SetSrcValue(middleValue);
+            IrValue srcValue = moveList.get(i).GetSrcValue();
+            if (!(srcValue instanceof IrConstant) && !valueRecord.contains(srcValue)) {
+                if (this.HaveRegisterConflict(moveList, i, irBasicBlock)) {
+                    IrValue middleValue = new IrValue(srcValue.GetIrType(),
+                        srcValue.GetIrName() + "_tmp");
+                    // 将所有相同指令的src替换为临时
+                    for (MoveInstr moveInstr : moveList) {
+                        if (moveInstr.GetSrcValue() == srcValue) {
+                            moveInstr.SetSrcValue(middleValue);
+                        }
                     }
+                    // 在moveList开头加入新move
+                    MoveInstr moveInstr = new MoveInstr(srcValue, middleValue, irBasicBlock);
+                    fixList.add(moveInstr);
                 }
-                // 在moveList开头加入新move
-                MoveInstr moveInstr = new MoveInstr(srcValue, middleValue, irBasicBlock);
-                addList.add(moveInstr);
+                valueRecord.add(srcValue);
             }
         }
-        moveList.addAll(0, addList);
+        return fixList;
     }
 
     private boolean HaveRegisterConflict(ArrayList<MoveInstr> moveList, int index,
                                          IrBasicBlock irBasicBlock) {
-        HashMap<IrValue, Register> registerMap =
-            irBasicBlock.GetIrFunction().GetValueRegisterMap();
+        HashMap<IrValue, Register> registerMap = irBasicBlock.GetIrFunction().GetValueRegisterMap();
         IrValue srcValue = moveList.get(index).GetSrcValue();
         Register srcRegister = registerMap.get(srcValue);
 

@@ -10,9 +10,7 @@ import midend.llvm.value.IrValue;
 public class ReturnInstr extends Instr {
     public ReturnInstr(IrValue returnValue) {
         super(IrBaseType.VOID, InstrType.RETURN, "return");
-        if (returnValue != null) {
-            this.AddUseValue(returnValue);
-        }
+        this.AddUseValue(returnValue);
     }
 
     public IrValue GetReturnValue() {
