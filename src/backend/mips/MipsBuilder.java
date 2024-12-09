@@ -8,6 +8,7 @@ import midend.llvm.value.IrValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class MipsBuilder {
     private static MipsModule currentModule = null;
@@ -46,7 +47,7 @@ public class MipsBuilder {
     }
 
     public static ArrayList<Register> GetAllocatedRegList() {
-        return new ArrayList<>(valueRegisterMap.values());
+        return new ArrayList<>(new HashSet<>(valueRegisterMap.values()));
     }
 
     public static int GetCurrentStackOffset() {
