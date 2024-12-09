@@ -1,7 +1,6 @@
 package optimize;
 
 import midend.MidEnd;
-import utils.Setting;
 
 import java.io.IOException;
 import java.util.ArrayList;

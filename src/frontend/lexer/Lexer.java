@@ -3,7 +3,6 @@ package frontend.lexer;
 import error.Error;
 import error.ErrorRecorder;
 import error.ErrorType;
-import utils.Setting;
 
 import java.io.IOException;
 import java.io.PushbackInputStream;

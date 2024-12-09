@@ -5,7 +5,6 @@ import backend.mips.Register;
 import backend.mips.assembly.MipsAlu;
 import backend.mips.assembly.MipsJump;
 import backend.mips.assembly.MipsLsu;
-import backend.mips.assembly.fake.MarsMove;
 import midend.llvm.IrBuilder;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrParameter;
