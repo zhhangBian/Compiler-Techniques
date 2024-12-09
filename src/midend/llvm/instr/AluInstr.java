@@ -3,8 +3,10 @@ package midend.llvm.instr;
 import backend.mips.Register;
 import backend.mips.assembly.MipsAlu;
 import backend.mips.assembly.MipsMdu;
+import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
+import utils.Setting;
 
 public class AluInstr extends Instr {
     public enum AluType {
@@ -47,16 +49,28 @@ public class AluInstr extends Instr {
         IrValue valueL = this.GetValueL();
         IrValue valueR = this.GetValueR();
 
-        Register registerL = Register.K0;
-        Register registerR = Register.K1;
-        LoadValueToRegister(valueL, registerL);
-        LoadValueToRegister(valueR, registerR);
-
+        Register registerL = this.GetRegisterOrK0ForValue(valueL);
+        Register registerR = this.GetRegisterOrK1ForValue(valueR);
         // 为计算结果分配寄存器
         Register registerResult = this.GetRegisterOrK0ForValue(this);
 
-        // 生成计算指令
-        this.GenerateAluMipsInstr(registerL, registerR, registerResult);
+        if (Setting.FINE_TUNING && !(this.aluType.equals(AluType.MUL) ||
+            this.aluType.equals(AluType.SDIV) || this.aluType.equals(AluType.SREM))) {
+            if (valueR instanceof IrConstant irConstant) {
+                this.LoadValueToRegister(valueL, registerL);
+                this.GenerateAluMipsInstr(registerL, irConstant, registerResult);
+            } else {
+                LoadValueToRegister(valueL, registerL);
+                LoadValueToRegister(valueR, registerR);
+                // 生成计算指令
+                this.GenerateAluMipsInstr(registerL, registerR, registerResult);
+            }
+        } else {
+            LoadValueToRegister(valueL, registerL);
+            LoadValueToRegister(valueR, registerR);
+            // 生成计算指令
+            this.GenerateAluMipsInstr(registerL, registerR, registerResult);
+        }
 
         // 如果没有寄存器保留结果，则应该把结果存到栈上
         this.SaveRegisterResult(this, registerResult);
@@ -105,4 +119,17 @@ public class AluInstr extends Instr {
             default -> throw new RuntimeException("illegal alu type");
         }
     }
+
+    private void GenerateAluMipsInstr(Register registerL, IrConstant irConstant,
+                                      Register registerResult) {
+        int immediate = Integer.parseInt(irConstant.GetIrName());
+        switch (this.aluType) {
+            case ADD -> new MipsAlu(MipsAlu.AluType.ADDIU, registerResult, registerL, immediate);
+            case SUB -> new MipsAlu(MipsAlu.AluType.ADDIU, registerResult, registerL, -immediate);
+            case AND -> new MipsAlu(MipsAlu.AluType.ANDI, registerResult, registerL, immediate);
+            case OR -> new MipsAlu(MipsAlu.AluType.ORI, registerResult, registerL, immediate);
+            default -> throw new RuntimeException("illegal alu type");
+        }
+    }
+
 }

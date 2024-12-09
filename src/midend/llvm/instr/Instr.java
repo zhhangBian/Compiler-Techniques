@@ -102,6 +102,12 @@ public abstract class Instr extends IrUser {
         return register == null ? Register.K0 : register;
     }
 
+    // 得到分配的寄存器，若没有则使用K1
+    protected Register GetRegisterOrK1ForValue(IrValue irValue) {
+        Register register = MipsBuilder.GetValueToRegister(irValue);
+        return register == null ? Register.K1 : register;
+    }
+
     // 保存寄存器中的计算结果，若没分配寄存器则保留到栈上
     protected void SaveRegisterResult(IrValue irValue, Register valueRegister) {
         Register register = MipsBuilder.GetValueToRegister(irValue);

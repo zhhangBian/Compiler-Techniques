@@ -2,8 +2,11 @@ package midend.llvm.instr;
 
 import backend.mips.Register;
 import backend.mips.assembly.MipsCompare;
+import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
+import utils.Debug;
+import utils.Setting;
 
 public class CompareInstr extends Instr {
     public enum CompareOp {
@@ -44,16 +47,30 @@ public class CompareInstr extends Instr {
         IrValue valueL = this.GetValueL();
         IrValue valueR = this.GetValueR();
 
-        Register registerL = Register.K0;
-        Register registerR = Register.K1;
+        Register registerL = this.GetRegisterOrK0ForValue(valueL);
+        Register registerR = this.GetRegisterOrK1ForValue(valueR);
         Register registerResult = this.GetRegisterOrK0ForValue(this);
 
-        // 加载数据
-        this.LoadValueToRegister(valueL, registerL);
-        this.LoadValueToRegister(valueR, registerR);
+        if (Setting.FINE_TUNING) {
+            if (valueR instanceof IrConstant irConstantR) {
+                this.LoadValueToRegister(valueL, registerL);
+                this.GenerateMipsCompareInstr(registerL, irConstantR, registerResult);
+            } else {
+                // 加载数据
+                this.LoadValueToRegister(valueL, registerL);
+                this.LoadValueToRegister(valueR, registerR);
 
-        // 生成计算指令
-        this.GenerateMipsCompareInstr(registerL, registerR, registerResult);
+                // 生成计算指令
+                this.GenerateMipsCompareInstr(registerL, registerR, registerResult);
+            }
+        } else {
+            // 加载数据
+            this.LoadValueToRegister(valueL, registerL);
+            this.LoadValueToRegister(valueR, registerR);
+
+            // 生成计算指令
+            this.GenerateMipsCompareInstr(registerL, registerR, registerResult);
+        }
 
         // 如果没有寄存器保留结果，则应该把结果存到栈上
         this.SaveRegisterResult(this, registerResult);
@@ -94,6 +111,26 @@ public class CompareInstr extends Instr {
                 new MipsCompare(MipsCompare.CompareType.SLT, registerResult, registerL, registerR);
             case SLE ->
                 new MipsCompare(MipsCompare.CompareType.SLE, registerResult, registerL, registerR);
+            default -> throw new RuntimeException("illegal compare op");
+        }
+    }
+
+    private void GenerateMipsCompareInstr(
+        Register registerL, IrConstant irConstant, Register registerResult) {
+        int immediate = Integer.parseInt(irConstant.GetIrName());
+        switch (this.compareOp) {
+            case EQ -> new MipsCompare(MipsCompare.CompareType.SEQ,
+                registerResult, registerL, immediate);
+            case NE -> new MipsCompare(MipsCompare.CompareType.SNE,
+                registerResult, registerL, immediate);
+            case SGT -> new MipsCompare(MipsCompare.CompareType.SGT,
+                registerResult, registerL, immediate);
+            case SGE -> new MipsCompare(MipsCompare.CompareType.SGE,
+                registerResult, registerL, immediate);
+            case SLT -> new MipsCompare(MipsCompare.CompareType.SLTI,
+                registerResult, registerL, immediate);
+            case SLE -> new MipsCompare(MipsCompare.CompareType.SLE,
+                registerResult, registerL, immediate);
             default -> throw new RuntimeException("illegal compare op");
         }
     }
