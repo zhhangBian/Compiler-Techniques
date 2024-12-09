@@ -3,6 +3,7 @@ package frontend.lexer;
 import error.Error;
 import error.ErrorRecorder;
 import error.ErrorType;
+import utils.Setting;
 
 import java.io.IOException;
 import java.io.PushbackInputStream;
@@ -26,6 +27,9 @@ public class Lexer {
         while (!token.GetTokenType().equals(TokenType.EOF)) {
             this.tokenList.add(token);
             token = this.GetToken();
+        }
+        if (this.lineNumber > 200) {
+            Setting.FINE_TUNING = false;
         }
     }
 

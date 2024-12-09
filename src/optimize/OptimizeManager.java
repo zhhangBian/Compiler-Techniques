@@ -1,15 +1,13 @@
 package optimize;
 
 import midend.MidEnd;
-import utils.IOhandler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class OptimizeManager {
     private static ArrayList<Optimizer> optimizerList;
 
-    public static void Init() throws IOException {
+    public static void Init() {
         Optimizer.SetIrModule(MidEnd.GetIrModule());
 
         optimizerList = new ArrayList<>();
@@ -22,17 +20,7 @@ public class OptimizeManager {
 
         optimizerList.add(new ActiveAnalysis());
         optimizerList.add(new AllocateRegister());
-        for (Optimizer optimizer : optimizerList) {
-            optimizer.Optimize();
-        }
-        optimizerList.clear();
-        IOhandler.PrintLlvmPhi();
-
         optimizerList.add(new RemovePhi());
-
-        for (Optimizer optimizer : optimizerList) {
-            optimizer.Optimize();
-        }
     }
 
     public static void Optimize() {
