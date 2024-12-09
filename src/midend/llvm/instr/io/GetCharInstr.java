@@ -30,6 +30,6 @@ public class GetCharInstr extends IoInstr {
 
         new MarsLi(Register.V0, 12);
         new MipsSyscall();
-        this.SaveResult(this, Register.V0);
+        this.SaveRegisterResult(this, Register.V0);
     }
 }

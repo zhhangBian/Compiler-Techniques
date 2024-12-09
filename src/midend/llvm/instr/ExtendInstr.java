@@ -33,7 +33,7 @@ public class ExtendInstr extends Instr {
         IrValue originValue = this.GetOriginValue();
         Register register = this.GetRegisterOrK0ForValue(this);
         this.LoadValueToRegister(originValue, register);
-        this.SaveResult(this, register);
+        this.SaveRegisterResult(this, register);
     }
 
     private IrValue GetOriginValue() {

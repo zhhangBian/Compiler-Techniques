@@ -2,6 +2,8 @@ package midend.llvm.instr;
 
 import backend.mips.Register;
 import backend.mips.assembly.MipsAlu;
+import backend.mips.assembly.fake.MarsLi;
+import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrArrayType;
 import midend.llvm.type.IrPointerType;
 import midend.llvm.type.IrType;
@@ -65,15 +67,21 @@ public class GepInstr extends Instr {
 
         // 加载数组的首地址
         this.LoadValueToRegister(pointerValue, pointerRegister);
-        // 加载offset的值
-        this.LoadValueToRegister(offsetValue, offsetRegister);
-        // 将offset左移两位
-        new MipsAlu(MipsAlu.AluType.SLL, Register.K1, offsetRegister, 2);
+        if (offsetValue instanceof IrConstant irConstant) {
+            // 直接赋值
+            new MarsLi(offsetRegister, Integer.parseInt(irConstant.GetIrName()) << 2);
+        } else {
+            // 加载offset的值
+            this.LoadValueToRegister(offsetValue, offsetRegister);
+            // 将offset左移两位
+            new MipsAlu(MipsAlu.AluType.SLL, offsetRegister, offsetRegister, 2);
+        }
+
         // 相加得到地址
         Register targetRegister = this.GetRegisterOrK0ForValue(this);
         new MipsAlu(MipsAlu.AluType.ADDU, targetRegister, Register.K1, pointerRegister);
         // 保存结果
-        this.SaveResult(this, targetRegister);
+        this.SaveRegisterResult(this, targetRegister);
     }
 
     public static IrType GetTargetType(IrValue pointer) {

@@ -51,6 +51,6 @@ public class MoveInstr extends Instr {
         }
         dstRegister = this.GetRegisterOrK0ForValue(dstValue);
         this.LoadValueToRegister(srcValue, dstRegister);
-        this.SaveResult(dstValue, dstRegister);
+        this.SaveRegisterResult(dstValue, dstRegister);
     }
 }

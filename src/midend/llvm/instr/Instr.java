@@ -103,7 +103,7 @@ public abstract class Instr extends IrUser {
     }
 
     // 保存寄存器中的计算结果，若没分配寄存器则保留到栈上
-    protected void SaveResult(IrValue irValue, Register valueRegister) {
+    protected void SaveRegisterResult(IrValue irValue, Register valueRegister) {
         Register register = MipsBuilder.GetValueToRegister(irValue);
         if (register == null) {
             int offset = MipsBuilder.AllocateStackForValue(irValue);

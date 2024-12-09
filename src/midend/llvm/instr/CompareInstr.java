@@ -56,7 +56,7 @@ public class CompareInstr extends Instr {
         this.GenerateMipsCompareInstr(registerL, registerR, registerResult);
 
         // 如果没有寄存器保留结果，则应该把结果存到栈上
-        this.SaveResult(this, registerResult);
+        this.SaveRegisterResult(this, registerResult);
     }
 
     private CompareOp GetCompareOp(String op) {

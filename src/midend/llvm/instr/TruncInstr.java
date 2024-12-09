@@ -39,7 +39,7 @@ public class TruncInstr extends Instr {
         } else if (this.targetType.IsInt8Type()) {
             new MipsAlu(MipsAlu.AluType.ANDI, valueRegister, valueRegister, 0xff);
         }
-        this.SaveResult(this, valueRegister);
+        this.SaveRegisterResult(this, valueRegister);
     }
 
     private IrValue GetOriginValue() {
