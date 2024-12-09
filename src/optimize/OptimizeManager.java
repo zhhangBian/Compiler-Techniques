@@ -1,13 +1,15 @@
 package optimize;
 
 import midend.MidEnd;
+import utils.Setting;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class OptimizeManager {
     private static ArrayList<Optimizer> optimizerList;
 
-    public static void Init() {
+    public static void Init() throws IOException {
         Optimizer.SetIrModule(MidEnd.GetIrModule());
 
         optimizerList = new ArrayList<>();
@@ -16,13 +18,15 @@ public class OptimizeManager {
         optimizerList.add(new CfgBuilder());
         optimizerList.add(new RemoveDeadBlock());
         optimizerList.add(new CfgBuilder());
-
-        optimizerList.add(new MemToReg());
+        if (!Setting.SPECIAL) {
+            optimizerList.add(new MemToReg());
+        }
         optimizerList.add(new CfgBuilder());
-
         optimizerList.add(new ActiveAnalysis());
         optimizerList.add(new AllocateRegister());
-        optimizerList.add(new RemovePhi());
+        if (!Setting.SPECIAL) {
+            optimizerList.add(new RemovePhi());
+        }
     }
 
     public static void Optimize() {

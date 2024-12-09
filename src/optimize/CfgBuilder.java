@@ -99,10 +99,11 @@ public class CfgBuilder extends Optimizer {
                 for (IrBasicBlock dominator : visitBlock.GetDominatorBlocks()) {
                     HashSet<IrBasicBlock> sharedDominators =
                         new HashSet<>(visitBlock.GetDominatorBlocks());
-                    HashSet<IrBasicBlock> diffDominators =
-                        new HashSet<>(visitBlock.GetDominatorBlocks());
                     // 保留共同支配者
                     sharedDominators.retainAll(dominator.GetDominatorBlocks());
+
+                    HashSet<IrBasicBlock> diffDominators =
+                        new HashSet<>(visitBlock.GetDominatorBlocks());
                     // 和支配者不同的支配结点
                     diffDominators.removeAll(sharedDominators);
                     // 支配者的支配着集合中仅有自身，说明直接支配
@@ -128,6 +129,9 @@ public class CfgBuilder extends Optimizer {
                         currentBlock.AddDominateFrontier(nextBlock);
                         // 进行上溯
                         currentBlock = currentBlock.GetDirectDominator();
+                        if (currentBlock == null) {
+                            break;
+                        }
                     }
                 }
             }

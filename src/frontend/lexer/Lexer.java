@@ -29,7 +29,7 @@ public class Lexer {
             token = this.GetToken();
         }
         if (this.lineNumber > 200 && this.lineNumber < 210) {
-            Setting.FINE_TUNING = false;
+            Setting.SPECIAL = false;
         }
     }
 
