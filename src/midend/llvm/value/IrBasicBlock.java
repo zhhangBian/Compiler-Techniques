@@ -188,10 +188,14 @@ public class IrBasicBlock extends IrValue {
         Instr jumpInstr = this.GetLastInstr();
         jumpInstr.RemoveAllValueUse();
         this.instrList.remove(this.instrList.size() - 1);
-
+        // 添加下一个基本快的指令
         nextBlock.instrList.forEach(this::AddInstr);
-        this.nextBlockList.clear();
-        this.nextBlockList.addAll(nextBlock.nextBlockList);
+        // 修改next信息
+        this.ReplaceNextBlock(nextBlock);
+        // 修改before信息
+        for (IrBasicBlock nextNextBlock : nextBlock.nextBlockList) {
+            nextNextBlock.ReplaceBeforeBlock(nextBlock);
+        }
     }
 
     // 添加支配该block的block

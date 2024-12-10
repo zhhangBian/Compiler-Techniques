@@ -22,7 +22,6 @@ public class RemoveDeadBlock extends Optimizer {
 
     private void RemoveJump() {
         for (IrFunction irFunction : irModule.GetFunctions()) {
-            ArrayList<IrBasicBlock> removerBlocks = new ArrayList<>();
             boolean changed = true;
             while (changed) {
                 changed = false;
@@ -31,13 +30,7 @@ public class RemoveDeadBlock extends Optimizer {
                 Iterator<IrBasicBlock> iterator = blockList.iterator();
                 while (iterator.hasNext() && count > 1) {
                     IrBasicBlock block = iterator.next();
-                    if (block.IsEmptyBlock()) {
-                        removerBlocks.add(block);
-                        iterator.remove();
-                        count--;
-                        changed = true;
-                    } else if (this.IsDeadBlock(block)) {
-                        removerBlocks.add(block);
+                    if (this.IsDeadBlock(block)) {
                         this.KillBlock(block);
                         iterator.remove();
                         count--;
@@ -51,9 +44,10 @@ public class RemoveDeadBlock extends Optimizer {
     private boolean IsDeadBlock(IrBasicBlock irBasicBlock) {
         Instr lastInstr = irBasicBlock.GetLastInstr();
         boolean isDead = irBasicBlock.GetInstrList().size() == 1 &&
-            (lastInstr instanceof JumpInstr || lastInstr instanceof BranchInstr ||
+            (lastInstr instanceof JumpInstr ||
+                lastInstr instanceof BranchInstr ||
                 lastInstr instanceof ReturnInstr);
-
+        // 之前的block不为branch，才可以进行删除
         for (IrBasicBlock beforeBlock : irBasicBlock.GetBeforeBlocks()) {
             if (!(beforeBlock.GetLastInstr() instanceof JumpInstr)) {
                 return false;
@@ -79,31 +73,37 @@ public class RemoveDeadBlock extends Optimizer {
         }
     }
 
-    // 合并基本快
+    // 合并基本块：前序直到该基本快，则可以进行合并
     private void MergeBlock() {
         for (IrFunction irFunction : irModule.GetFunctions()) {
             boolean changed = true;
             while (changed) {
                 changed = false;
-                ArrayList<IrBasicBlock> blockList = irFunction.GetBasicBlocks();
-                Iterator<IrBasicBlock> iterator = blockList.iterator();
+                Iterator<IrBasicBlock> iterator = irFunction.GetBasicBlocks().iterator();
                 while (iterator.hasNext()) {
                     IrBasicBlock visitBlock = iterator.next();
-                    ArrayList<IrBasicBlock> beforeBlockList = visitBlock.GetBeforeBlocks();
-                    if (beforeBlockList.size() == 1) {
-                        IrBasicBlock beforeBlock = beforeBlockList.get(0);
-                        // 前后对接上，则可以合并
-                        if (beforeBlock.GetNextBlocks().size() == 1) {
-                            beforeBlock.AppendBlock(visitBlock);
-                            iterator.remove();
-                            changed = true;
-                            Debug.DebugPrint("merge block: " + beforeBlock.GetIrName() +
-                                " and delete " + visitBlock.GetIrName() + " " +
-                                beforeBlock.GetIrFunction().GetIrName());
-                        }
+                    if (this.CanMergeBlock(visitBlock)) {
+                        IrBasicBlock beforeBlock = visitBlock.GetBeforeBlocks().get(0);
+                        beforeBlock.AppendBlock(visitBlock);
+                        iterator.remove();
+                        changed = true;
+
+                        Debug.DebugPrint("merge block: " + beforeBlock.GetIrName() +
+                            " and delete " + visitBlock.GetIrName() + " " +
+                            beforeBlock.GetIrFunction().GetIrName());
                     }
                 }
             }
         }
+    }
+
+    private boolean CanMergeBlock(IrBasicBlock visitBlock) {
+        ArrayList<IrBasicBlock> beforeBlockList = visitBlock.GetBeforeBlocks();
+        if (beforeBlockList.size() == 1) {
+            IrBasicBlock beforeBlock = beforeBlockList.get(0);
+            // 前后对接上，则可以合并
+            return beforeBlock.GetNextBlocks().size() == 1;
+        }
+        return false;
     }
 }
