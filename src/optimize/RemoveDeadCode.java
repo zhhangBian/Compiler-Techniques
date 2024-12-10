@@ -24,12 +24,12 @@ public class RemoveDeadCode extends Optimizer {
     // 记录被哪些函数调用
     private final HashMap<IrFunction, HashSet<IrFunction>> callerMap;
     // 副作用：有IO操作
-    private final HashSet<IrFunction> sideEffectfunctions;
+    private final HashSet<IrFunction> sideEffectFunctions;
 
     public RemoveDeadCode() {
         this.calleeMap = new HashMap<>();
         this.callerMap = new HashMap<>();
-        this.sideEffectfunctions = new HashSet<>();
+        this.sideEffectFunctions = new HashSet<>();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class RemoveDeadCode extends Optimizer {
             this.BuildFunctionCallMap();
             finished &= this.RemoveUselessBlock();
             finished &= this.RemoveUselessFunction();
-//            finished &= this.RemoveUselessCode();
+            finished &= this.RemoveUselessCode();
         }
     }
 
@@ -48,7 +48,7 @@ public class RemoveDeadCode extends Optimizer {
         // 进行初始化
         this.calleeMap.clear();
         this.callerMap.clear();
-        this.sideEffectfunctions.clear();
+        this.sideEffectFunctions.clear();
         for (IrFunction irFunction : irModule.GetFunctions()) {
             this.calleeMap.put(irFunction, new HashSet<>());
             this.callerMap.put(irFunction, new HashSet<>());
@@ -72,15 +72,15 @@ public class RemoveDeadCode extends Optimizer {
                     this.calleeMap.get(visitFunction).add(callee);
                     this.callerMap.get(callee).add(visitFunction);
                     // 对与函数副作用
-                    if (this.sideEffectfunctions.contains(callee)) {
-                        this.sideEffectfunctions.add(visitFunction);
+                    if (this.sideEffectFunctions.contains(callee)) {
+                        this.sideEffectFunctions.add(visitFunction);
                     }
 
                     this.DfsFunction(callee, visited);
                 }
                 // IO、存操作
                 else if (instr instanceof IoInstr || instr instanceof StoreInstr) {
-                    this.sideEffectfunctions.add(visitFunction);
+                    this.sideEffectFunctions.add(visitFunction);
                 }
             }
         }
@@ -164,7 +164,7 @@ public class RemoveDeadCode extends Optimizer {
             for (IrBasicBlock irBasicBlock : irFunction.GetBasicBlocks()) {
                 for (Instr instr : irBasicBlock.GetInstrList()) {
                     if (this.IsCriticalInstr(instr)) {
-                        todoInstrStack.add(instr);
+                        todoInstrStack.push(instr);
                     }
                 }
             }
@@ -174,7 +174,8 @@ public class RemoveDeadCode extends Optimizer {
             Instr todoInstr = todoInstrStack.pop();
             activeInstrSet.add(todoInstr);
             for (IrValue useValue : todoInstr.GetUseValueList()) {
-                if (useValue instanceof Instr useInstr) {
+                if (useValue instanceof Instr useInstr && !activeInstrSet.contains(useInstr)) {
+                    todoInstrStack.push(useInstr);
                     activeInstrSet.add(useInstr);
                 }
             }
@@ -184,7 +185,9 @@ public class RemoveDeadCode extends Optimizer {
     }
 
     private boolean IsCriticalInstr(Instr instr) {
-        return instr instanceof CallInstr || instr instanceof ReturnInstr ||
+        return instr instanceof ReturnInstr ||
+            (instr instanceof CallInstr callInstr &&
+                this.sideEffectFunctions.contains(callInstr.GetTargetFunction())) ||
             instr instanceof BranchInstr || instr instanceof JumpInstr ||
             instr instanceof StoreInstr || instr instanceof IoInstr;
     }

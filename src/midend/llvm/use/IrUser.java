@@ -39,8 +39,9 @@ public class IrUser extends IrValue {
         }
         this.useValueList.clear();
         // 对使用该value的使用者清空
-        for (IrUse irUse : this.useList) {
-            irUse.GetUser().useValueList.remove(this);
-        }
+        // 不知道为什么，但是有bug
+        //for (IrUse irUse : this.useList) {
+        //    irUse.GetUser().useValueList.remove(this);
+        //}
     }
 }
