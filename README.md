@@ -21,10 +21,10 @@ my compiler for course Compiler-Techniques
 | 寄存器分配         | 完成，但是太简单了 |
 | GVN                |                    |
 | GCM                |                    |
-| 乘除法优化         |                    |
+| 乘除法优化         | 完成               |
 | 窥空优化           |                    |
 | 死代码删除         |                    |
-| 代码块重排         | 有bug              |
+| 代码块重排         | 完成               |
 | 循环优化           |                    |
 | inline             |                    |
 

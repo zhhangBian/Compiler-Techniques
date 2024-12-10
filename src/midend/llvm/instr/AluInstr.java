@@ -2,11 +2,16 @@ package midend.llvm.instr;
 
 import backend.mips.Register;
 import backend.mips.assembly.MipsAlu;
+import backend.mips.assembly.MipsCompare;
 import backend.mips.assembly.MipsMdu;
+import backend.mips.assembly.fake.MarsLi;
 import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
+import utils.Debug;
 import utils.Setting;
+
+import java.math.BigInteger;
 
 public class AluInstr extends Instr {
     public enum AluType {
@@ -54,16 +59,32 @@ public class AluInstr extends Instr {
         // 为计算结果分配寄存器
         Register registerResult = this.GetRegisterOrK0ForValue(this);
 
-        if (Setting.FINE_TUNING && !(this.aluType.equals(AluType.MUL) ||
-            this.aluType.equals(AluType.SDIV) || this.aluType.equals(AluType.SREM))) {
-            if (valueR instanceof IrConstant irConstant) {
-                this.LoadValueToRegister(valueL, registerL);
-                this.GenerateAluMipsInstr(registerL, irConstant, registerResult);
-            } else {
-                LoadValueToRegister(valueL, registerL);
-                LoadValueToRegister(valueR, registerR);
-                // 生成计算指令
-                this.GenerateAluMipsInstr(registerL, registerR, registerResult);
+        if (Setting.FINE_TUNING) {
+            // 如果是乘除指令
+            if (this.IsMduInstr()) {
+                switch (this.aluType) {
+                    case MUL ->
+                        this.MulOptimize(valueL, valueR, registerL, registerR, registerResult);
+                    case SDIV ->
+                        this.DivOptimize(valueL, valueR, registerL, registerR, registerResult);
+                    case SREM ->
+                        this.RemOptimize(valueL, valueR, registerL, registerR, registerResult);
+                    default -> {
+                        Debug.DebugPrint(this.aluType);
+                    }
+                }
+            }
+            // 如果不是
+            else {
+                if (valueR instanceof IrConstant irConstant) {
+                    this.LoadValueToRegister(valueL, registerL);
+                    this.GenerateAluMipsInstr(registerL, irConstant, registerResult);
+                } else {
+                    LoadValueToRegister(valueL, registerL);
+                    LoadValueToRegister(valueR, registerR);
+                    // 生成计算指令
+                    this.GenerateAluMipsInstr(registerL, registerR, registerResult);
+                }
             }
         } else {
             LoadValueToRegister(valueL, registerL);
@@ -132,4 +153,214 @@ public class AluInstr extends Instr {
         }
     }
 
+    private boolean IsMduInstr() {
+        return this.aluType.equals(AluType.MUL) ||
+            this.aluType.equals(AluType.SDIV) ||
+            this.aluType.equals(AluType.SREM);
+    }
+
+    // 1.若两个操作数都是常数，直接计算结果
+    // 2.若一个操作数是常数，另一个是变量，判断常数是否是2的倍数，若是，生成sll指令
+    // 3.其他情况，生成mul指令
+    private void MulOptimize(IrValue valueL, IrValue valueR,
+                             Register registerL, Register registerR,
+                             Register registerResult) {
+        boolean canOptimize = false;
+        // 均为常数
+        if (valueL instanceof IrConstant && valueR instanceof IrConstant) {
+            int numL = Integer.parseInt(valueL.GetIrName());
+            int numR = Integer.parseInt(valueR.GetIrName());
+            int numResult = numL * numR;
+            new MarsLi(registerResult, numResult);
+            canOptimize = true;
+        }
+        // 左值为个常数
+        else if (valueL instanceof IrConstant irConstantL) {
+            canOptimize = this.MulSingleConstant(valueR, irConstantL, registerR, registerResult);
+        }
+        // 右值为常数
+        else if (valueR instanceof IrConstant irConstantR) {
+            canOptimize = this.MulSingleConstant(valueL, irConstantR, registerL, registerResult);
+        }
+
+        if (!canOptimize) {
+            this.LoadValueToRegister(valueL, registerL);
+            this.LoadValueToRegister(valueR, registerR);
+            new MipsMdu(MipsMdu.MduType.MULT, registerL, registerR);
+            new MipsMdu(MipsMdu.MduType.MFLO, registerResult);
+        }
+    }
+
+    private boolean MulSingleConstant(IrValue value, IrConstant irConstant,
+                                      Register registerValue, Register registerResult) {
+        int num = Integer.parseInt(irConstant.GetIrName());
+        Debug.DebugPrint(num);
+        if (num == 0) {
+            new MarsLi(registerResult, 0);
+            return true;
+        } else if (num == 1) {
+            this.LoadValueToRegister(value, registerResult);
+            return true;
+        } else if (num == -1) {
+            this.LoadValueToRegister(value, registerResult);
+            new MipsAlu(MipsAlu.AluType.SUBU, registerResult, Register.ZERO, registerResult);
+            return true;
+        } else {
+            num = this.GetTwoShiftNum(num);
+            if (num != -1) {
+                this.LoadValueToRegister(value, registerValue);
+                new MipsAlu(MipsAlu.AluType.SLL, registerResult, registerValue, num);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void DivOptimize(IrValue valueL, IrValue valueR,
+                             Register registerL, Register registerR,
+                             Register registerResult) {
+        // 均为常数
+        if (valueL instanceof IrConstant && valueR instanceof IrConstant) {
+            int numL = Integer.parseInt(valueL.GetIrName());
+            int numR = Integer.parseInt(valueR.GetIrName());
+            new MarsLi(registerResult, numL / numR);
+        }
+        // 右值为常数
+        else if (valueR instanceof IrConstant) {
+            int num = Integer.parseInt(valueR.GetIrName());
+            if (num == 1) {
+                this.LoadValueToRegister(valueL, registerResult);
+            } else if (num == -1) {
+                this.LoadValueToRegister(valueL, registerL);
+                new MipsAlu(MipsAlu.AluType.SUBU, registerResult, Register.ZERO, registerL);
+            }
+            // 一般情况：转化为除以无符号常数的除法优化
+            else {
+                this.DivSingleConstant(valueL, num, registerL, registerResult);
+            }
+        }
+        // 一般情况
+        else {
+            this.LoadValueToRegister(valueL, registerL);
+            this.LoadValueToRegister(valueR, registerR);
+            new MipsMdu(MipsMdu.MduType.DIV, registerL, registerR);
+            new MipsMdu(MipsMdu.MduType.MFLO, registerResult);
+        }
+    }
+
+    private void RemOptimize(IrValue valueL, IrValue valueR,
+                             Register registerL, Register registerR,
+                             Register registerResult) {
+        // 均为常数
+        if (valueL instanceof IrConstant && valueR instanceof IrConstant) {
+            int numL = Integer.parseInt(valueL.GetIrName());
+            int numR = Integer.parseInt(valueR.GetIrName());
+            new MarsLi(registerResult, numL % numR);
+        } else {
+            this.LoadValueToRegister(valueL, registerL);
+            this.LoadValueToRegister(valueR, registerR);
+            new MipsMdu(MipsMdu.MduType.DIV, registerL, registerR);
+            new MipsMdu(MipsMdu.MduType.MFHI, registerResult);
+        }
+    }
+
+    private int GetTwoShiftNum(int num) {
+        for (int i = 1; i < 32; i++) {
+            if (num == 1 << i) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // dst <- n / d
+    // 这里寄存器分配会乱掉，手动进行一些管理
+    private void DivSingleConstant(IrValue value, long divisionValue,
+                                   Register valueRegister, Register resultRegister) {
+        Multiplier multiplier = this.GetMultiplier(Math.abs(divisionValue), 31);
+        BigInteger multiplyValue = multiplier.GetMultiplyValue();
+        int post = multiplier.GetPost();
+
+        this.LoadValueToRegister(value, Register.K1);
+        if (multiplyValue.compareTo(BigInteger.ONE.shiftLeft(31)) < 0) {
+            new MarsLi(resultRegister, multiplyValue.intValue());
+            new MipsMdu(MipsMdu.MduType.MULT, resultRegister, Register.K1);
+            new MipsMdu(MipsMdu.MduType.MFHI, resultRegister);
+        } else {
+            multiplyValue = multiplyValue.subtract(BigInteger.ONE.shiftLeft(32));
+            multiplier.SetM(multiplyValue);
+
+            new MarsLi(resultRegister, multiplyValue.intValue());
+            new MipsMdu(MipsMdu.MduType.MULT, resultRegister, Register.K1);
+            new MipsMdu(MipsMdu.MduType.MFHI, resultRegister);
+            new MipsAlu(MipsAlu.AluType.ADDU, resultRegister, resultRegister, Register.K1);
+        }
+
+        if (post > 0) {
+            new MipsAlu(MipsAlu.AluType.SRA, resultRegister, resultRegister, post);
+        }
+
+        new MipsCompare(MipsCompare.CompareType.SLT, Register.K1, Register.K1, Register.ZERO);
+        new MipsAlu(MipsAlu.AluType.ADDU, resultRegister, resultRegister, Register.K1);
+
+        if (divisionValue < 0) {
+            new MipsAlu(MipsAlu.AluType.SUBU, resultRegister, Register.ZERO, resultRegister);
+        }
+    }
+
+    private class Multiplier {
+        private BigInteger multiplyValue;
+        private final int leftShift;
+        private final int post;
+
+        public Multiplier(BigInteger multiplyValue, int post, int leftShift) {
+            this.multiplyValue = multiplyValue;
+            this.post = post;
+            this.leftShift = leftShift;
+        }
+
+        public BigInteger GetMultiplyValue() {
+            return this.multiplyValue;
+        }
+
+        public int GetLeftShift() {
+            return this.leftShift;
+        }
+
+        public int GetPost() {
+            return this.post;
+        }
+
+        public void SetM(BigInteger m) {
+            this.multiplyValue = m;
+        }
+    }
+
+    private Multiplier GetMultiplier(long d, int prec) {
+        int l = 32 - CountLestZero(d - 1); // l = log2(d) 上取整
+        int post = l;
+
+        BigInteger shiftedValue = BigInteger.ONE.shiftLeft(32 + l);
+        BigInteger low = shiftedValue.divide(BigInteger.valueOf(d));
+        BigInteger high = shiftedValue.add(BigInteger.ONE.shiftLeft(32 + l - prec))
+            .divide(BigInteger.valueOf(d));
+        while ((low.shiftRight(1).compareTo(high.shiftRight(1)) < 0) && post > 0) {
+            low = low.shiftRight(1);
+            high = high.shiftRight(1);
+            post--;
+        }
+        return new Multiplier(high, post, l);
+    }
+
+    // x二进制表示从最高位开始（左起）的连续的0的个数
+    private int CountLestZero(long x) {
+        int count = 0;
+        for (int i = 31; i >= 0; i--) {
+            if ((x & (1L << i)) != 0) {
+                break;
+            }
+            count++;
+        }
+        return count;
+    }
 }

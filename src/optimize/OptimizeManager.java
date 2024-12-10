@@ -1,6 +1,7 @@
 package optimize;
 
 import midend.MidEnd;
+import utils.Setting;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,14 +14,19 @@ public class OptimizeManager {
 
         optimizerList = new ArrayList<>();
         // 这里的顺序是关键的
-        optimizerList.add(new RemoveUselessCode());
+        optimizerList.add(new RemoveUnReachCode());
         optimizerList.add(new CfgBuilder());
         optimizerList.add(new RemoveDeadBlock());
         optimizerList.add(new CfgBuilder());
+        // 死代码删除
+        // TODO
+
         optimizerList.add(new MemToReg());
         optimizerList.add(new CfgBuilder());
         optimizerList.add(new ActiveAnalysis());
-        //optimizerList.add(new AllocateRegister());
+        if (!Setting.SPECIAL) {
+            optimizerList.add(new AllocateRegister());
+        }
         optimizerList.add(new RemovePhi());
     }
 

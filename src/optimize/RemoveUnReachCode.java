@@ -10,12 +10,13 @@ import midend.llvm.value.IrFunction;
 import java.util.HashSet;
 import java.util.Iterator;
 
-public class RemoveUselessCode extends Optimizer {
+public class RemoveUnReachCode extends Optimizer {
     @Override
     public void Optimize() {
+        // 删除多余的jump
         this.RemoveUselessJump();
+        // 删除不可达块
         this.RemoveUselessBlock();
-        // 对于只有一个跳转的block进行优化
     }
 
     private void RemoveUselessJump() {
