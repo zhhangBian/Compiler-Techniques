@@ -21,14 +21,34 @@ public class CompareInstr extends Instr {
 
     public CompareInstr(String op, IrValue valueL, IrValue valueR) {
         super(IrBaseType.INT1, InstrType.CMP);
-        this.compareOp = this.GetCompareOp(op);
+        this.compareOp = this.GetStringToCompareOp(op);
         this.AddUseValue(valueL);
         this.AddUseValue(valueR);
+    }
+
+    public CompareOp GetCompareOp() {
+        return this.compareOp;
+    }
+
+    public IrValue GetValueL() {
+        return this.useValueList.get(0);
+    }
+
+    public IrValue GetValueR() {
+        return this.useValueList.get(1);
     }
 
     @Override
     public boolean DefValue() {
         return true;
+    }
+
+    @Override
+    public String GetGvnHash() {
+        String valueL = this.GetValueL().GetIrName();
+        String valueR = this.GetValueR().GetIrName();
+        // 按照字典序
+        return valueR + " " + this.compareOp + " " + valueL;
     }
 
     @Override
@@ -75,7 +95,7 @@ public class CompareInstr extends Instr {
         this.SaveRegisterResult(this, registerResult);
     }
 
-    private CompareOp GetCompareOp(String op) {
+    private CompareOp GetStringToCompareOp(String op) {
         return switch (op) {
             case "==" -> CompareOp.EQ;
             case "!=" -> CompareOp.NE;
@@ -85,14 +105,6 @@ public class CompareInstr extends Instr {
             case "<" -> CompareOp.SLT;
             default -> throw new RuntimeException("illegal compare op");
         };
-    }
-
-    private IrValue GetValueL() {
-        return this.useValueList.get(0);
-    }
-
-    private IrValue GetValueR() {
-        return this.useValueList.get(1);
     }
 
     private void GenerateMipsCompareInstr(Register registerL, Register registerR,

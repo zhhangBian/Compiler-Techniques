@@ -33,6 +33,8 @@ public class OptimizeManager {
         optimizerList.add(new RemoveDeadCode());
         optimizerList.add(new CfgBuilder());
 
+        optimizerList.add(new Lvn());
+
         optimizerList.add(new ActiveAnalysis());
         if (!Setting.SPECIAL) {
             optimizerList.add(new AllocateRegister());

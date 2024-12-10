@@ -61,6 +61,10 @@ public abstract class Instr extends IrUser {
         return this.inBasicBlock.GetOutValueSet().contains(useValue);
     }
 
+    public String GetGvnHash() {
+        return null;
+    }
+
     @Override
     public abstract String toString();
 

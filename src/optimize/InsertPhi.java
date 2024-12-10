@@ -132,7 +132,7 @@ public class InsertPhi {
             }
             // load
             else if (!(instr instanceof PhiInstr) && this.useInstrs.contains(instr)) {
-                instr.ModifyUsersToNewValue(this.PeekValueStack());
+                instr.ModifyAllUsersToNewValue(this.PeekValueStack());
                 iterator.remove();
             }
             // phi

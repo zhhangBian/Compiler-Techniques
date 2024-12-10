@@ -37,7 +37,7 @@ public class IrValue {
     }
 
     // 将所有使用此value的user替换为使用新value
-    public void ModifyUsersToNewValue(IrValue newValue) {
+    public void ModifyAllUsersToNewValue(IrValue newValue) {
         ArrayList<IrUser> userList = this.useList.stream().map(IrUse::GetUser).
             collect(Collectors.toCollection(ArrayList::new));
         for (IrUser user : userList) {

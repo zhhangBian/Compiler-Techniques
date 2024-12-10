@@ -21,16 +21,27 @@ public class AluInstr extends Instr {
         OR,
         MUL,
         SDIV,
-        SREM
+        SREM;
+
+        public boolean CanChangeOrder() {
+            return switch (this) {
+                case ADD, AND, OR, MUL -> true;
+                default -> false;
+            };
+        }
     }
 
-    private final AluType aluType;
+    private final AluType aluOp;
 
     public AluInstr(String aluOp, IrValue valueL, IrValue valueR) {
         super(IrBaseType.INT32, InstrType.ALU);
-        this.aluType = this.GetAluType(aluOp);
+        this.aluOp = this.GetAluOp(aluOp);
         this.AddUseValue(valueL);
         this.AddUseValue(valueR);
+    }
+
+    public AluType GetAluOp() {
+        return this.aluOp;
     }
 
     @Override
@@ -39,11 +50,21 @@ public class AluInstr extends Instr {
     }
 
     @Override
+    public String GetGvnHash() {
+        String valueL = this.GetValueL().GetIrName();
+        String valueR = this.GetValueR().GetIrName();
+        // 按照字典序
+        return (this.aluOp.CanChangeOrder() && valueL.compareTo(valueR) >= 0) ?
+            valueL + " " + this.aluOp + " " + valueR :
+            valueR + " " + this.aluOp + " " + valueL;
+    }
+
+    @Override
     public String toString() {
         IrValue irValueL = this.GetValueL();
         IrValue irValueR = this.GetValueR();
 
-        return this.irName + " = " + this.aluType.toString().toLowerCase() +
+        return this.irName + " = " + this.aluOp.toString().toLowerCase() +
             " i32 " + irValueL.GetIrName() + ", " + irValueR.GetIrName();
     }
 
@@ -62,7 +83,7 @@ public class AluInstr extends Instr {
         if (Setting.FINE_TUNING) {
             // 如果是乘除指令
             if (this.IsMduInstr()) {
-                switch (this.aluType) {
+                switch (this.aluOp) {
                     case MUL ->
                         this.MulOptimize(valueL, valueR, registerL, registerR, registerResult);
                     case SDIV ->
@@ -70,7 +91,7 @@ public class AluInstr extends Instr {
                     case SREM ->
                         this.RemOptimize(valueL, valueR, registerL, registerR, registerResult);
                     default -> {
-                        Debug.DebugPrint(this.aluType);
+                        Debug.DebugPrint(this.aluOp);
                     }
                 }
             }
@@ -97,15 +118,15 @@ public class AluInstr extends Instr {
         this.SaveRegisterResult(this, registerResult);
     }
 
-    private IrValue GetValueL() {
+    public IrValue GetValueL() {
         return this.useValueList.get(0);
     }
 
-    private IrValue GetValueR() {
+    public IrValue GetValueR() {
         return this.useValueList.get(1);
     }
 
-    private AluType GetAluType(String aluOp) {
+    private AluType GetAluOp(String aluOp) {
         return switch (aluOp) {
             case "+" -> AluType.ADD;
             case "-" -> AluType.SUB;
@@ -120,7 +141,7 @@ public class AluInstr extends Instr {
 
     private void GenerateAluMipsInstr(Register registerL, Register registerR,
                                       Register registerResult) {
-        switch (this.aluType) {
+        switch (this.aluOp) {
             case ADD -> new MipsAlu(MipsAlu.AluType.ADDU, registerResult, registerL, registerR);
             case SUB -> new MipsAlu(MipsAlu.AluType.SUBU, registerResult, registerL, registerR);
             case AND -> new MipsAlu(MipsAlu.AluType.AND, registerResult, registerL, registerR);
@@ -144,7 +165,7 @@ public class AluInstr extends Instr {
     private void GenerateAluMipsInstr(Register registerL, IrConstant irConstant,
                                       Register registerResult) {
         int immediate = Integer.parseInt(irConstant.GetIrName());
-        switch (this.aluType) {
+        switch (this.aluOp) {
             case ADD -> new MipsAlu(MipsAlu.AluType.ADDIU, registerResult, registerL, immediate);
             case SUB -> new MipsAlu(MipsAlu.AluType.ADDIU, registerResult, registerL, -immediate);
             case AND -> new MipsAlu(MipsAlu.AluType.ANDI, registerResult, registerL, immediate);
@@ -154,9 +175,9 @@ public class AluInstr extends Instr {
     }
 
     private boolean IsMduInstr() {
-        return this.aluType.equals(AluType.MUL) ||
-            this.aluType.equals(AluType.SDIV) ||
-            this.aluType.equals(AluType.SREM);
+        return this.aluOp.equals(AluType.MUL) ||
+            this.aluOp.equals(AluType.SDIV) ||
+            this.aluOp.equals(AluType.SREM);
     }
 
     // 1.若两个操作数都是常数，直接计算结果
