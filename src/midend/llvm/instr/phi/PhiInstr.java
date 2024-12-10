@@ -7,6 +7,7 @@ import midend.llvm.type.IrType;
 import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrValue;
+import utils.Debug;
 
 import java.util.ArrayList;
 import java.util.StringJoiner;
@@ -19,7 +20,7 @@ public class PhiInstr extends Instr {
             IrBuilder.GetLocalVarName(irBasicBlock.GetIrFunction()), false);
         this.SetInBasicBlock(irBasicBlock);
 
-        this.beforeBlockList = irBasicBlock.GetBeforeBlocks();
+        this.beforeBlockList = new ArrayList<>(irBasicBlock.GetBeforeBlocks());
         // 填充相应的value，等待后续替换
         for (int i = 0; i < this.beforeBlockList.size(); i++) {
             this.AddUseValue(null);
@@ -33,9 +34,25 @@ public class PhiInstr extends Instr {
     public void ConvertBlockToValue(IrValue irValue, IrBasicBlock beforeBlock) {
         int index = this.beforeBlockList.indexOf(beforeBlock);
         // 进行相应的值替换
+        IrValue oldValue = this.useValueList.get(index);
+        if (oldValue != null) {
+            oldValue.DeleteUser(this);
+        }
         this.useValueList.set(index, irValue);
         // 添加use关系
         irValue.AddUse(new IrUse(this, irValue));
+    }
+
+    public void RemoveBlock(IrBasicBlock irBasicBlock) {
+        int index = this.beforeBlockList.indexOf(irBasicBlock);
+        // 进行相应的值替换
+        IrValue oldValue = this.useValueList.get(index);
+        if (oldValue != null) {
+            oldValue.DeleteUser(this);
+        }
+        Debug.DebugPrint("phi remove block " + irBasicBlock.GetIrName() + " " + index);
+        this.useValueList.remove(index);
+        this.beforeBlockList.remove(index);
     }
 
     @Override

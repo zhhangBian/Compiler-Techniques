@@ -72,6 +72,15 @@ public class IrModule extends IrNode {
         return this.functions;
     }
 
+    public IrFunction GetMainFunction() {
+        for (IrFunction irFunction : this.functions) {
+            if (irFunction.IsMainFunction()) {
+                return irFunction;
+            }
+        }
+        throw new RuntimeException("no main function");
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

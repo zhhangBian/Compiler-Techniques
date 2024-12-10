@@ -65,6 +65,10 @@ public class IrBasicBlock extends IrValue {
         return this.instrList.isEmpty();
     }
 
+    public boolean IsEntryBlock() {
+        return this.irFunction.GetBasicBlocks().get(0) == this;
+    }
+
     public void AddInstr(Instr instr) {
         this.instrList.add(instr);
         instr.SetInBasicBlock(this);

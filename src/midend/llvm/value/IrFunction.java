@@ -27,6 +27,10 @@ public class IrFunction extends IrValue {
         this.valueRegisterMap = new HashMap<>();
     }
 
+    public boolean IsMainFunction() {
+        return this.irName.equals("@main");
+    }
+
     public IrType GetReturnType() {
         return ((IrFunctionType) (this.irType)).GetReturnType();
     }

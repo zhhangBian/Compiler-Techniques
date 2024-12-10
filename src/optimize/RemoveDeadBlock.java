@@ -16,7 +16,7 @@ public class RemoveDeadBlock extends Optimizer {
     public void Optimize() {
         // 删除无用Jump
         this.RemoveJump();
-        // 合并基本快
+        // 合并基本块
         this.MergeBlock();
     }
 
