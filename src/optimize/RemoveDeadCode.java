@@ -12,6 +12,7 @@ import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ public class RemoveDeadCode extends Optimizer {
             finished &= this.RemoveUselessBlock();
             finished &= this.RemoveUselessFunction();
             finished &= this.RemoveUselessCode();
+            finished &= this.MergeBlock();
         }
     }
 
@@ -190,5 +192,31 @@ public class RemoveDeadCode extends Optimizer {
                 this.sideEffectFunctions.contains(callInstr.GetTargetFunction())) ||
             instr instanceof BranchInstr || instr instanceof JumpInstr ||
             instr instanceof StoreInstr || instr instanceof IoInstr;
+    }
+
+    private boolean MergeBlock() {
+        boolean finished = true;
+
+        for (IrFunction irFunction : irModule.GetFunctions()) {
+            for (IrBasicBlock irBasicBlock : irFunction.GetBasicBlocks()) {
+                if (this.CanMergeBlock(irBasicBlock)) {
+                    finished = false;
+                    IrBasicBlock beforeBlock = irBasicBlock.GetBeforeBlocks().get(0);
+                    beforeBlock.AppendBlock(irBasicBlock);
+                }
+            }
+        }
+
+        return finished;
+    }
+
+    private boolean CanMergeBlock(IrBasicBlock visitBlock) {
+        ArrayList<IrBasicBlock> beforeBlockList = visitBlock.GetBeforeBlocks();
+        if (beforeBlockList.size() == 1) {
+            IrBasicBlock beforeBlock = beforeBlockList.get(0);
+            // 前后对接上，则可以合并
+            return beforeBlock.GetNextBlocks().size() == 1;
+        }
+        return false;
     }
 }

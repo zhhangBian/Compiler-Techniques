@@ -7,6 +7,7 @@ import midend.llvm.instr.Instr;
 import midend.llvm.instr.JumpInstr;
 import midend.llvm.instr.ReturnInstr;
 import midend.llvm.instr.phi.ParallelCopyInstr;
+import midend.llvm.instr.phi.PhiInstr;
 import midend.llvm.type.IrBasicBlockType;
 
 import java.util.ArrayList;
@@ -199,6 +200,11 @@ public class IrBasicBlock extends IrValue {
         // 修改before信息
         for (IrBasicBlock nextNextBlock : nextBlock.nextBlockList) {
             nextNextBlock.ReplaceBeforeBlock(nextBlock);
+            for (Instr instr : nextNextBlock.GetInstrList()) {
+                if (instr instanceof PhiInstr phiInstr) {
+                    phiInstr.ReplaceBlock(nextBlock, this);
+                }
+            }
         }
     }
 

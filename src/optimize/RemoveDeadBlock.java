@@ -11,6 +11,7 @@ import utils.Debug;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+// 不考虑phi，只在mem2reg前进行
 public class RemoveDeadBlock extends Optimizer {
     @Override
     public void Optimize() {
@@ -73,7 +74,7 @@ public class RemoveDeadBlock extends Optimizer {
         }
     }
 
-    // 合并基本块：前序直到该基本快，则可以进行合并
+    // 合并基本块：前序只到该基本块，则可以进行合并
     private void MergeBlock() {
         for (IrFunction irFunction : irModule.GetFunctions()) {
             boolean changed = true;

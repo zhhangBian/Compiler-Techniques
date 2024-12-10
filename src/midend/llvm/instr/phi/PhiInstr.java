@@ -33,11 +33,7 @@ public class PhiInstr extends Instr {
 
     public void ConvertBlockToValue(IrValue irValue, IrBasicBlock beforeBlock) {
         int index = this.beforeBlockList.indexOf(beforeBlock);
-        // 进行相应的值替换
-        IrValue oldValue = this.useValueList.get(index);
-        if (oldValue != null) {
-            oldValue.DeleteUser(this);
-        }
+        // 进行相应的值替换：原先只会是null
         this.useValueList.set(index, irValue);
         // 添加use关系
         irValue.AddUse(new IrUse(this, irValue));
@@ -53,6 +49,18 @@ public class PhiInstr extends Instr {
         Debug.DebugPrint("phi remove block " + irBasicBlock.GetIrName() + " " + index);
         this.useValueList.remove(index);
         this.beforeBlockList.remove(index);
+    }
+
+    public void ReplaceBlock(IrBasicBlock oldBlock, IrBasicBlock newBlock) {
+        int index;
+        if (this.beforeBlockList.contains(newBlock)) {
+            index = this.beforeBlockList.indexOf(newBlock);
+            this.beforeBlockList.remove(index);
+            this.useValueList.remove(index);
+        }
+
+        index = this.beforeBlockList.indexOf(oldBlock);
+        this.beforeBlockList.set(index, newBlock);
     }
 
     @Override
