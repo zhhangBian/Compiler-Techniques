@@ -23,7 +23,7 @@ my compiler for course Compiler-Techniques
 | GCM                |                    |
 | 乘除法优化         | 完成               |
 | 窥空优化           |                    |
-| 死代码删除         |                    |
+| 死代码删除         | 完成               |
 | 代码块重排         | 完成               |
 | 循环优化           |                    |
 | inline             |                    |

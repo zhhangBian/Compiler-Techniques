@@ -19,10 +19,15 @@ public class OptimizeManager {
         optimizerList.add(new RemoveDeadBlock());
         optimizerList.add(new CfgBuilder());
 
+        optimizerList.add(new RemoveDeadCode());
+        optimizerList.add(new CfgBuilder());
+
+        optimizerList.add(new RemoveDeadBlock());
+        optimizerList.add(new CfgBuilder());
+
         optimizerList.add(new MemToReg());
         optimizerList.add(new CfgBuilder());
 
-        // 死代码删除
         optimizerList.add(new RemoveUnReachCode());
         optimizerList.add(new CfgBuilder());
         optimizerList.add(new RemoveDeadCode());
