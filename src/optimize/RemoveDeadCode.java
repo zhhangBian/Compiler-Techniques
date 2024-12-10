@@ -39,8 +39,8 @@ public class RemoveDeadCode extends Optimizer {
         while (!finished) {
             finished = true;
             this.BuildFunctionCallMap();
-            finished &= this.RemoveUselessBlock();
             finished &= this.RemoveUselessFunction();
+            finished &= this.RemoveUselessBlock();
             finished &= this.RemoveUselessCode();
             finished &= this.MergeBlock();
         }
@@ -50,17 +50,15 @@ public class RemoveDeadCode extends Optimizer {
         // 进行初始化
         this.calleeMap.clear();
         this.callerMap.clear();
-        this.sideEffectFunctions.clear();
         for (IrFunction irFunction : irModule.GetFunctions()) {
             this.calleeMap.put(irFunction, new HashSet<>());
             this.callerMap.put(irFunction, new HashSet<>());
         }
         // 进行dfs
-        HashSet<IrFunction> visited = new HashSet<>();
-        this.DfsFunction(irModule.GetMainFunction(), visited);
+        this.DfsSideFunction(irModule.GetMainFunction(), new HashSet<>());
     }
 
-    private void DfsFunction(IrFunction visitFunction, HashSet<IrFunction> visited) {
+    private void DfsSideFunction(IrFunction visitFunction, HashSet<IrFunction> visited) {
         if (visited.contains(visitFunction)) {
             return;
         }
@@ -71,14 +69,14 @@ public class RemoveDeadCode extends Optimizer {
                 // 函数调用
                 if (instr instanceof CallInstr callInstr) {
                     IrFunction callee = callInstr.GetTargetFunction();
+                    this.DfsSideFunction(callee, visited);
+
                     this.calleeMap.get(visitFunction).add(callee);
                     this.callerMap.get(callee).add(visitFunction);
                     // 对与函数副作用
                     if (this.sideEffectFunctions.contains(callee)) {
                         this.sideEffectFunctions.add(visitFunction);
                     }
-
-                    this.DfsFunction(callee, visited);
                 }
                 // IO、存操作
                 else if (instr instanceof IoInstr || instr instanceof StoreInstr) {
@@ -176,8 +174,10 @@ public class RemoveDeadCode extends Optimizer {
             Instr todoInstr = todoInstrStack.pop();
             activeInstrSet.add(todoInstr);
             for (IrValue useValue : todoInstr.GetUseValueList()) {
-                if (useValue instanceof Instr useInstr && !activeInstrSet.contains(useInstr)) {
-                    todoInstrStack.push(useInstr);
+                if (useValue instanceof Instr useInstr) {
+                    if (!activeInstrSet.contains(useInstr)) {
+                        todoInstrStack.push(useInstr);
+                    }
                     activeInstrSet.add(useInstr);
                 }
             }
