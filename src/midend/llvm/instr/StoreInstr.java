@@ -45,8 +45,8 @@ public class StoreInstr extends Instr {
         IrValue valueValue = this.GetValueValue();
         IrValue addressValue = this.GetAddressValue();
 
-        Register valueRegister = Register.K0;
-        Register addressRegister = Register.K1;
+        Register valueRegister = this.GetRegisterOrK0ForValue(valueValue);
+        Register addressRegister = this.GetRegisterOrK1ForValue(addressValue);
 
         // 获取value的值
         this.LoadValueToRegister(valueValue, valueRegister);

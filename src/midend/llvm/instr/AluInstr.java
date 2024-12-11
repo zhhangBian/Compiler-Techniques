@@ -35,7 +35,7 @@ public class AluInstr extends Instr {
 
     public AluInstr(String aluOp, IrValue valueL, IrValue valueR) {
         super(IrBaseType.INT32, InstrType.ALU);
-        this.aluOp = this.GetAluOp(aluOp);
+        this.aluOp = this.GenerateAluOp(aluOp);
         this.AddUseValue(valueL);
         this.AddUseValue(valueR);
     }
@@ -107,7 +107,9 @@ public class AluInstr extends Instr {
                     this.GenerateAluMipsInstr(registerL, registerR, registerResult);
                 }
             }
-        } else {
+        }
+        // 不优化的质朴翻译
+        else {
             LoadValueToRegister(valueL, registerL);
             LoadValueToRegister(valueR, registerR);
             // 生成计算指令
@@ -126,7 +128,7 @@ public class AluInstr extends Instr {
         return this.useValueList.get(1);
     }
 
-    private AluType GetAluOp(String aluOp) {
+    private AluType GenerateAluOp(String aluOp) {
         return switch (aluOp) {
             case "+" -> AluType.ADD;
             case "-" -> AluType.SUB;

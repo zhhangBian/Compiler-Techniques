@@ -2,7 +2,6 @@ package midend.llvm.instr;
 
 import backend.mips.Register;
 import backend.mips.assembly.MipsAlu;
-import backend.mips.assembly.fake.MarsLi;
 import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrArrayType;
 import midend.llvm.type.IrPointerType;
@@ -68,24 +67,25 @@ public class GepInstr extends Instr {
         IrValue pointerValue = this.GetPointer();
         IrValue offsetValue = this.GetOffset();
 
-        Register pointerRegister = Register.K0;
-        Register offsetRegister = Register.K1;
+        Register pointerRegister = this.GetRegisterOrK0ForValue(pointerValue);
+        // 一定要都是k0或k1，不然有覆盖问题
+        Register offsetRegister = this.GetRegisterOrK1ForValue(offsetValue);
+        Register targetRegister = this.GetRegisterOrK1ForValue(this);
 
         // 加载数组的首地址
         this.LoadValueToRegister(pointerValue, pointerRegister);
         if (offsetValue instanceof IrConstant irConstant) {
             // 直接赋值
-            new MarsLi(offsetRegister, Integer.parseInt(irConstant.GetIrName()) << 2);
+            new MipsAlu(MipsAlu.AluType.ADDIU, targetRegister, pointerRegister,
+                Integer.parseInt(irConstant.GetIrName()) << 2);
         } else {
             // 加载offset的值
             this.LoadValueToRegister(offsetValue, offsetRegister);
             // 将offset左移两位
-            new MipsAlu(MipsAlu.AluType.SLL, offsetRegister, offsetRegister, 2);
+            new MipsAlu(MipsAlu.AluType.SLL, targetRegister, offsetRegister, 2);
+            new MipsAlu(MipsAlu.AluType.ADDU, targetRegister, pointerRegister, targetRegister);
         }
 
-        // 相加得到地址
-        Register targetRegister = this.GetRegisterOrK0ForValue(this);
-        new MipsAlu(MipsAlu.AluType.ADDU, targetRegister, Register.K1, pointerRegister);
         // 保存结果
         this.SaveRegisterResult(this, targetRegister);
     }

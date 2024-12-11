@@ -34,21 +34,17 @@ public class OptimizeManager {
         optimizerList.add(new RemoveDeadCode());
         optimizerList.add(new CfgBuilder());
 
-        for (Optimizer optimizer : optimizerList) {
-            optimizer.Optimize();
+        for (int i = 0; i < 5; i++) {
+            optimizerList.add(new Lvn());
+            optimizerList.add(new RemoveUnReachCode());
+            optimizerList.add(new CfgBuilder());
+            optimizerList.add(new RemoveDeadCode());
+            optimizerList.add(new CfgBuilder());
         }
-        optimizerList.clear();
-        try {
-            IOhandler.PrintLlvmPhi();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        optimizerList.add(new Lvn());
 
         optimizerList.add(new ActiveAnalysis());
         if (!Setting.SPECIAL) {
-            //optimizerList.add(new AllocateRegister());
+            optimizerList.add(new AllocateRegister());
         }
         optimizerList.add(new RemovePhi());
     }
