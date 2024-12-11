@@ -33,6 +33,11 @@ public class MoveInstr extends Instr {
     }
 
     @Override
+    public String GetGvnHash() {
+        return this.GetSrcValue().GetIrName();
+    }
+
+    @Override
     public String toString() {
         return "move " + this.GetDstValue().GetIrName() + ", " + this.GetSrcValue().GetIrName();
     }

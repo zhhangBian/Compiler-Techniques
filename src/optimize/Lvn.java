@@ -2,10 +2,7 @@ package optimize;
 
 import midend.llvm.constant.IrConstant;
 import midend.llvm.constant.IrConstantInt;
-import midend.llvm.instr.AluInstr;
-import midend.llvm.instr.CompareInstr;
-import midend.llvm.instr.GepInstr;
-import midend.llvm.instr.Instr;
+import midend.llvm.instr.*;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
@@ -87,6 +84,12 @@ public class Lvn extends Optimizer {
                     this.gvnHashMap.put(hash, instr);
                     addedInstr.add(instr);
                 }
+            }
+            // 对于move
+            else if (instr instanceof MoveInstr moveInstr) {
+                IrValue dstValue = moveInstr.GetDstValue();
+                IrValue srcValue = moveInstr.GetSrcValue();
+                dstValue.ModifyAllUsersToNewValue(srcValue);
             }
         }
     }
