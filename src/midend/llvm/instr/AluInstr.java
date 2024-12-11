@@ -195,7 +195,7 @@ public class AluInstr extends Instr {
             new MarsLi(registerResult, numResult);
             canOptimize = true;
         }
-        // 左值为个常数
+        // 左值为常数
         else if (valueL instanceof IrConstant irConstantL) {
             canOptimize = this.MulSingleConstant(valueR, irConstantL, registerR, registerResult);
         }
@@ -276,6 +276,27 @@ public class AluInstr extends Instr {
             int numL = Integer.parseInt(valueL.GetIrName());
             int numR = Integer.parseInt(valueR.GetIrName());
             new MarsLi(registerResult, numL % numR);
+        }
+        // 右值为常数
+        else if (valueR instanceof IrConstant) {
+            int num = Integer.parseInt(valueR.GetIrName());
+            // 一般情况：先除优化，再减，总归是优化
+            this.LoadValueToRegister(valueL, Register.FP);
+            // div中会用到K1
+            this.DivSingleConstant(valueL, num, registerL, Register.GP);
+            // 进行乘
+            int shift = this.GetTwoShiftNum(num);
+            if (shift != -1) {
+                new MipsAlu(MipsAlu.AluType.SLL, Register.GP, Register.GP, shift);
+            }
+            // 没有乘优化
+            else {
+                // 需要手动管理寄存器，不然还是会乱
+                new MarsLi(Register.K0, num);
+                new MipsMdu(MipsMdu.MduType.MULT, Register.GP, Register.K0);
+                new MipsMdu(MipsMdu.MduType.MFLO, Register.GP);
+            }
+            new MipsAlu(MipsAlu.AluType.SUBU, registerResult, Register.FP, Register.GP);
         } else {
             this.LoadValueToRegister(valueL, registerL);
             this.LoadValueToRegister(valueR, registerR);
