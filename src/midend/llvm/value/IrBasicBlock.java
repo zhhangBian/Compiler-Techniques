@@ -188,6 +188,11 @@ public class IrBasicBlock extends IrValue {
         this.beforeBlockList.addAll(irBasicBlock.beforeBlockList);
     }
 
+    public void DeleteNextBlock(IrBasicBlock nextBlock) {
+        this.nextBlockList.remove(nextBlock);
+        nextBlock.beforeBlockList.remove(this);
+    }
+
     public void AppendBlock(IrBasicBlock nextBlock) {
         // 对于原块的尾跳转
         Instr jumpInstr = this.GetLastInstr();

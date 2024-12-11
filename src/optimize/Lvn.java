@@ -3,6 +3,7 @@ package optimize;
 import midend.llvm.constant.IrConstant;
 import midend.llvm.constant.IrConstantInt;
 import midend.llvm.instr.*;
+import midend.llvm.type.IrType;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
@@ -30,7 +31,7 @@ public class Lvn extends Optimizer {
 
     private void GvnVisit(IrBasicBlock irBasicBlock) {
         // 常量折叠
-        this.FoldConstant(irBasicBlock);
+        this.FoldValue(irBasicBlock);
 
         // 当前block插入map的instr：在支配块中可使用
         HashSet<Instr> gvnAddInstrSet = new HashSet<>();
@@ -53,14 +54,16 @@ public class Lvn extends Optimizer {
     }
 
     // 进行常量折叠
-    private void FoldConstant(IrBasicBlock irBasicBlock) {
+    private void FoldValue(IrBasicBlock irBasicBlock) {
         Iterator<Instr> iterator = irBasicBlock.GetInstrList().iterator();
         while (iterator.hasNext()) {
             Instr instr = iterator.next();
             boolean folded =
                 instr instanceof AluInstr aluInstr ? this.FoldAluInstr(aluInstr) :
                     instr instanceof CompareInstr compareInstr ? this.FoldCompare(compareInstr) :
-                        false;
+                        instr instanceof ExtendInstr extendInstr ? this.FoldExtend(extendInstr) :
+                            instr instanceof TruncInstr truncInstr ? this.FoldTrunc(truncInstr) :
+                                false;
             if (folded) {
                 iterator.remove();
             }
@@ -331,6 +334,32 @@ public class Lvn extends Optimizer {
     private boolean FoldElseSle(IrValue valueL, IrValue valueR, CompareInstr compareInstr) {
         if (valueR == valueL) {
             compareInstr.ModifyAllUsersToNewValue(new IrConstantInt(1));
+            return true;
+        }
+        return false;
+    }
+
+    // extend
+    private boolean FoldExtend(ExtendInstr extendInstr) {
+        IrType targetType = extendInstr.GetTargetType();
+        IrType originType = extendInstr.GetOriginType();
+        IrValue originValue = extendInstr.GetOriginValue();
+
+        if (targetType == originType) {
+            extendInstr.ModifyAllUsersToNewValue(originValue);
+            return true;
+        }
+        return false;
+    }
+
+    // trunc
+    private boolean FoldTrunc(TruncInstr truncInstr) {
+        IrType targetType = truncInstr.GetTargetType();
+        IrType originType = truncInstr.GetOriginType();
+        IrValue originValue = truncInstr.GetOriginValue();
+
+        if (targetType == originType) {
+            truncInstr.ModifyAllUsersToNewValue(originValue);
             return true;
         }
         return false;

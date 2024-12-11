@@ -46,9 +46,6 @@ public class PhiInstr extends Instr {
         if (oldValue != null) {
             oldValue.DeleteUser(this);
         }
-        Debug.DebugPrint("phi remove block " + irBasicBlock.GetIrName() + " " + index);
-        this.useValueList.remove(index);
-        this.beforeBlockList.remove(index);
     }
 
     public void ReplaceBlock(IrBasicBlock oldBlock, IrBasicBlock newBlock) {

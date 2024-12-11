@@ -14,6 +14,18 @@ public class TruncInstr extends Instr {
         this.AddUseValue(originValue);
     }
 
+    public IrType GetTargetType() {
+        return this.targetType;
+    }
+
+    public IrType GetOriginType() {
+        return this.GetOriginValue().GetIrType();
+    }
+
+    public IrValue GetOriginValue() {
+        return this.useValueList.get(0);
+    }
+
     @Override
     public boolean DefValue() {
         return true;
@@ -40,9 +52,5 @@ public class TruncInstr extends Instr {
             new MipsAlu(MipsAlu.AluType.ANDI, valueRegister, valueRegister, 0xff);
         }
         this.SaveRegisterResult(this, valueRegister);
-    }
-
-    private IrValue GetOriginValue() {
-        return this.useValueList.get(0);
     }
 }

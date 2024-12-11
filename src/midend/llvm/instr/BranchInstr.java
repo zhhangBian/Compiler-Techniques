@@ -16,7 +16,7 @@ public class BranchInstr extends Instr {
         this.AddUseValue(falseBlock);
     }
 
-    private IrValue GetCond() {
+    public IrValue GetCond() {
         return this.useValueList.get(0);
     }
 

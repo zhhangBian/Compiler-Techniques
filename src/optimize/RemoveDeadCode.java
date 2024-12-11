@@ -1,5 +1,6 @@
 package optimize;
 
+import midend.llvm.constant.IrConstant;
 import midend.llvm.instr.BranchInstr;
 import midend.llvm.instr.CallInstr;
 import midend.llvm.instr.Instr;
@@ -11,6 +12,7 @@ import midend.llvm.instr.phi.PhiInstr;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
+import utils.Debug;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +44,7 @@ public class RemoveDeadCode extends Optimizer {
             finished &= this.RemoveUselessFunction();
             finished &= this.RemoveUselessBlock();
             finished &= this.RemoveUselessCode();
+            //finished &= this.RemoveDeadBranch();
             finished &= this.MergeBlock();
         }
     }
@@ -192,6 +195,43 @@ public class RemoveDeadCode extends Optimizer {
                 this.sideEffectFunctions.contains(callInstr.GetTargetFunction())) ||
             instr instanceof BranchInstr || instr instanceof JumpInstr ||
             instr instanceof StoreInstr || instr instanceof IoInstr;
+    }
+
+    private boolean RemoveDeadBranch() {
+        boolean finished = true;
+
+        for (IrFunction irFunction : irModule.GetFunctions()) {
+            for (IrBasicBlock irBasicBlock : irFunction.GetBasicBlocks()) {
+                // 删除无用jump后直接获取最后一条
+                Instr instr = irBasicBlock.GetLastInstr();
+                if (!(instr instanceof BranchInstr branchInstr)) {
+                    continue;
+                }
+                IrValue cond = branchInstr.GetCond();
+                IrBasicBlock trueBlock = branchInstr.GetTrueBlock();
+                IrBasicBlock falseBlock = branchInstr.GetFalseBlock();
+
+                if (cond instanceof IrConstant) {
+                    int condValue = Integer.parseInt(cond.GetIrName());
+                    JumpInstr jumpInstr;
+                    // 为真
+                    if (condValue != 0) {
+                        jumpInstr = new JumpInstr(trueBlock, irBasicBlock);
+                        // 更改before-next关系
+                        irBasicBlock.DeleteNextBlock(falseBlock);
+                    }
+                    // 为假
+                    else {
+                        jumpInstr = new JumpInstr(falseBlock, irBasicBlock);
+                        // 更改before-next关系
+                        irBasicBlock.DeleteNextBlock(trueBlock);
+                    }
+                    irBasicBlock.ReplaceLastInstr(jumpInstr);
+                }
+            }
+        }
+
+        return finished;
     }
 
     private boolean MergeBlock() {

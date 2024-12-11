@@ -13,6 +13,18 @@ public class ExtendInstr extends Instr {
         this.AddUseValue(originValue);
     }
 
+    public IrType GetTargetType() {
+        return this.targetType;
+    }
+
+    public IrType GetOriginType() {
+        return this.GetOriginValue().GetIrType();
+    }
+
+    public IrValue GetOriginValue() {
+        return this.useValueList.get(0);
+    }
+
     @Override
     public boolean DefValue() {
         return true;
@@ -34,9 +46,5 @@ public class ExtendInstr extends Instr {
         Register register = this.GetRegisterOrK0ForValue(this);
         this.LoadValueToRegister(originValue, register);
         this.SaveRegisterResult(this, register);
-    }
-
-    private IrValue GetOriginValue() {
-        return this.useValueList.get(0);
     }
 }
