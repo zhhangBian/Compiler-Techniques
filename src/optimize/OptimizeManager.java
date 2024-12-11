@@ -1,6 +1,7 @@
 package optimize;
 
 import midend.MidEnd;
+import utils.IOhandler;
 import utils.Setting;
 
 import java.io.IOException;
@@ -33,11 +34,21 @@ public class OptimizeManager {
         optimizerList.add(new RemoveDeadCode());
         optimizerList.add(new CfgBuilder());
 
+        for (Optimizer optimizer : optimizerList) {
+            optimizer.Optimize();
+        }
+        optimizerList.clear();
+        try {
+            IOhandler.PrintLlvmPhi();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         optimizerList.add(new Lvn());
 
         optimizerList.add(new ActiveAnalysis());
         if (!Setting.SPECIAL) {
-            optimizerList.add(new AllocateRegister());
+            //optimizerList.add(new AllocateRegister());
         }
         optimizerList.add(new RemovePhi());
     }

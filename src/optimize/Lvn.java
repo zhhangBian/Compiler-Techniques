@@ -4,6 +4,7 @@ import midend.llvm.constant.IrConstant;
 import midend.llvm.constant.IrConstantInt;
 import midend.llvm.instr.AluInstr;
 import midend.llvm.instr.CompareInstr;
+import midend.llvm.instr.GepInstr;
 import midend.llvm.instr.Instr;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
@@ -50,7 +51,8 @@ public class Lvn extends Optimizer {
     }
 
     private boolean CanGvnInstr(Instr instr) {
-        return instr instanceof AluInstr || instr instanceof CompareInstr;
+        return instr instanceof AluInstr || instr instanceof CompareInstr ||
+            instr instanceof GepInstr;
     }
 
     // 进行常量折叠

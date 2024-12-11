@@ -30,6 +30,12 @@ public class GepInstr extends Instr {
     }
 
     @Override
+    public String GetGvnHash() {
+        // 按照字典序
+        return this.GetPointer().GetIrName() + " " + this.GetOffset().GetIrName();
+    }
+
+    @Override
     public String toString() {
         IrValue pointer = this.GetPointer();
         IrValue offset = this.GetOffset();

@@ -5,10 +5,12 @@ import backend.mips.Register;
 import backend.mips.assembly.MipsBranch;
 import backend.mips.assembly.MipsJump;
 import backend.mips.assembly.MipsLsu;
+import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrValue;
+import utils.Debug;
 
 public class BranchInstr extends Instr {
     public BranchInstr(IrValue cond, IrBasicBlock trueBlock, IrBasicBlock falseBlock) {
@@ -63,14 +65,8 @@ public class BranchInstr extends Instr {
         super.toMips();
 
         IrValue cond = this.GetCond();
-        Register condRegister = MipsBuilder.GetValueToRegister(cond);
-
-        if (condRegister == null) {
-            condRegister = Register.K0;
-            new MipsLsu(MipsLsu.LsuType.LW, condRegister, Register.SP,
-                MipsBuilder.GetStackValueOffset(cond));
-        }
-
+        Register condRegister = this.GetRegisterOrK0ForValue(cond);
+        this.LoadValueToRegister(cond, condRegister);
         // 利用bne进行cond判断
         new MipsBranch(MipsBranch.BranchType.BNE, condRegister, Register.ZERO,
             this.GetTrueBlock().GetMipsLabel());
