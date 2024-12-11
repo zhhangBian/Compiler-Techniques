@@ -8,7 +8,6 @@ import backend.mips.assembly.fake.MarsLi;
 import midend.llvm.constant.IrConstant;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
-import utils.Debug;
 import utils.Setting;
 
 import java.math.BigInteger;
@@ -91,7 +90,6 @@ public class AluInstr extends Instr {
                     case SREM ->
                         this.RemOptimize(valueL, valueR, registerL, registerR, registerResult);
                     default -> {
-                        Debug.DebugPrint(this.aluOp);
                     }
                 }
             }
@@ -217,7 +215,6 @@ public class AluInstr extends Instr {
     private boolean MulSingleConstant(IrValue value, IrConstant irConstant,
                                       Register registerValue, Register registerResult) {
         int num = Integer.parseInt(irConstant.GetIrName());
-        Debug.DebugPrint(num);
         if (num == 0) {
             new MarsLi(registerResult, 0);
             return true;

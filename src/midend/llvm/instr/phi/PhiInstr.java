@@ -7,7 +7,6 @@ import midend.llvm.type.IrType;
 import midend.llvm.use.IrUse;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrValue;
-import utils.Debug;
 
 import java.util.ArrayList;
 import java.util.StringJoiner;
@@ -42,9 +41,13 @@ public class PhiInstr extends Instr {
     public void RemoveBlock(IrBasicBlock irBasicBlock) {
         int index = this.beforeBlockList.indexOf(irBasicBlock);
         // 进行相应的值替换
-        IrValue oldValue = this.useValueList.get(index);
-        if (oldValue != null) {
-            oldValue.DeleteUser(this);
+        if (index >= 0) {
+            IrValue oldValue = this.useValueList.get(index);
+            this.useValueList.remove(index);
+            this.beforeBlockList.remove(index);
+            if (oldValue != null) {
+                oldValue.DeleteUser(this);
+            }
         }
     }
 
@@ -57,7 +60,9 @@ public class PhiInstr extends Instr {
         }
 
         index = this.beforeBlockList.indexOf(oldBlock);
-        this.beforeBlockList.set(index, newBlock);
+        if (index >= 0) {
+            this.beforeBlockList.set(index, newBlock);
+        }
     }
 
     @Override

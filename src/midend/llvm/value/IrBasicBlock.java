@@ -56,12 +56,6 @@ public class IrBasicBlock extends IrValue {
         this.useValueSet = new HashSet<>();
     }
 
-    public void RemoveAllValueUse() {
-        for (Instr instr : this.instrList) {
-            instr.RemoveAllValueUse();
-        }
-    }
-
     public boolean IsEmptyBlock() {
         return this.instrList.isEmpty();
     }
@@ -81,9 +75,9 @@ public class IrBasicBlock extends IrValue {
 
     public void ReplaceLastInstr(Instr instr) {
         Instr jumpInstr = this.GetLastInstr();
+        this.instrList.remove(jumpInstr);
         jumpInstr.RemoveAllValueUse();
-        this.instrList.set(this.instrList.size() - 1, instr);
-        instr.SetInBasicBlock(this);
+        this.AddInstr(instr);
     }
 
     public void AddInstrBeforeJump(Instr instr) {
@@ -197,7 +191,7 @@ public class IrBasicBlock extends IrValue {
         // 对于原块的尾跳转
         Instr jumpInstr = this.GetLastInstr();
         jumpInstr.RemoveAllValueUse();
-        this.instrList.remove(this.instrList.size() - 1);
+        this.instrList.remove(jumpInstr);
         // 添加下一个基本快的指令
         nextBlock.instrList.forEach(this::AddInstr);
         // 修改next信息

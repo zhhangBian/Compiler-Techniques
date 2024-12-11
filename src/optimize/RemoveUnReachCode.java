@@ -47,14 +47,7 @@ public class RemoveUnReachCode extends Optimizer {
             HashSet<IrBasicBlock> visited = new HashSet<>();
             // 使用dfs记录可达的block
             this.DfsBlock(entryBlock, visited);
-            Iterator<IrBasicBlock> iterator = irFunction.GetBasicBlocks().iterator();
-            while (iterator.hasNext()) {
-                IrBasicBlock block = iterator.next();
-                if (!visited.contains(block)) {
-                    block.RemoveAllValueUse();
-                    iterator.remove();
-                }
-            }
+            irFunction.GetBasicBlocks().removeIf(block -> !visited.contains(block));
         }
     }
 

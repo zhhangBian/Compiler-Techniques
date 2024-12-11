@@ -12,7 +12,6 @@ import midend.llvm.instr.phi.PhiInstr;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
 import midend.llvm.value.IrValue;
-import utils.Debug;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +43,7 @@ public class RemoveDeadCode extends Optimizer {
             finished &= this.RemoveUselessFunction();
             finished &= this.RemoveUselessBlock();
             finished &= this.RemoveUselessCode();
+            finished &= this.RemoveUselessPhi();
             //finished &= this.RemoveDeadBranch();
             finished &= this.MergeBlock();
         }
@@ -115,11 +115,6 @@ public class RemoveDeadCode extends Optimizer {
                 IrBasicBlock visitBlock = iterator.next();
                 // 不可达块，删除
                 if (visitBlock.GetBeforeBlocks().isEmpty() && !visitBlock.IsEntryBlock()) {
-                    // 删除指令
-                    for (Instr instr : visitBlock.GetInstrList()) {
-                        instr.RemoveAllValueUse();
-                    }
-
                     // 改变关系
                     for (IrBasicBlock nextBlock : visitBlock.GetNextBlocks()) {
                         nextBlock.GetBeforeBlocks().remove(visitBlock);
@@ -130,6 +125,11 @@ public class RemoveDeadCode extends Optimizer {
                             }
                         }
                     }
+                    // 删除指令
+                    for (Instr instr : visitBlock.GetInstrList()) {
+                        instr.RemoveAllValueUse();
+                    }
+
                     finished = false;
                     iterator.remove();
                 }
@@ -197,6 +197,31 @@ public class RemoveDeadCode extends Optimizer {
             instr instanceof StoreInstr || instr instanceof IoInstr;
     }
 
+    private boolean RemoveUselessPhi() {
+        boolean finished = true;
+        for (IrFunction irFunction : irModule.GetFunctions()) {
+            for (IrBasicBlock irBasicBlock : irFunction.GetBasicBlocks()) {
+                Iterator<Instr> iterator = irBasicBlock.GetInstrList().iterator();
+                while (iterator.hasNext()) {
+                    Instr instr = iterator.next();
+                    if (!(instr instanceof PhiInstr phiInstr)) {
+                        continue;
+                    }
+
+                    ArrayList<IrValue> phiValueList = phiInstr.GetUseValueList();
+                    if (phiValueList.size() == 1) {
+                        finished = false;
+                        phiInstr.ModifyAllUsersToNewValue(phiValueList.get(0));
+                        phiInstr.RemoveAllValueUse();
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+
+        return finished;
+    }
+
     private boolean RemoveDeadBranch() {
         boolean finished = true;
 
@@ -219,12 +244,24 @@ public class RemoveDeadCode extends Optimizer {
                         jumpInstr = new JumpInstr(trueBlock, irBasicBlock);
                         // 更改before-next关系
                         irBasicBlock.DeleteNextBlock(falseBlock);
+                        // 消除phi
+                        for (Instr nextInstr : falseBlock.GetInstrList()) {
+                            if (nextInstr instanceof PhiInstr phiInstr) {
+                                phiInstr.RemoveBlock(irBasicBlock);
+                            }
+                        }
                     }
                     // 为假
                     else {
                         jumpInstr = new JumpInstr(falseBlock, irBasicBlock);
                         // 更改before-next关系
                         irBasicBlock.DeleteNextBlock(trueBlock);
+                        // 消除phi
+                        for (Instr nextInstr : trueBlock.GetInstrList()) {
+                            if (nextInstr instanceof PhiInstr phiInstr) {
+                                phiInstr.RemoveBlock(irBasicBlock);
+                            }
+                        }
                     }
                     irBasicBlock.ReplaceLastInstr(jumpInstr);
                 }
@@ -238,11 +275,14 @@ public class RemoveDeadCode extends Optimizer {
         boolean finished = true;
 
         for (IrFunction irFunction : irModule.GetFunctions()) {
-            for (IrBasicBlock irBasicBlock : irFunction.GetBasicBlocks()) {
+            Iterator<IrBasicBlock> iterator = irFunction.GetBasicBlocks().iterator();
+            while (iterator.hasNext()) {
+                IrBasicBlock irBasicBlock = iterator.next();
                 if (this.CanMergeBlock(irBasicBlock)) {
                     finished = false;
                     IrBasicBlock beforeBlock = irBasicBlock.GetBeforeBlocks().get(0);
                     beforeBlock.AppendBlock(irBasicBlock);
+                    iterator.remove();
                 }
             }
         }
@@ -255,7 +295,8 @@ public class RemoveDeadCode extends Optimizer {
         if (beforeBlockList.size() == 1) {
             IrBasicBlock beforeBlock = beforeBlockList.get(0);
             // 前后对接上，则可以合并
-            return beforeBlock.GetNextBlocks().size() == 1;
+            return beforeBlock.GetNextBlocks().size() == 1 &&
+                beforeBlock.GetNextBlocks().get(0) == visitBlock;
         }
         return false;
     }

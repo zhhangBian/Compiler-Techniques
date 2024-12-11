@@ -1,7 +1,6 @@
 package optimize;
 
 import midend.MidEnd;
-import utils.IOhandler;
 import utils.Setting;
 
 import java.io.IOException;

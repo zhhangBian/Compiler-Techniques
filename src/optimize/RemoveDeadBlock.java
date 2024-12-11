@@ -6,7 +6,6 @@ import midend.llvm.instr.JumpInstr;
 import midend.llvm.instr.ReturnInstr;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
-import utils.Debug;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -45,8 +44,7 @@ public class RemoveDeadBlock extends Optimizer {
     private boolean IsDeadBlock(IrBasicBlock irBasicBlock) {
         Instr lastInstr = irBasicBlock.GetLastInstr();
         boolean isDead = irBasicBlock.GetInstrList().size() == 1 &&
-            (lastInstr instanceof JumpInstr ||
-                lastInstr instanceof BranchInstr ||
+            (lastInstr instanceof JumpInstr || lastInstr instanceof BranchInstr ||
                 lastInstr instanceof ReturnInstr);
         // 之前的block不为branch，才可以进行删除
         for (IrBasicBlock beforeBlock : irBasicBlock.GetBeforeBlocks()) {
@@ -88,10 +86,6 @@ public class RemoveDeadBlock extends Optimizer {
                         beforeBlock.AppendBlock(visitBlock);
                         iterator.remove();
                         changed = true;
-
-                        Debug.DebugPrint("merge block: " + beforeBlock.GetIrName() +
-                            " and delete " + visitBlock.GetIrName() + " " +
-                            beforeBlock.GetIrFunction().GetIrName());
                     }
                 }
             }
