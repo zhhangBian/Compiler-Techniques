@@ -1,4 +1,5 @@
 import backend.BackEnd;
+import error.ErrorRecorder;
 import frontend.FrontEnd;
 import midend.MidEnd;
 import optimize.OptimizeManager;
@@ -17,23 +18,29 @@ public class Compiler {
         FrontEnd.GenerateAstTree();
 
         MidEnd.GenerateSymbolTable();
-        MidEnd.GenerateIr();
 
-        if (Setting.FINE_TUNING) {
-            IOhandler.PrintLlvmInit();
-            OptimizeManager.Init();
-            OptimizeManager.Optimize();
+        if (ErrorRecorder.HaveNoError()) {
+            MidEnd.GenerateIr();
+
+            if (Setting.FINE_TUNING) {
+                IOhandler.PrintLlvmInit();
+                OptimizeManager.Init();
+                OptimizeManager.Optimize();
+            }
+
+            BackEnd.GenerateMips();
         }
-
-        BackEnd.GenerateMips();
 
         IOhandler.PrintTokenList();
         IOhandler.PrintAstTree();
         IOhandler.PrintSymbolTable();
         IOhandler.PrintErrorMessage();
-        IOhandler.PrintLlvm();
-        IOhandler.PrintMips();
 
-        HandleComplexity.PrintReport();
+        if (ErrorRecorder.HaveNoError()) {
+            IOhandler.PrintLlvm();
+            IOhandler.PrintMips();
+
+            HandleComplexity.PrintReport();
+        }
     }
 }

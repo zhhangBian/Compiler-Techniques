@@ -7,6 +7,10 @@ public class ErrorRecorder {
     private static final TreeMap<Integer, Error> errorList = new TreeMap<>();
     private static boolean recordError = true;
 
+    public static boolean HaveNoError() {
+        return errorList.isEmpty();
+    }
+
     public static void AddError(Error error) {
         if (recordError) {
             if (!errorList.containsKey(error.GetLineNumber())) {
