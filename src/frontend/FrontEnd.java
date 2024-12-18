@@ -32,7 +32,7 @@ public class FrontEnd {
         return lexer.GetTokenList();
     }
 
-    public static TokenStream GetTokenStream() {
+    private static TokenStream GetTokenStream() {
         return new TokenStream(lexer.GetTokenList());
     }
 

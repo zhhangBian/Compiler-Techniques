@@ -34,6 +34,17 @@ public class MipsLsu extends MipsAssembly {
         this.label = label;
     }
 
+    public boolean IsStoreType() {
+        return switch (this.lsuType) {
+            case SW, SH, SB -> true;
+            default -> false;
+        };
+    }
+
+    public String GetTarget() {
+        return this.label == null ? offset + "(" + base + ")" : label + "+" + offset;
+    }
+
     @Override
     public String toString() {
         return this.label == null ?
