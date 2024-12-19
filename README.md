@@ -15,6 +15,7 @@ GBB：my compiler for course Compiler-Techniques
 - 1122-10：00：完成MIPS代码生成
 - 1211-20：30：完成代码优化
 - 1219-16：00：完成文档
+- 1219-17：00：确认最终提交
 
 # 概述
 
