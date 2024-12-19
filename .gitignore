@@ -6,6 +6,7 @@ gen
 .gitignore
 
 reference
+submit
 
 lexer.txt
 testfile.txt
