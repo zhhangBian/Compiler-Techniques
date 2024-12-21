@@ -111,7 +111,7 @@ public class UnaryExp extends ComputeExp {
         // 无参数情况
         if (funcRealParamS == null) {
             if (!funcSymbol.GetFormalParamList().isEmpty()) {
-                ErrorRecorder.AddError(new Error(ErrorType.UNDEFINED, line));
+                ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_NUM_NOT_MATCH, line));
             }
         } else {
             ArrayList<Exp> realParamList = funcRealParamS.GetRealParamList();
@@ -124,7 +124,6 @@ public class UnaryExp extends ComputeExp {
             if (realParamCount != formalParamCount) {
                 ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_NUM_NOT_MATCH, line));
                 return;
-
             }
 
             this.CheckParamFit(realParamList, formalParamList, line);

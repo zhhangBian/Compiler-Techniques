@@ -16,14 +16,14 @@ public class OptimizeManager {
         // 这里的顺序是关键的
         optimizerList.add(new RemoveUnReachCode());
         optimizerList.add(new CfgBuilder());
-        optimizerList.add(new RemoveDeadBlock());
-        optimizerList.add(new CfgBuilder());
+        //optimizerList.add(new RemoveDeadBlock());
+        //optimizerList.add(new CfgBuilder());
 
         optimizerList.add(new RemoveDeadCode());
         optimizerList.add(new CfgBuilder());
 
-        optimizerList.add(new RemoveDeadBlock());
-        optimizerList.add(new CfgBuilder());
+        //optimizerList.add(new RemoveDeadBlock());
+        //optimizerList.add(new CfgBuilder());
 
         optimizerList.add(new MemToReg());
         optimizerList.add(new CfgBuilder());

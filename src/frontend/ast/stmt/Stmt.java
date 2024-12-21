@@ -340,7 +340,9 @@ public class Stmt extends Node {
     }
 
     private boolean IsAssignStmt() {
-        return this.stmtType.equals(StmtType.AssignStmt);
+        return this.stmtType.equals(StmtType.AssignStmt) ||
+            this.stmtType.equals(StmtType.GetIntStmt) ||
+            this.stmtType.equals(StmtType.GetChatStmt);
     }
 
     public boolean IsReturnStmt() {

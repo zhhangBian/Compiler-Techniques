@@ -76,14 +76,8 @@ public class LVal extends ComputeExp {
         }
 
         SymbolType type = symbol.GetSymbolType();
-        // 是变量
-        if (this.components.size() == 1) {
-            return !type.equals(SymbolType.INT) && !type.equals(SymbolType.CHAR);
-        }
-        // 是数组
-        else {
-            return !type.equals(SymbolType.INT_ARRAY) && !type.equals(SymbolType.CHAR_ARRAY);
-        }
+        return type.equals(SymbolType.CONST_INT) || type.equals(SymbolType.CONST_CHAR) ||
+            type.equals(SymbolType.CONST_INT_ARRAY) || type.equals(SymbolType.CONST_CHAR_ARRAY);
     }
 
     public int GetLine() {
