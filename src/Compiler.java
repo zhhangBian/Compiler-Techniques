@@ -17,7 +17,14 @@ public class Compiler {
         FrontEnd.GenerateTokenList();
         FrontEnd.GenerateAstTree();
 
+        IOhandler.PrintTokenList();
+        IOhandler.PrintAstTree();
+
+
         MidEnd.GenerateSymbolTable();
+
+        IOhandler.PrintSymbolTable();
+        IOhandler.PrintErrorMessage();
 
         if (ErrorRecorder.HaveNoError()) {
             MidEnd.GenerateIr();
@@ -30,11 +37,6 @@ public class Compiler {
 
             BackEnd.GenerateMips();
         }
-
-        IOhandler.PrintTokenList();
-        IOhandler.PrintAstTree();
-        IOhandler.PrintSymbolTable();
-        IOhandler.PrintErrorMessage();
 
         if (ErrorRecorder.HaveNoError()) {
             IOhandler.PrintLlvm();

@@ -1,6 +1,7 @@
 package midend.visit;
 
 import frontend.ast.block.Block;
+import frontend.ast.decl.VarDef;
 import frontend.ast.exp.Cond;
 import frontend.ast.exp.Exp;
 import frontend.ast.exp.LVal;
@@ -254,13 +255,19 @@ public class VisitorStmt {
     }
 
     public static void VisitForStmt(ForStmt forStmt) {
-        LVal lval = forStmt.GetLVal();
-        Exp exp = forStmt.GetExp();
+        if (forStmt.IsDecl()) {
+            VarDef varDef = forStmt.GetVarDef();
+            VisitorDecl.VisitVarDef(varDef);
+        }
+        else {
+            LVal lval = forStmt.GetLVal();
+            Exp exp = forStmt.GetExp();
 
-        IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
-        IrValue irExp = VisitorExp.VisitExp(exp);
-        irExp = IrType.ConvertType(irExp, ((IrPointerType) irLVal.GetIrType()).GetTargetType());
-        StoreInstr storeInstr = new StoreInstr(irExp, irLVal);
+            IrValue irLVal = VisitorLVal.VisitLVal(lval, true);
+            IrValue irExp = VisitorExp.VisitExp(exp);
+            irExp = IrType.ConvertType(irExp, ((IrPointerType) irLVal.GetIrType()).GetTargetType());
+            StoreInstr storeInstr = new StoreInstr(irExp, irLVal);
+        }
     }
 
     private static void VisitBreakStmt(Stmt stmt) {

@@ -42,7 +42,7 @@ public class VisitorDecl {
         }
     }
 
-    private static void VisitVarDecl(VarDecl varDecl) {
+    public static void VisitVarDecl(VarDecl varDecl) {
         ArrayList<VarDef> varDefs = varDecl.GetVAeDefs();
         for (VarDef varDef : varDefs) {
             VisitVarDef(varDef);
@@ -100,7 +100,7 @@ public class VisitorDecl {
         }
     }
 
-    private static void VisitVarDef(VarDef varDef) {
+    public static void VisitVarDef(VarDef varDef) {
         ValueSymbol symbol =
             (ValueSymbol) SymbolManger.GetSymbol(varDef.GetIdent().GetSimpleName());
         // 当前在global层级
