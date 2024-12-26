@@ -30,8 +30,9 @@ public class MulExp extends RecursionNode {
 
         while (GetCurrentTokenType().equals(TokenType.MULT) ||
             GetCurrentTokenType().equals(TokenType.DIV) ||
-            GetCurrentTokenType().equals(TokenType.MOD)) {
-            // * | / | %
+            GetCurrentTokenType().equals(TokenType.MOD) ||
+            GetCurrentTokenType().equals(TokenType.POWER)) {
+            // * | / | % | **
             this.AddNodeList(new TokenNode());
             // UnaryExp
             this.AddNodeList(new UnaryExp());

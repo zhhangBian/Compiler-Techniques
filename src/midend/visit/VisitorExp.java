@@ -69,15 +69,31 @@ public class VisitorExp {
         int index = 1;
         while (index < nodeList.size()) {
             final TokenNode op = (TokenNode) nodeList.get(index++);
-            UnaryExp unaryExp2 = (UnaryExp) nodeList.get(index++);
-            irValue2 = VisitUnaryExp(unaryExp2);
+            if (op.GetTokenString().equals("**")) {
+                UnaryExp unaryExp2 = (UnaryExp) nodeList.get(index++);
+                unaryExp2.Compute();
+                int rightValue = Integer.parseUnsignedInt(String.valueOf(unaryExp2.GetValue()));
 
-            // 进行类型转换
-            irValue1 = IrType.ConvertType(irValue1, IrBaseType.INT32);
-            irValue2 = IrType.ConvertType(irValue2, IrBaseType.INT32);
+                AluInstr baseInstr =
+                    new AluInstr("+", irValue1, new IrConstantInt(rightValue));
+                AluInstr mulValue = baseInstr;
+                for (int i = 0; i < rightValue - 1; i++) {
+                    mulValue = new AluInstr("*", baseInstr, mulValue);
+                }
+                irValue1 = mulValue;
+            }
+            // 一般的乘
+            else {
+                UnaryExp unaryExp2 = (UnaryExp) nodeList.get(index++);
+                irValue2 = VisitUnaryExp(unaryExp2);
 
-            AluInstr aluInstr = new AluInstr(op.GetSimpleName(), irValue1, irValue2);
-            irValue1 = aluInstr;
+                // 进行类型转换
+                irValue1 = IrType.ConvertType(irValue1, IrBaseType.INT32);
+                irValue2 = IrType.ConvertType(irValue2, IrBaseType.INT32);
+
+                AluInstr aluInstr = new AluInstr(op.GetSimpleName(), irValue1, irValue2);
+                irValue1 = aluInstr;
+            }
         }
 
         return irValue1;

@@ -190,9 +190,9 @@ public class Lexer {
 
     private Token LexerOp(StringBuilder string) throws IOException {
         return switch (this.currentChar) {
-            case '+', '-', '*', '%', ';', ',', '(', ')', '[', ']', '{', '}' ->
+            case '+', '-', '%', ';', ',', '(', ')', '[', ']', '{', '}' ->
                 this.LexerSingleOp(string);
-            case '<', '>', '!', '=' -> this.LexerTwiceEqual(string);
+            case '<', '>', '!', '=', '*' -> this.LexerTwiceEqual(string);
             case '&', '|' -> this.LexerOpTwiceWithError(string);
             default -> new Token(TokenType.ERROR, string.toString(), this.lineNumber);
         };
@@ -211,7 +211,8 @@ public class Lexer {
         string.append(character);
         this.Read();
 
-        if (this.currentChar == '=') {
+        if ((character != '*' && this.currentChar == '=') ||
+            (character == '*' && this.currentChar == '*')) {
             string.append(this.currentChar);
             this.Read();
             return new Token(TokenType.GetTokenType(string.toString()),

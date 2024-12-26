@@ -60,6 +60,8 @@ public enum TokenType {
     DIV,
     // %
     MOD,
+    // **
+    POWER,
 
     // <
     LSS,
@@ -101,6 +103,7 @@ public enum TokenType {
 
     public static TokenType GetTokenType(String identifier) {
         return switch (identifier) {
+            case "**" -> TokenType.POWER;
             case "<=" -> TokenType.LEQ;
             case ">=" -> TokenType.GEQ;
             case "==" -> TokenType.EQL;

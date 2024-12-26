@@ -15,11 +15,10 @@ public class Compiler {
 
         FrontEnd.SetInput();
         FrontEnd.GenerateTokenList();
-        FrontEnd.GenerateAstTree();
-
         IOhandler.PrintTokenList();
-        IOhandler.PrintAstTree();
 
+        FrontEnd.GenerateAstTree();
+        IOhandler.PrintAstTree();
 
         MidEnd.GenerateSymbolTable();
 
