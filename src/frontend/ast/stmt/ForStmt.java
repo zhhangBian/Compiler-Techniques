@@ -32,8 +32,8 @@ public class ForStmt extends Node {
         if (this.components.get(0) instanceof LVal lVal &&
             this.components.get(1) instanceof TokenNode tokenNode &&
             tokenNode.GetTokenString().equals("=")) {
-            // 得到LVal对应的符号
-            if (lVal.HaveSymbol() && lVal.CannotChangeValue()) {
+            // const类型不能修改值
+            if (lVal.HaveSymbol() && lVal.IsConstType()) {
                 ErrorRecorder.AddError(new Error(ErrorType.CHANGE_CONST_VALUE, lVal.GetLine()));
             }
         }

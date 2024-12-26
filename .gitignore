@@ -5,11 +5,11 @@ gen
 .vscode
 .gitignore
 
+!test
+
 reference
 submit
 
-lexer.txt
-testfile.txt
 *.txt
 *.zip
 *.rar

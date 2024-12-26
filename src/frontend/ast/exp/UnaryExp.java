@@ -13,7 +13,6 @@ import midend.symbol.FuncSymbol;
 import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
-import utils.Setting;
 
 import java.util.ArrayList;
 
@@ -68,13 +67,11 @@ public class UnaryExp extends ComputeExp {
         for (Node component : this.components) {
             component.Visit();
 
-            if (Setting.CHECK_ERROR) {
-                this.CheckIdentError(component);
-            }
+            this.CheckIdentUnDefinedError(component);
         }
     }
 
-    private void CheckIdentError(Node component) {
+    private void CheckIdentUnDefinedError(Node component) {
         if (!(component instanceof Ident ident)) {
             return;
         }
@@ -88,12 +85,9 @@ public class UnaryExp extends ComputeExp {
             return;
         }
 
+        // 如果是函数，检查参数
         if (symbol instanceof FuncSymbol funcSymbol) {
             this.CheckFuncParam(funcSymbol, line);
-        }
-        // 相应的符号不是函数
-        else {
-            ErrorRecorder.AddError(new Error(ErrorType.UNDEFINED, line));
         }
     }
 
@@ -113,7 +107,9 @@ public class UnaryExp extends ComputeExp {
             if (!funcSymbol.GetFormalParamList().isEmpty()) {
                 ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_NUM_NOT_MATCH, line));
             }
-        } else {
+        }
+        // 有参数
+        else {
             ArrayList<Exp> realParamList = funcRealParamS.GetRealParamList();
             int realParamCount = realParamList.size();
 
@@ -126,12 +122,12 @@ public class UnaryExp extends ComputeExp {
                 return;
             }
 
-            this.CheckParamFit(realParamList, formalParamList, line);
+            this.CheckParamTypeFit(realParamList, formalParamList, line);
         }
     }
 
-    private void CheckParamFit(ArrayList<Exp> realParamList,
-                               ArrayList<Symbol> formalParamList, int line) {
+    private void CheckParamTypeFit(ArrayList<Exp> realParamList,
+                                   ArrayList<Symbol> formalParamList, int line) {
         for (int i = 0; i < formalParamList.size(); i++) {
             Symbol formalSymbol = formalParamList.get(i);
             SymbolType formalType = formalSymbol.GetSymbolType();
@@ -141,15 +137,16 @@ public class UnaryExp extends ComputeExp {
 
             switch (formalType) {
                 case INT_ARRAY, CHAR_ARRAY ->
-                    this.CheckArrayParamFit(realSymbol, formalSymbol, line);
-                case INT, CHAR -> this.CheckValueParamFit(realSymbol, formalSymbol, line);
+                    this.CheckArrayParamTypeFit(realSymbol, formalSymbol, line);
+                case INT, CHAR -> this.CheckValueParamTypeFit(realSymbol, formalSymbol, line);
                 default -> {
                 }
             }
         }
     }
 
-    private void CheckArrayParamFit(Symbol realSymbol, Symbol formalSymbol, int line) {
+    // 数组类型参数检查：必须严格相同
+    private void CheckArrayParamTypeFit(Symbol realSymbol, Symbol formalSymbol, int line) {
         if (realSymbol == null) {
             ErrorRecorder.AddError(new Error(ErrorType.FUNC_PARAM_TYPE_NOT_MATCH, line));
             return;
@@ -160,7 +157,9 @@ public class UnaryExp extends ComputeExp {
         }
     }
 
-    private void CheckValueParamFit(Symbol realSymbol, Symbol formalSymbol, int line) {
+    // 值类型参数检查：不是数组即可
+    private void CheckValueParamTypeFit(Symbol realSymbol, Symbol formalSymbol, int line) {
+        // 参数可能是常数，这种情况为null
         if (realSymbol != null) {
             SymbolType realType = realSymbol.GetSymbolType();
             if (realType.equals(SymbolType.INT_ARRAY) || realType.equals(SymbolType.CHAR_ARRAY)) {

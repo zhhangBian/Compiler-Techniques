@@ -9,7 +9,6 @@ import frontend.ast.SyntaxType;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 import midend.symbol.SymbolManger;
-import utils.Setting;
 
 public class MainFuncDef extends Node {
     public MainFuncDef() {
@@ -42,17 +41,17 @@ public class MainFuncDef extends Node {
                 SymbolManger.CreateSonSymbolTable();
                 block.Visit();
 
-                if (Setting.CHECK_ERROR) {
-                    this.CheckReturnError(block);
-                }
+                // 检查是否有正确的return
+                this.CheckReturnError(block);
 
                 SymbolManger.GoToFatherSymbolTable();
             }
         }
     }
 
+    // 检查是否有正确的return
     private void CheckReturnError(Block block) {
-        if (!block.LastIsReturnStmt()) {
+        if (block.LastIsNotReturnStmt()) {
             ErrorRecorder.AddError(new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
         }
     }
@@ -63,6 +62,6 @@ public class MainFuncDef extends Node {
                 return block;
             }
         }
-        throw new RuntimeException("no block in this func");
+        throw new RuntimeException("no block in main func");
     }
 }

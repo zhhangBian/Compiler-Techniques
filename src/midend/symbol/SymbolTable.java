@@ -49,7 +49,9 @@ public class SymbolTable {
         if (!this.symbolTable.containsKey(symbolName)) {
             this.symbolList.add(symbol);
             this.symbolTable.put(symbolName, symbol);
-        } else {
+        }
+        // 当前层有相同名，重定义
+        else {
             ErrorRecorder.AddError(new Error(ErrorType.NAME_REDEFINE, line));
         }
     }

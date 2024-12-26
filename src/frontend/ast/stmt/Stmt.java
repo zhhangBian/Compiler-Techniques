@@ -13,7 +13,6 @@ import frontend.ast.token.StringConst;
 import frontend.ast.token.TokenNode;
 import frontend.lexer.TokenType;
 import midend.symbol.SymbolManger;
-import utils.Setting;
 
 import java.util.ArrayList;
 
@@ -150,9 +149,9 @@ public class Stmt extends Node {
         this.stmtType = StmtType.BreakStmt;
 
         // break
-        if (!SymbolManger.InForBlock()) {
+        if (SymbolManger.NotInForBlock()) {
             ErrorRecorder.AddError(new Error(ErrorType.BREAK_OR_CONTINUE_IN_NOT_LOOP,
-                GetCurrentLineNumber()));
+                this.GetCurrentLineNumber()));
         }
         this.AddNode(new TokenNode());
         // ;
@@ -167,9 +166,9 @@ public class Stmt extends Node {
         this.stmtType = StmtType.ContinueStmt;
 
         // continue
-        if (!SymbolManger.InForBlock()) {
+        if (SymbolManger.NotInForBlock()) {
             ErrorRecorder.AddError(new Error(ErrorType.BREAK_OR_CONTINUE_IN_NOT_LOOP,
-                GetCurrentLineNumber()));
+                this.GetCurrentLineNumber()));
         }
         this.AddNode(new TokenNode());
         // ;
@@ -273,6 +272,7 @@ public class Stmt extends Node {
         }
     }
 
+    // 包括了 = exp | getint | getchar 的三种情况
     private void AssignStmt() {
         this.stmtType = StmtType.AssignStmt;
 
@@ -322,10 +322,8 @@ public class Stmt extends Node {
                 component.Visit();
             }
         }
-
-        if (Setting.CHECK_ERROR) {
-            this.CheckConstError();
-        }
+        // 检查是否对const赋值
+        this.CheckConstError();
     }
 
     private void CheckConstError() {
@@ -333,7 +331,7 @@ public class Stmt extends Node {
         if (this.IsAssignStmt()) {
             // 得到LVal对应的符号
             LVal lval = (LVal) this.components.get(0);
-            if (lval.HaveSymbol() && lval.CannotChangeValue()) {
+            if (lval.HaveSymbol() && lval.IsConstType()) {
                 ErrorRecorder.AddError(new Error(ErrorType.CHANGE_CONST_VALUE, lval.GetLine()));
             }
         }

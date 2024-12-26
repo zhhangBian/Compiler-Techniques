@@ -85,8 +85,8 @@ public class SymbolManger {
         forDepth--;
     }
 
-    public static boolean InForBlock() {
-        return forDepth > 0;
+    public static boolean NotInForBlock() {
+        return !(forDepth > 0);
     }
 
     public static void EnterFunc(String type) {

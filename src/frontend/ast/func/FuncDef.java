@@ -13,7 +13,6 @@ import frontend.lexer.TokenType;
 import midend.symbol.FuncSymbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
-import utils.Setting;
 
 public class FuncDef extends Node {
     private FuncSymbol symbol;
@@ -71,21 +70,20 @@ public class FuncDef extends Node {
             if (component instanceof FuncFormalParamS funcFormalParamS) {
                 this.symbol.SetFormalParamList(funcFormalParamS.GetFormalParamList());
             }
-
-            if (Setting.CHECK_ERROR) {
-                this.CheckReturnError(type, component);
-            }
+            // 检查是否有正确的return
+            this.CheckReturnError(type, component);
         }
         SymbolManger.GoToFatherSymbolTable();
     }
 
+    // 检查是否有正确的return
     private void CheckReturnError(String type, Node component) {
         if (!(component instanceof Block block)) {
             return;
         }
 
         if (type.equals("int") || type.equals("char")) {
-            if (!block.LastIsReturnStmt()) {
+            if (block.LastIsNotReturnStmt()) {
                 ErrorRecorder.AddError(new Error(ErrorType.MISS_RETURN, block.GetLastLine()));
             }
         }

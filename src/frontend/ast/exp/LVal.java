@@ -12,7 +12,6 @@ import midend.symbol.Symbol;
 import midend.symbol.SymbolManger;
 import midend.symbol.SymbolType;
 import midend.symbol.ValueSymbol;
-import utils.Setting;
 
 import java.util.ArrayList;
 
@@ -43,15 +42,14 @@ public class LVal extends ComputeExp {
     @Override
     public void Visit() {
         for (Node component : this.components) {
-            if (Setting.CHECK_ERROR) {
-                this.CheckSymbolError(component);
-            }
+            // 是否是未定义符号
+            this.CheckIdentUnDefinedError(component);
 
             component.Visit();
         }
     }
 
-    private void CheckSymbolError(Node component) {
+    private void CheckIdentUnDefinedError(Node component) {
         if (!(component instanceof Ident ident)) {
             return;
         }
@@ -68,7 +66,7 @@ public class LVal extends ComputeExp {
         return SymbolManger.GetSymbol(identName) != null;
     }
 
-    public boolean CannotChangeValue() {
+    public boolean IsConstType() {
         String identName = ((Ident) this.components.get(0)).GetTokenString();
         Symbol symbol = SymbolManger.GetSymbol(identName);
         if (symbol == null) {

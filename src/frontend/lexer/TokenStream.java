@@ -1,16 +1,18 @@
 package frontend.lexer;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class TokenStream {
     private final ArrayList<Token> tokenList;
     private int readPoint;
-    private int backPoint;
+    // 回溯栈
+    private final Stack<Integer> backPointStack;
 
     public TokenStream(ArrayList<Token> tokenList) {
         this.tokenList = tokenList;
         this.readPoint = 0;
-        this.backPoint = 0;
+        this.backPointStack = new Stack<>();
     }
 
     public void Read() {
@@ -28,10 +30,10 @@ public class TokenStream {
     }
 
     public void SetBackPoint() {
-        this.backPoint = this.readPoint;
+        this.backPointStack.push(this.readPoint);
     }
 
     public void GoToBackPoint() {
-        this.readPoint = this.backPoint;
+        this.readPoint = this.backPointStack.pop();
     }
 }

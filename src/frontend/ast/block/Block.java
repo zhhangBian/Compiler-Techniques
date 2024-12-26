@@ -24,13 +24,13 @@ public class Block extends Node {
         this.AddNode(new TokenNode());
     }
 
-    public boolean LastIsReturnStmt() {
+    public boolean LastIsNotReturnStmt() {
         if (this.components.size() == 2) {
-            return false;
+            return true;
         }
 
         BlockItem lastBlockItem = (BlockItem) this.components.get(this.components.size() - 2);
-        return lastBlockItem.IsReturnStmt();
+        return !lastBlockItem.IsReturnStmt();
     }
 
     public int GetLastLine() {
