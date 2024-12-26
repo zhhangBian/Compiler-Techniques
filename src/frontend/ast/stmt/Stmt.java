@@ -351,7 +351,9 @@ public class Stmt extends Node {
         int count = 0;
         for (int i = 0; i < formatString.length() - 1; i++) {
             if (formatString.charAt(i) == '%' &&
-                (formatString.charAt(i + 1) == 'd' || formatString.charAt(i + 1) == 'c')) {
+                (formatString.charAt(i + 1) == 'd' ||
+                    formatString.charAt(i + 1) == 'c' ||
+                    formatString.charAt(i + 1) == 's')) {
                 count++;
             }
         }

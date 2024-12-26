@@ -121,6 +121,13 @@ public class VisitorStmt {
                     PrintCharInstr printCharInstr = new PrintCharInstr(printValue);
 
                     i++;
+                } else if (formatString.charAt(i + 1) == 's') {
+                    IrValue irValue = printValueList.get(expCnt++);
+                    // 地址一定是32
+                    IrValue printAddress = IrType.ConvertType(irValue, IrBaseType.INT32);
+                    PrintStrInstr printStrInstr = new PrintStrInstr(printAddress, "hello");
+
+                    i++;
                 }
             }
             // 转义只会是换行

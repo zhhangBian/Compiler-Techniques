@@ -37,7 +37,11 @@ public class LoadInstr extends Instr {
         // 加载指针的地址
         this.LoadValueToRegister(pointer, pointerRegister);
         // 加载数据
-        new MipsLsu(MipsLsu.LsuType.LW, targetRegister, pointerRegister, 0);
+        if (this.irType.IsInt8Type()) {
+            new MipsLsu(MipsLsu.LsuType.LB, targetRegister, pointerRegister, 0);
+        } else {
+            new MipsLsu(MipsLsu.LsuType.LW, targetRegister, pointerRegister, 0);
+        }
         // 将数据保存到栈空间上
         if (MipsBuilder.GetValueToRegister(this) == null) {
             int offset = MipsBuilder.AllocateStackForValue(this);

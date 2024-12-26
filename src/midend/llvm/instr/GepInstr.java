@@ -74,16 +74,38 @@ public class GepInstr extends Instr {
 
         // 加载数组的首地址
         this.LoadValueToRegister(pointerValue, pointerRegister);
+
+        int offset = 4;
+        IrPointerType pointerType = (IrPointerType) pointerValue.GetIrType();
+        IrType targetType = pointerType.GetTargetType();
+        // 普通char
+        if (targetType.IsInt8Type()) {
+            offset = 1;
+        }
+        // char数组
+        else if (targetType.IsArrayType()) {
+            IrArrayType arrayType = (IrArrayType) targetType;
+            if (arrayType.GetElementType().IsInt8Type()) {
+                offset = 1;
+            }
+        }
+
         if (offsetValue instanceof IrConstant irConstant) {
             // 直接赋值
             new MipsAlu(MipsAlu.AluType.ADDIU, targetRegister, pointerRegister,
-                Integer.parseInt(irConstant.GetIrName()) << 2);
+                Integer.parseInt(irConstant.GetIrName()) * offset);
         } else {
-            // 加载offset的值
-            this.LoadValueToRegister(offsetValue, offsetRegister);
             // 将offset左移两位
-            new MipsAlu(MipsAlu.AluType.SLL, targetRegister, offsetRegister, 2);
-            new MipsAlu(MipsAlu.AluType.ADDU, targetRegister, pointerRegister, targetRegister);
+            if (offset == 4) {
+                // 加载offset的值
+                this.LoadValueToRegister(offsetValue, offsetRegister);
+                new MipsAlu(MipsAlu.AluType.SLL, targetRegister, offsetRegister, 2);
+                new MipsAlu(MipsAlu.AluType.ADDU, targetRegister, pointerRegister, targetRegister);
+            }
+            // 不用移位
+            else {
+                new MipsAlu(MipsAlu.AluType.ADDU, targetRegister, pointerRegister, offsetRegister);
+            }
         }
 
         // 保存结果

@@ -53,6 +53,10 @@ public class StoreInstr extends Instr {
         // 获取address的值
         this.LoadValueToRegister(addressValue, addressRegister);
 
-        new MipsLsu(MipsLsu.LsuType.SW, valueRegister, addressRegister, 0);
+        if (valueValue.GetIrType().IsInt8Type()) {
+            new MipsLsu(MipsLsu.LsuType.SB, valueRegister, addressRegister, 0);
+        } else {
+            new MipsLsu(MipsLsu.LsuType.SW, valueRegister, addressRegister, 0);
+        }
     }
 }
