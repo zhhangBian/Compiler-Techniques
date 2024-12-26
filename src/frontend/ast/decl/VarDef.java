@@ -17,9 +17,13 @@ import java.util.ArrayList;
 public class VarDef extends Node {
     private String type;
     private ValueSymbol symbol;
+    private boolean isGetInt;
+    private boolean isGetChar;
 
     public VarDef() {
         super(SyntaxType.VAR_DEF);
+        this.isGetInt = false;
+        this.isGetChar = false;
     }
 
     public void SetTypeString(String type) {
@@ -53,8 +57,26 @@ public class VarDef extends Node {
         if (GetCurrentTokenType().equals(TokenType.ASSIGN)) {
             // =
             this.AddNode(new TokenNode());
+
+            if (GetCurrentTokenType().equals(TokenType.GETINTTK) ||
+                GetCurrentTokenType().equals(TokenType.GETCHARTK)) {
+                this.isGetInt = GetCurrentTokenType().equals(TokenType.GETINTTK);
+                this.isGetChar = GetCurrentTokenType().equals(TokenType.GETCHARTK);
+                // getint | getchar
+                this.AddNode(new TokenNode());
+                // (
+                this.AddNode(new TokenNode());
+                // )
+                if (GetCurrentTokenType().equals(TokenType.RPARENT)) {
+                    this.AddNode(new TokenNode());
+                } else {
+                    this.AddMissRParentError();
+                }
+            }
             // InitVal
-            this.AddNode(new InitVal());
+            else {
+                this.AddNode(new InitVal());
+            }
         }
     }
 
@@ -108,5 +130,13 @@ public class VarDef extends Node {
             }
         }
         throw new RuntimeException("no init value");
+    }
+
+    public boolean IsGetInt() {
+        return this.isGetInt;
+    }
+
+    public boolean IsGetChar() {
+        return this.isGetChar;
     }
 }

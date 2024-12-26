@@ -14,6 +14,8 @@ import midend.llvm.constant.IrConstantInt;
 import midend.llvm.instr.AllocateInstr;
 import midend.llvm.instr.GepInstr;
 import midend.llvm.instr.StoreInstr;
+import midend.llvm.instr.io.GetCharInstr;
+import midend.llvm.instr.io.GetIntInstr;
 import midend.llvm.type.IrArrayType;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.type.IrPointerType;
@@ -129,6 +131,14 @@ public class VisitorDecl {
                     irExp = IrType.ConvertType(irExp, IrBaseType.INT8);
                 }
                 StoreInstr storeInstr = new StoreInstr(irExp, allocateInstr);
+            }
+            // 如果是getint | getchar
+            else if (varDef.IsGetInt()) {
+                GetIntInstr getIntInstr = new GetIntInstr();
+                StoreInstr storeInstr = new StoreInstr(getIntInstr, allocateInstr);
+            } else if (varDef.IsGetChar()) {
+                GetCharInstr getCharInstr = new GetCharInstr();
+                StoreInstr storeInstr = new StoreInstr(getCharInstr, allocateInstr);
             }
         } else {
             if (varDef.HaveInitVal()) {
