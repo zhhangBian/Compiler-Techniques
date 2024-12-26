@@ -3,13 +3,12 @@ package optimize;
 import midend.MidEnd;
 import utils.Setting;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class OptimizeManager {
     private static ArrayList<Optimizer> optimizerList;
 
-    public static void Init() throws IOException {
+    public static void Init() {
         Optimizer.SetIrModule(MidEnd.GetIrModule());
 
         optimizerList = new ArrayList<>();
