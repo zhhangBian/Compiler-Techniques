@@ -1,0 +1,12 @@
+// 测试a类错误
+int main() {
+	int a = 0;
+    int res = 1;
+    if (a == 0 & a != 0) {
+        res = 2;
+    }
+    if (a == 0 | a != 0) {
+        res = 3;
+    }
+	return 0;
+}

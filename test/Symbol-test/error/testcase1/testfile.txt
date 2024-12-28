@@ -1,0 +1,14 @@
+void f0() {
+
+}
+
+void f1(int x, int y, int z) {
+    f0(2024);
+}
+
+int main() {
+    f1(1);
+
+
+    return 0;
+}

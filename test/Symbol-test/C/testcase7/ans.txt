@@ -1,0 +1,6 @@
+1 __fact IntFunc
+1 fact IntFunc
+2 x Int
+2 r Int
+3 x Int
+4 x Int

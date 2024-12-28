@@ -1,0 +1,25 @@
+int checkYear(int year){ 
+    const int i = 0;
+    if(year % 4 == 0{ // 错误1 j
+        if(year % 100 == 0){
+            if(year % 400 == 0 return 0; // 错误2 j
+            return 1;
+        }
+        return 1;
+    } else{
+        return 0;
+    }
+} // 错误3 g
+
+int main() {
+    int year;
+    year = getint(; // 错误4 j
+
+    if(checkYear(year)){
+        printf("leap year\n"; // 错误5 j
+    } else{
+        printf("common year\n");
+    }
+    
+    return 0;
+}

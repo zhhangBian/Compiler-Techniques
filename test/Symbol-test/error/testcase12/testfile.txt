@@ -1,0 +1,11 @@
+int f1()
+{}
+
+void f2() {}
+
+char f3() {}
+int f4() {}
+
+int main() {
+
+}

@@ -1,0 +1,7 @@
+1 ZERO ConstInt
+1 ONE ConstInt
+1 var2 Int
+1 var3 Int
+1 fun VoidFunc
+2 i Int
+3 yuming Int

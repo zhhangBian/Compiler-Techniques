@@ -1,0 +1,14 @@
+const int a=1 // error1
+
+int main() {
+    const int a=-2,b[2]={2,2},c=3 // error2
+    int d,e=-1 // error3
+    {
+
+    }
+    for (;;) {
+        break // error4
+        continue // error5
+    }
+    return 0;
+}

@@ -1,0 +1,3 @@
+1 global Int
+1 func_cond IntFunc
+1 test_if VoidFunc

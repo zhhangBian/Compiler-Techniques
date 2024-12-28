@@ -1,0 +1,16 @@
+void f(char str[], char str[]){
+
+}
+
+void f() {
+
+}
+
+int main() {
+    const char a = '\\';
+    for(;;) {
+        char a[5];
+    }
+    int a[10];
+    return 0;
+}

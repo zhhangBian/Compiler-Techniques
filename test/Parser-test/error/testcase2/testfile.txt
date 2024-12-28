@@ -1,0 +1,8 @@
+int a // error1
+int main() {
+    printf("hello"; // error2
+	printf("%d",1; // error3
+	printf("%d%c",1,'c'; // error4
+	printf("hello") // error5
+	return 0;
+}

@@ -1,0 +1,16 @@
+1 constIntArray ConstIntArray
+1 constCharArray ConstCharArray
+1 constCharArray2 ConstCharArray
+1 intArray IntArray
+1 charArray CharArray
+1 func_with_param IntFunc
+2 a Int
+2 b Char
+2 arr IntArray
+2 str CharArray
+2 sum Int
+3 result Int
+3 asciiSum Int
+3 charSum Char
+3 x1 Int
+3 a1 Char

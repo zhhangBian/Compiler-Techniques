@@ -1,0 +1,32 @@
+int f1( { // error1
+	return 1 // error2
+}
+
+void f2(int a {} // error3
+
+void f3(char a[] {} // error4
+
+void f4(int a,int b[] {} // error5
+
+void f5(int b[],int a {} // error6
+
+void f6(int a[) {} // error7
+
+void f7(int a[,char b) { // error8
+	int c;
+	return // error9
+	int d;
+}
+
+int main( { // error10
+	int a[2={1,2}; // error11
+	int b[2]={a[0,2}; // error12
+	char str[6]="hell0";
+	a[0=2; // error13
+	f1(; // error14
+	f2(1; // error15
+	f3(str; // error16
+	f4(1,b; // error17
+	f5(b,1; // error18
+	return 0;
+}

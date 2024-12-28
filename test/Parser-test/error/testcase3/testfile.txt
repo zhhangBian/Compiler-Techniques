@@ -1,0 +1,16 @@
+void f() {}
+
+int main() {
+    int a;
+    a = 1 // error1
+    f();
+    1 // error2
+    int b;
+    if (0 // error3
+        a = a + 1;
+    if (1 && 4 + 2 > 0 // error4
+        a = a + 1;
+    ((1); // error5
+    return 0;
+
+}

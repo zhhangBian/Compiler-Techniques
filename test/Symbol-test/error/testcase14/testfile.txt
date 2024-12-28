@@ -1,0 +1,27 @@
+void f1(int x){
+    return;
+}
+
+void f2(int x[])
+{
+    return;
+}
+
+void f3(char x) {
+    return;
+}
+
+void f4(char x[]) {
+    return;
+}
+
+int main() {
+    int a1[2];
+    char a2[2];
+    f1(a1);
+    f2(1);
+    f3(a2);
+    f4(a1);
+    f2(a2);
+    return 0;
+}

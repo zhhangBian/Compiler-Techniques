@@ -1,0 +1,17 @@
+int f(int a[], char c[]) {
+    return a[0] - c[0];
+}
+
+int main() {
+    int a[100];
+    int b;
+    char c[100];
+    char d;
+    f(a,b);
+    f(a,c);
+    f(a,d);
+    f(b,c);
+    f(b,d);
+    f(c,d);
+    return 0;
+}

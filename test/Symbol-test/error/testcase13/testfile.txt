@@ -1,0 +1,10 @@
+void f1(){
+    return 0;
+}
+void f2() {
+    return 'a';
+}
+
+int main() {
+    return 0;
+}

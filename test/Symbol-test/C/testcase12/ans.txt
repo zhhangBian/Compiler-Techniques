@@ -1,0 +1,10 @@
+1 move VoidFunc
+1 hanoi VoidFunc
+2 x Int
+2 y Int
+3 n Int
+3 a Int
+3 b Int
+3 c Int
+6 n Int
+6 fun1 Int
