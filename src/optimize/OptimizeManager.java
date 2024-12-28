@@ -1,7 +1,6 @@
 package optimize;
 
 import midend.MidEnd;
-import utils.Setting;
 
 import java.util.ArrayList;
 
@@ -41,9 +40,8 @@ public class OptimizeManager {
         }
 
         optimizerList.add(new ActiveAnalysis());
-        if (!Setting.SPECIAL) {
-            optimizerList.add(new AllocateRegister());
-        }
+        optimizerList.add(new AllocateRegister());
+
         optimizerList.add(new RemovePhi());
     }
 
