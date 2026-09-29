@@ -355,6 +355,16 @@ public class Lvn extends Optimizer {
         IrType originType = extendInstr.GetOriginType();
         IrValue originValue = extendInstr.GetOriginValue();
 
+        if (originValue instanceof IrConstant constant) {
+            int value = Integer.parseInt(constant.GetIrName());
+            if (originType.IsInt1Type()) {
+                value &= 1;
+            } else if (originType.IsInt8Type()) {
+                value &= 0xff;
+            }
+            extendInstr.ModifyAllUsersToNewValue(new IrConstantInt(value));
+            return true;
+        }
         if (targetType == originType) {
             extendInstr.ModifyAllUsersToNewValue(originValue);
             return true;
@@ -368,6 +378,16 @@ public class Lvn extends Optimizer {
         IrType originType = truncInstr.GetOriginType();
         IrValue originValue = truncInstr.GetOriginValue();
 
+        if (originValue instanceof IrConstant constant) {
+            int value = Integer.parseInt(constant.GetIrName());
+            if (targetType.IsInt1Type()) {
+                value &= 1;
+            } else if (targetType.IsInt8Type()) {
+                value &= 0xff;
+            }
+            truncInstr.ModifyAllUsersToNewValue(new IrConstantInt(value));
+            return true;
+        }
         if (targetType == originType) {
             truncInstr.ModifyAllUsersToNewValue(originValue);
             return true;

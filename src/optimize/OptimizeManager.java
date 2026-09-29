@@ -1,6 +1,7 @@
 package optimize;
 
 import midend.MidEnd;
+import utils.Setting;
 
 import java.util.ArrayList;
 
@@ -39,8 +40,20 @@ public class OptimizeManager {
             optimizerList.add(new CfgBuilder());
         }
 
-        optimizerList.add(new ActiveAnalysis());
-        optimizerList.add(new AllocateRegister());
+        optimizerList.add(new ConstantPropagation());
+        optimizerList.add(new RemoveDeadCode());
+        optimizerList.add(new CfgBuilder());
+        optimizerList.add(new LoopInvariantCodeMotion());
+        optimizerList.add(new Lvn());
+        optimizerList.add(new RemoveDeadCode());
+        optimizerList.add(new CfgBuilder());
+
+        if (Setting.GRAPH_COLORING) {
+            optimizerList.add(new ColoringRegisterAllocator());
+        } else {
+            optimizerList.add(new ActiveAnalysis());
+            optimizerList.add(new AllocateRegister());
+        }
 
         optimizerList.add(new RemovePhi());
     }

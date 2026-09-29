@@ -11,8 +11,11 @@ import midend.llvm.value.IrParameter;
 import midend.llvm.value.IrValue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class CallInstr extends Instr {
+    private HashSet<IrValue> liveAcross;
+
     public CallInstr(IrFunction targetFunction, ArrayList<IrValue> paramList) {
         super(targetFunction.GetReturnType(), InstrType.CALL,
             targetFunction.GetReturnType().IsVoidType() ? "call" : IrBuilder.GetLocalVarName());
@@ -26,6 +29,10 @@ public class CallInstr extends Instr {
 
     public ArrayList<IrValue> GetParamList() {
         return new ArrayList<>(this.useValueList.subList(1, this.useValueList.size()));
+    }
+
+    public void SetLiveAcross(HashSet<IrValue> liveAcross) {
+        this.liveAcross = liveAcross;
     }
 
     private boolean IsVoidReturnType() {
@@ -69,7 +76,7 @@ public class CallInstr extends Instr {
 
         // 现场信息
         int currentOffset = MipsBuilder.GetCurrentStackOffset();
-        ArrayList<Register> allocatedRegisterList = MipsBuilder.GetAllocatedRegList();
+        ArrayList<Register> allocatedRegisterList = this.GetSavedRegisters();
 
         // 保护现场
         this.SaveCurrent(currentOffset, allocatedRegisterList);
@@ -91,6 +98,32 @@ public class CallInstr extends Instr {
 
         // 处理返回值
         this.HandleReturnValue();
+    }
+
+    private ArrayList<Register> GetSavedRegisters() {
+        ArrayList<Register> allocated = MipsBuilder.GetAllocatedRegList();
+        if (this.liveAcross == null) {
+            return allocated;
+        }
+
+        HashSet<Register> needed = new HashSet<>();
+        for (IrValue value : this.liveAcross) {
+            Register register = MipsBuilder.GetValueToRegister(value);
+            if (register != null) {
+                needed.add(register);
+            }
+        }
+        // 传参可能覆盖 A1-A3，作为实参的形参也要从保存区读取。
+        for (IrValue value : this.GetParamList()) {
+            if (value instanceof IrParameter) {
+                Register register = MipsBuilder.GetValueToRegister(value);
+                if (register != null) {
+                    needed.add(register);
+                }
+            }
+        }
+        allocated.removeIf(register -> !needed.contains(register));
+        return allocated;
     }
 
     private void SaveCurrent(int currentOffset, ArrayList<Register> allocatedRegisterList) {

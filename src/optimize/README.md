@@ -604,52 +604,25 @@ private void RemOptimize(IrValue valueL, IrValue valueR,
 
 模优化的效果是十分显著的，有一个测试点直接消除了全部的模运算，带来了较大的性能提升。
 
+## 跨块常量传播与分支折叠
+
+局部常量折叠只能处理当前可见的表达式；合流块中的值还可能来自多个前驱。`ConstantPropagation`反复检查Phi、算术、比较与类型转换：当Phi的各个输入是同一常量时，将其使用处直接替换为该常量，再继续折叠依赖它的指令。条件确定后，把`br`改为`jump`，删除失效边上的Phi输入，并重新构建控制流图。循环执行到没有新的替换或分支折叠为止。
+
+这里只折叠结果可以静态确定的指令；除数为零的除法和取模保持原样。内存读取、函数调用及其他有副作用的操作不参与常量推断。
+
+## 循环不变量外提
+
+`LoopInvariantCodeMotion`通过回边识别自然循环，只处理具有唯一前置块的循环。如果一条指令的所有操作数都在循环外定义，就把它移到前置块的跳转之前，使它不再每轮重复计算。外提范围限定为无副作用且可安全提前执行的算术、比较、类型转换和地址计算；除法、取模、访存及调用不会外提。即使循环执行零次，提前计算也不会引入新的访存或函数副作用。
+
 ## 寄存器分配
 
-限于时间，我并没有实现图着色寄存器分配，而是使用了基于线性扫描的寄存器分配：为每个value记录最后使用其的指令，当不再使用时，就可以释放寄存器。
+优化后的IR采用SSA形式：每条产生结果的指令只定义一个值，但不同值的存活区间可能重叠。默认的`ColoringRegisterAllocator`先计算各基本块的`use`、`def`、`liveIn`和`liveOut`，再从块尾反向扫描指令。Phi的输入属于对应的**前驱边**，不能把不同分支的输入都当作合流块内同时活跃的值。
 
-在实际的分配过程中，采用了DFS的方式：程序的执行本质上还是线性的，使用DFS就是在，模拟线性的执行过程。两个并列的基本块可以公用寄存器，因为线性的执行使得实际上无法共用寄存器。
+当一个值被定义时，它与此刻仍活跃的其他值在冲突图中连边；相连的两个值不能占用同一寄存器。分配器按图的度数逐步移除节点，再逆序选择颜色。可用颜色是`$t0`～`$t9`和`$s0`～`$s7`；若没有可用颜色，该值沿用后端已有的栈存储路径。函数形参的`$a1`～`$a3`由后端单独处理，`$k0`和`$k1`保留作临时寄存器。
 
-```java
-// 记录当前block的使用信息
-this.RecordLastUse(entryBlock, lastUseMap);
-// 为首块分配寄存器
-this.AllocateOneBlock(entryBlock, lastUseMap, defineSet, neverUseAfterSet);
-// 遍历支配结点
-for (IrBasicBlock childBlock : entryBlock.GetDirectDominateBlocks()) {
-    this.AllocateChildBlock(childBlock);
-}
-// 释放寄存器
-this.FreeDefineValueRegister(defineSet);
-// 递归过程：恢复原先的映射关系：将 后继不再使用但是是从前驱block传过来 的变量对应的寄存器映射恢复回来
-// 也就是 在neverUsedAfter中，但是不是在当前基本块定义的变量
-this.ReCoverRegisterValueMap(defineSet, neverUseAfterSet);
-```
+Phi最终会被拆成前驱块中的拷贝。着色时，互不冲突的Phi输入和结果优先使用同一寄存器，后端便可省去相应的`move`；若它们冲突，仍按冲突图分配，不会为了消除拷贝破坏值的正确性。函数调用只保存调用后仍活跃的寄存器，同时保留传参时可能被覆盖的形参寄存器；递归调用也遵循同一规则。
 
-在线性扫描的过程中，需要在递归过程中**记录递归前的寄存器使用状态**，在递归完成后进行恢复，以实现并列基本块的寄存器共用。
-
-```java
-private void AllocateChildBlock(IrBasicBlock visitBlock) {
-    // 程序运行的逻辑本质上还是线性的：如果子节点和子子结点均用不到某值，则可以释放
-    // 使用buffer记录该映射关系，在为子节点分配完成后恢复，以免影响其兄弟节点的寄存器分配
-    HashMap<Register, IrValue> bufferMap = new HashMap<>();
-    // 子程序不使用即不in
-    Set<Register> registerSet = new HashSet<>(this.registerValueMap.keySet());
-    for (Register register : registerSet) {
-        IrValue registerValue = this.registerValueMap.get(register);
-        if (!visitBlock.GetInValueSet().contains(registerValue)) {
-            bufferMap.put(register, registerValue);
-            this.registerValueMap.remove(register);
-        }
-    }
-    // 递归调用
-    this.Allocate(visitBlock);
-    // 恢复映射关系
-    for (Register register : bufferMap.keySet()) {
-        this.registerValueMap.put(register, bufferMap.get(register));
-    }
-}
-```
+将`Setting.GRAPH_COLORING`设为`false`并重新编译，可切回原有的基于最后使用位置和支配树DFS的分配器。原分配器按块记录寄存器状态，在返回兄弟块前恢复状态；图着色则直接根据跨块活跃性判断哪些值可以共用寄存器。
 
 # 后端优化
 

@@ -6,4 +6,6 @@ public class Setting {
     public static final boolean FIX_ERROR = true;
 
     public static final boolean FINE_TUNING = true;
+
+    public static final boolean GRAPH_COLORING = true;
 }

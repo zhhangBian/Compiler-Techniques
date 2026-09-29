@@ -3,6 +3,7 @@
 out
 gen
 .vscode
+.metals
 
 !test
 
