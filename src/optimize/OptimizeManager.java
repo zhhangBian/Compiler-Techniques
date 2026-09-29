@@ -24,8 +24,10 @@ public class OptimizeManager {
         //optimizerList.add(new RemoveDeadBlock());
         //optimizerList.add(new CfgBuilder());
 
+        optimizerList.add(new ScalarizeLocalArray());
         optimizerList.add(new MemToReg());
         optimizerList.add(new CfgBuilder());
+        optimizerList.add(new InlineSmallFunction());
 
         optimizerList.add(new RemoveUnReachCode());
         optimizerList.add(new CfgBuilder());
@@ -41,9 +43,11 @@ public class OptimizeManager {
         }
 
         optimizerList.add(new ConstantPropagation());
+        optimizerList.add(new MemoryValuePropagation());
         optimizerList.add(new RemoveDeadCode());
         optimizerList.add(new CfgBuilder());
         optimizerList.add(new LoopInvariantCodeMotion());
+        optimizerList.add(new MemoryValuePropagation());
         optimizerList.add(new Lvn());
         optimizerList.add(new RemoveDeadCode());
         optimizerList.add(new CfgBuilder());

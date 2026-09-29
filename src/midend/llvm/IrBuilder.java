@@ -58,6 +58,20 @@ public class IrBuilder {
         return irFunction;
     }
 
+    public static void BuildInContext(IrFunction irFunction, IrBasicBlock irBasicBlock,
+                                      Runnable action) {
+        IrFunction previousFunction = currentFunction;
+        IrBasicBlock previousBlock = currentBasicBlock;
+        try {
+            currentFunction = irFunction;
+            currentBasicBlock = irBasicBlock;
+            action.run();
+        } finally {
+            currentFunction = previousFunction;
+            currentBasicBlock = previousBlock;
+        }
+    }
+
     public static IrBasicBlock GetNewBasicBlockIr() {
         IrBasicBlock basicBlock = new IrBasicBlock(GetBasicBlockName(), currentFunction);
         // 添加到当前的处理中

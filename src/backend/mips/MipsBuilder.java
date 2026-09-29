@@ -17,6 +17,7 @@ public class MipsBuilder {
     // 函数栈偏移量分配表
     private static int stackOffset = 0;
     private static HashMap<IrValue, Integer> stackOffsetValueMap = null;
+    private static Integer returnAddressOffset = null;
 
     public static void SetBackEndModule(MipsModule mipsModule) {
         currentModule = mipsModule;
@@ -36,6 +37,7 @@ public class MipsBuilder {
         // 初始化栈分配表
         stackOffset = 0;
         stackOffsetValueMap = new HashMap<>();
+        returnAddressOffset = null;
     }
 
     public static Register GetValueToRegister(IrValue irValue) {
@@ -52,6 +54,15 @@ public class MipsBuilder {
 
     public static int GetCurrentStackOffset() {
         return stackOffset;
+    }
+
+    public static void ReserveReturnAddress() {
+        stackOffset -= 4;
+        returnAddressOffset = stackOffset;
+    }
+
+    public static Integer GetReturnAddressOffset() {
+        return returnAddressOffset;
     }
 
     public static Integer GetStackValueOffset(IrValue irValue) {

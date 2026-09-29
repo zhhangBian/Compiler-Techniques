@@ -45,7 +45,7 @@ public class LoadInstr extends Instr {
         }
     }
 
-    private IrValue GetPointer() {
+    public IrValue GetPointer() {
         return this.useValueList.get(0);
     }
 }

@@ -6,6 +6,9 @@ import midend.llvm.instr.ExtendInstr;
 import midend.llvm.instr.GepInstr;
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.JumpInstr;
+import midend.llvm.instr.CallInstr;
+import midend.llvm.instr.LoadInstr;
+import midend.llvm.instr.StoreInstr;
 import midend.llvm.instr.TruncInstr;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
@@ -68,7 +71,7 @@ public class LoopInvariantCodeMotion extends Optimizer {
                     continue;
                 }
                 for (Instr instr : new ArrayList<>(block.GetInstrList())) {
-                    if (this.CanHoist(instr) && this.OperandsOutsideLoop(instr, loop)) {
+                    if (this.CanHoist(instr, loop) && this.OperandsOutsideLoop(instr, loop)) {
                         block.GetInstrList().remove(instr);
                         preheader.AddInstrBeforeJump(instr);
                         changed = true;
@@ -78,13 +81,37 @@ public class LoopInvariantCodeMotion extends Optimizer {
         } while (changed);
     }
 
-    private boolean CanHoist(Instr instr) {
+    private boolean CanHoist(Instr instr, HashSet<IrBasicBlock> loop) {
         if (instr instanceof AluInstr alu) {
             return alu.GetAluOp() != AluInstr.AluType.SDIV &&
                 alu.GetAluOp() != AluInstr.AluType.SREM;
         }
+        if (instr instanceof LoadInstr load) {
+            return this.CanHoistLoad(load, loop);
+        }
         return instr instanceof CompareInstr || instr instanceof ExtendInstr ||
             instr instanceof TruncInstr || instr instanceof GepInstr;
+    }
+
+    private boolean CanHoistLoad(LoadInstr load, HashSet<IrBasicBlock> loop) {
+        IrValue pointer = load.GetPointer();
+        if (!MemoryAlias.IsSafeFixedAddress(pointer)) {
+            return false;
+        }
+        IrValue base = MemoryAlias.GetBase(pointer);
+        if (base instanceof Instr definition && loop.contains(definition.GetInBasicBlock())) {
+            return false;
+        }
+        for (IrBasicBlock block : loop) {
+            for (Instr instr : block.GetInstrList()) {
+                if (instr instanceof CallInstr ||
+                    instr instanceof StoreInstr store &&
+                        MemoryAlias.MayAlias(pointer, store.GetAddressValue())) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private boolean OperandsOutsideLoop(Instr instr, HashSet<IrBasicBlock> loop) {

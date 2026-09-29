@@ -9,6 +9,7 @@ import midend.llvm.instr.GepInstr;
 import midend.llvm.instr.Instr;
 import midend.llvm.instr.MoveInstr;
 import midend.llvm.instr.TruncInstr;
+import midend.llvm.type.IrBaseType;
 import midend.llvm.type.IrType;
 import midend.llvm.value.IrBasicBlock;
 import midend.llvm.value.IrFunction;
@@ -266,7 +267,36 @@ public class Lvn extends Optimizer {
         if (valueL instanceof IrConstant && valueR instanceof IrConstant) {
             return this.FoldCompareTwoConstant(valueL, valueR, compareInstr);
         }
+        IrValue booleanValue = this.GetBooleanIdentityCompare(compareInstr);
+        if (booleanValue != null) {
+            compareInstr.ModifyAllUsersToNewValue(booleanValue);
+            return true;
+        }
         return false;
+    }
+
+    private IrValue GetBooleanIdentityCompare(CompareInstr compare) {
+        IrValue left = compare.GetValueL();
+        IrValue right = compare.GetValueR();
+        IrValue value;
+        IrConstant constant;
+        if (right instanceof IrConstant rightConstant) {
+            value = left;
+            constant = rightConstant;
+        } else if (left instanceof IrConstant leftConstant) {
+            value = right;
+            constant = leftConstant;
+        } else {
+            return null;
+        }
+        if (!(value instanceof ExtendInstr extend) ||
+            extend.GetOriginType() != IrBaseType.INT1) {
+            return null;
+        }
+        int number = Integer.parseInt(constant.GetIrName());
+        boolean identity = compare.GetCompareOp() == CompareInstr.CompareOp.NE && number == 0 ||
+            compare.GetCompareOp() == CompareInstr.CompareOp.EQ && number == 1;
+        return identity ? extend.GetOriginValue() : null;
     }
 
     // 折叠两个常量

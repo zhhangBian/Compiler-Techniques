@@ -3,10 +3,12 @@ package midend.llvm.value;
 import backend.mips.MipsBuilder;
 import backend.mips.Register;
 import backend.mips.assembly.MipsLabel;
+import backend.mips.assembly.MipsLsu;
 import midend.llvm.IrBuilder;
 import midend.llvm.constant.IrConstantChar;
 import midend.llvm.constant.IrConstantInt;
 import midend.llvm.instr.JumpInstr;
+import midend.llvm.instr.CallInstr;
 import midend.llvm.instr.ReturnInstr;
 import midend.llvm.type.IrFunctionType;
 import midend.llvm.type.IrType;
@@ -115,6 +117,13 @@ public class IrFunction extends IrValue {
             }
             // 在运行栈上分配空间
             MipsBuilder.AllocateStackForValue(this.parameterList.get(i));
+        }
+
+        if (this.basicBlockList.stream().anyMatch(block -> block.GetInstrList().stream()
+            .anyMatch(instr -> instr instanceof CallInstr))) {
+            MipsBuilder.ReserveReturnAddress();
+            new MipsLsu(MipsLsu.LsuType.SW, Register.RA, Register.SP,
+                MipsBuilder.GetReturnAddressOffset());
         }
 
         for (IrBasicBlock irBasicBlock : this.basicBlockList) {

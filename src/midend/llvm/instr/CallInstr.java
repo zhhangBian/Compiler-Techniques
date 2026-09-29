@@ -84,17 +84,16 @@ public class CallInstr extends Instr {
         ArrayList<IrValue> paramList = this.GetParamList();
         // 将参数填入对应位置
         this.FillParams(paramList, currentOffset, allocatedRegisterList);
-        currentOffset = currentOffset - 4 * allocatedRegisterList.size() - 8;
+        int frameOffset = currentOffset - 4 * allocatedRegisterList.size();
 
         // 设置新的栈地址
-        new MipsAlu(MipsAlu.AluType.ADDI, Register.SP, Register.SP, currentOffset);
+        new MipsAlu(MipsAlu.AluType.ADDI, Register.SP, Register.SP, frameOffset);
         // 跳转到函数
         IrFunction targetFunction = this.GetTargetFunction();
         new MipsJump(MipsJump.JumpType.JAL, targetFunction.GetMipsLabel());
 
         // 恢复现场
-        currentOffset = currentOffset + 4 * allocatedRegisterList.size() + 8;
-        this.RecoverCurrent(currentOffset, allocatedRegisterList);
+        this.RecoverCurrent(currentOffset, frameOffset, allocatedRegisterList);
 
         // 处理返回值
         this.HandleReturnValue();
@@ -134,11 +133,7 @@ public class CallInstr extends Instr {
             new MipsLsu(MipsLsu.LsuType.SW, register, Register.SP,
                 currentOffset - registerNum * 4);
         }
-        // 保存SP寄存器和RA寄存器
-        new MipsLsu(MipsLsu.LsuType.SW, Register.SP, Register.SP,
-            currentOffset - registerNum * 4 - 4);
-        new MipsLsu(MipsLsu.LsuType.SW, Register.RA, Register.SP,
-            currentOffset - registerNum * 4 - 8);
+        // 返回地址在函数入口保存；这里只保存调用后仍活跃的寄存器。
     }
 
     private void FillParams(ArrayList<IrValue> paramList, int currentOffset,
@@ -177,15 +172,15 @@ public class CallInstr extends Instr {
                     this.LoadValueToRegister(param, tempRegister);
                 }
                 new MipsLsu(MipsLsu.LsuType.SW, tempRegister, Register.SP,
-                    currentOffset - 4 * allocatedRegisterList.size() - 8 - 4 * i - 4);
+                    currentOffset - 4 * allocatedRegisterList.size() - 4 * i - 4);
             }
         }
     }
 
-    private void RecoverCurrent(int formerOffset, ArrayList<Register> allocatedRegisterList) {
-        // 恢复RA寄存器和SP寄存器
-        new MipsLsu(MipsLsu.LsuType.LW, Register.RA, Register.SP, 0);
-        new MipsLsu(MipsLsu.LsuType.LW, Register.SP, Register.SP, 4);
+    private void RecoverCurrent(int formerOffset, int frameOffset,
+                                ArrayList<Register> allocatedRegisterList) {
+        // 根据固定帧大小恢复SP。
+        new MipsAlu(MipsAlu.AluType.ADDI, Register.SP, Register.SP, -frameOffset);
 
         // 恢复原先的寄存器
         // 此时sp已经恢复了

@@ -3,6 +3,7 @@ package midend.llvm.instr;
 import backend.mips.MipsBuilder;
 import backend.mips.Register;
 import backend.mips.assembly.MipsJump;
+import backend.mips.assembly.MipsLsu;
 import backend.mips.assembly.fake.MarsMove;
 import midend.llvm.type.IrBaseType;
 import midend.llvm.value.IrValue;
@@ -46,6 +47,11 @@ public class ReturnInstr extends Instr {
             else {
                 this.LoadValueToRegister(returnValue, Register.V0);
             }
+        }
+        Integer returnAddressOffset = MipsBuilder.GetReturnAddressOffset();
+        if (returnAddressOffset != null) {
+            new MipsLsu(MipsLsu.LsuType.LW, Register.RA, Register.SP,
+                returnAddressOffset);
         }
         new MipsJump(MipsJump.JumpType.JR, Register.RA);
     }
