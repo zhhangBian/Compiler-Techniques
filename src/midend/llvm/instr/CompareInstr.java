@@ -138,8 +138,16 @@ public class CompareInstr extends Instr {
                 registerResult, registerL, immediate);
             case SGE -> new MipsCompare(MipsCompare.CompareType.SGE,
                 registerResult, registerL, immediate);
-            case SLT -> new MipsCompare(MipsCompare.CompareType.SLTI,
-                registerResult, registerL, immediate);
+            case SLT -> {
+                if (immediate >= Short.MIN_VALUE && immediate <= Short.MAX_VALUE) {
+                    new MipsCompare(MipsCompare.CompareType.SLTI,
+                        registerResult, registerL, immediate);
+                } else {
+                    this.LoadValueToRegister(irConstant, Register.K1);
+                    new MipsCompare(MipsCompare.CompareType.SLT,
+                        registerResult, registerL, Register.K1);
+                }
+            }
             case SLE -> new MipsCompare(MipsCompare.CompareType.SLE,
                 registerResult, registerL, immediate);
             default -> throw new RuntimeException("illegal compare op");

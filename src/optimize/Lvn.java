@@ -121,7 +121,11 @@ public class Lvn extends Optimizer {
     private boolean FoldAluTwoConstant(IrValue valueL, IrValue valueR, AluInstr aluInstr) {
         int numL = Integer.parseInt(valueL.GetIrName());
         int numR = Integer.parseInt(valueR.GetIrName());
-        int num = switch (aluInstr.GetAluOp()) {
+        AluInstr.AluType op = aluInstr.GetAluOp();
+        if (numR == 0 && (op == AluInstr.AluType.SDIV || op == AluInstr.AluType.SREM)) {
+            return false;
+        }
+        int num = switch (op) {
             case ADD -> numL + numR;
             case SUB -> numL - numR;
             case AND -> numL & numR;

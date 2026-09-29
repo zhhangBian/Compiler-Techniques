@@ -122,21 +122,20 @@ public class RemovePhi extends Optimizer {
 
         ArrayList<MoveInstr> fixList = new ArrayList<>();
         HashSet<IrValue> valueRecord = new HashSet<>();
-        for (int i = 0; i < moveList.size(); i++) {
+        for (int i = 0; i < dstList.size(); i++) {
             IrValue dstValue = dstList.get(i);
 
             if (!(dstValue instanceof IrConstant) && !valueRecord.contains(dstValue)) {
                 if (this.HaveCircleConflict(copyInstr, i)) {
                     IrValue middleValue = new IrValue(dstValue.GetIrType(),
                         dstValue.GetIrName() + "_tmp");
-                    moveList.add(0, new MoveInstr(dstValue, middleValue, irBasicBlock));
-                    // 替换后续指令的src
+                    fixList.add(new MoveInstr(dstValue, middleValue, irBasicBlock));
+                    // 只替换原有复制指令的src，不改动保存旧值的指令
                     for (MoveInstr moveInstr : moveList) {
                         if (moveInstr.GetSrcValue().equals(dstValue)) {
                             moveInstr.SetSrcValue(middleValue);
                         }
                     }
-                    fixList.add(new MoveInstr(middleValue, dstValue, irBasicBlock));
                 }
                 valueRecord.add(dstValue);
             }
@@ -191,7 +190,7 @@ public class RemovePhi extends Optimizer {
         if (srcRegister != null) {
             for (int i = 0; i < index; i++) {
                 IrValue dstValue = moveList.get(i).GetDstValue();
-                if (registerMap.get(dstValue).equals(srcRegister)) {
+                if (srcRegister.equals(registerMap.get(dstValue))) {
                     return true;
                 }
             }

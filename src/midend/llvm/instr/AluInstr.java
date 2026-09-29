@@ -239,14 +239,16 @@ public class AluInstr extends Instr {
     private void DivOptimize(IrValue valueL, IrValue valueR,
                              Register registerL, Register registerR,
                              Register registerResult) {
+        boolean nonZeroConstantDivisor = valueR instanceof IrConstant &&
+            Integer.parseInt(valueR.GetIrName()) != 0;
         // 均为常数
-        if (valueL instanceof IrConstant && valueR instanceof IrConstant) {
+        if (valueL instanceof IrConstant && nonZeroConstantDivisor) {
             int numL = Integer.parseInt(valueL.GetIrName());
             int numR = Integer.parseInt(valueR.GetIrName());
             new MarsLi(registerResult, numL / numR);
         }
         // 右值为常数
-        else if (valueR instanceof IrConstant) {
+        else if (nonZeroConstantDivisor) {
             int num = Integer.parseInt(valueR.GetIrName());
             if (num == 1) {
                 this.LoadValueToRegister(valueL, registerResult);
@@ -271,14 +273,16 @@ public class AluInstr extends Instr {
     private void RemOptimize(IrValue valueL, IrValue valueR,
                              Register registerL, Register registerR,
                              Register registerResult) {
+        boolean nonZeroConstantDivisor = valueR instanceof IrConstant &&
+            Integer.parseInt(valueR.GetIrName()) != 0;
         // 均为常数
-        if (valueL instanceof IrConstant && valueR instanceof IrConstant) {
+        if (valueL instanceof IrConstant && nonZeroConstantDivisor) {
             int numL = Integer.parseInt(valueL.GetIrName());
             int numR = Integer.parseInt(valueR.GetIrName());
             new MarsLi(registerResult, numL % numR);
         }
         // 右值为常数
-        else if (valueR instanceof IrConstant) {
+        else if (nonZeroConstantDivisor) {
             int num = Integer.parseInt(valueR.GetIrName());
             // 一般情况：先除优化，再减，总归是优化
             this.LoadValueToRegister(valueL, Register.FP);

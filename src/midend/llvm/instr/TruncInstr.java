@@ -44,13 +44,13 @@ public class TruncInstr extends Instr {
 
         // 缩减即防止溢出，缩减为两位
         IrValue originValue = this.GetOriginValue();
-        Register valueRegister = this.GetRegisterOrK0ForValue(originValue);
-        this.LoadValueToRegister(originValue, valueRegister);
+        Register resultRegister = this.GetRegisterOrK0ForValue(this);
+        this.LoadValueToRegister(originValue, resultRegister);
         if (this.targetType.IsInt1Type()) {
-            new MipsAlu(MipsAlu.AluType.ANDI, valueRegister, valueRegister, 0x1);
+            new MipsAlu(MipsAlu.AluType.ANDI, resultRegister, resultRegister, 0x1);
         } else if (this.targetType.IsInt8Type()) {
-            new MipsAlu(MipsAlu.AluType.ANDI, valueRegister, valueRegister, 0xff);
+            new MipsAlu(MipsAlu.AluType.ANDI, resultRegister, resultRegister, 0xff);
         }
-        this.SaveRegisterResult(this, valueRegister);
+        this.SaveRegisterResult(this, resultRegister);
     }
 }
